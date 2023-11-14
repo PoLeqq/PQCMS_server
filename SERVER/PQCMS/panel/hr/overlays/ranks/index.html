@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ranks - Overlay ElectroCMS</title>
+    
+    <link rel="stylesheet" href="../../../../../bs5/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../overlay.css">
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+    <form>
+        <form method="POST" action="x.php" class="col-12 p-4"> 
+            <fieldset class="d-flex flex-column justify-content-center align-items-start">
+                <legend class="">Grupa</legend>
+        
+                <label class="mt-1">Nazwa grupy</label>
+                <input type="text" name="name" class="my-2 rounded-0" placeholder="nazwa"/>
+                
+                <label class="mt-1">Rodzic</label>
+                <select name="parent" class="my-2">
+                    <option value="">-</option>
+                    <option value="ranga1">Ranga 1</option>
+                    <option value="ranga2">Ranga 2</option>
+                </select>
+
+                <!-- Miejsce na permisje -->
+
+                <input type="submit" name="submit" class="btn btn-primary my-4 rounded-0" value="Dodaj">
+            </fieldset>
+        </form>
+    </form>
+</body>
+</html>

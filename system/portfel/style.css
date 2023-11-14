@@ -1,0 +1,28 @@
+.transaction-history-element {
+    color: black;
+    min-height: 50px;
+    font-size: 15px;
+    background-color: white;
+}
+
+.transaction-history-element > li {
+    padding: 5px;
+}
+
+.transaction-minus {
+    background: linear-gradient(white 40%,rgb(253, 45, 45));
+}
+
+.transaction-plus {
+    background: linear-gradient(white 40%,rgb(45, 250, 45));
+}
+
+#transaction-history-form > ul > li > input, #transaction-history-form > ul > li > select {
+    width: 100%;
+}
+
+#transaction-history-form-controls > div > input {
+    font-size: 10px;
+    padding: 0;
+    margin: 2px 0;
+}

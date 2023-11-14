@@ -1,0 +1,7 @@
+Options +FollowSymLinks -MultiViews
+Options -Indexes
+
+RewriteEngine On
+RewriteBase /
+
+RewriteRule ^(.+)\.json$ pqcms [L,NC,R=301]

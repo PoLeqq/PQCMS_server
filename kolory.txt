@@ -1,0 +1,6 @@
+1. Główny kolor tła: #222222 (ciemnoszary) - Ten kolor będzie stanowił tło strony, nadając jej elegancki i nowoczesny wygląd.
+2. Nagłówki i wyróżnienia: #FFD700 (złoty) - Ten kolor będzie używany do nagłówków, wyróżnień i innych elementów, które mają przyciągać uwagę użytkowników.
+3. Tekst i zawartość: #FFFFFF (biały) - Ten kolor będzie stosowany do tekstu i zawartości na stronie, aby zapewnić czytelność i kontrast na tle ciemnoszarego tła.
+4. Akcentowy kolor: #00BFFF (niebieski) - Ten jasny niebieski kolor będzie używany jako kolor akcentowy, np. do przycisków, linków i innych interaktywnych elementów.
+5. Dodatkowy kolor 1: #FF4500 (pomarańczowy) - Ten kolor można wykorzystać jako dodatkowy kolor do różnych elementów, takich jak ikony czy podkreślenia.
+6. Dodatkowy kolor 2: #8A2BE2 (fioletowy) - Ten fioletowy kolor może być stosowany do dodatkowych elementów projektu, aby dodać nieco głębi i zróżnicowania.

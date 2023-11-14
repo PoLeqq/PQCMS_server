@@ -1,0 +1,11 @@
+.update {
+    font-weight: bold;
+}
+
+.ok {
+    color: lime;
+}
+
+.required {
+    color: red;
+}

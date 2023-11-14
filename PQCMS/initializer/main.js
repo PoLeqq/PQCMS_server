@@ -1,0 +1,1 @@
+document.querySelector("#electrocms-domain").value = window.location.hostname;

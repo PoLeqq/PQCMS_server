@@ -1,0 +1,7 @@
+@import url("../index.css");
+
+body {
+    background: linear-gradient(135deg, #00ff00, #31a231, #57ff57, #00ff00);
+    background-size: 400% 400%;
+    animation: block-background 5.8s ease-in-out;
+}

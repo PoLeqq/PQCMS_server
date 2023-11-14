@@ -1,0 +1,70 @@
+{
+    "employees": [
+        {
+            "id": 1,
+            "name": "Imi\u0119",
+            "surname": "Pracownik",
+            "description": "<p><b>Og\u00f3lnie:<\/b> Super pracownik, na prawd\u0119 przyk\u0142ada si\u0119 do rozwoju ElectroCMS<\/p><p>**[-]** Zjad\u0142 cukierka po kryjomu, aby nikogo nie cz\u0119stowa\u0107<\/p>",
+            "reputation": 0,
+            "hours": null,
+            "salary": null
+        }
+    ],
+    "clients": [
+        {
+            "id": 1,
+            "name": "Imi\u0119",
+            "surname": "Klientka",
+            "description": "<p><b>Og\u00f3lnie:<\/b> Super babka, taka 9\/10 ale nie ma g\u00f3rnych jedynek wi\u0119c 0\/10<\/p><p>**[+]** Jaki\u015b plus, nie wiem czy to ma sens tutaj<\/p>",
+            "reputation": 0
+        },
+        {
+            "id": "c2",
+            "name": "Imi\u01192",
+            "surname": "Klient2",
+            "description": "",
+            "reputation": 0
+        }
+    ],
+    "transactionHistory": [
+        {
+            "id": 1,
+            "title": "Zap\u0142ata za wykonanie strony",
+            "description": "Pierwsza kasa :D Projekt pomalutku si\u0119 rozwija!",
+            "date": "2023-08-22",
+            "time": "10:50",
+            "value": 500.19,
+            "targetType": "c",
+            "targetId": 1
+        },
+        {
+            "id": 2,
+            "title": "Wyp\u0142ata za klienta: Klient Nazwisko",
+            "description": "To pierwsza wyp\u0142ata! Nie wydaj wszystkiego na cukierki ;)",
+            "date": "2023-08-22",
+            "time": "11:00",
+            "value": -20.11,
+            "targetType": "e",
+            "targetId": 1
+        },
+        {
+            "id": 3,
+            "title": "tytu\u0142",
+            "description": "opis",
+            "date": "23.08.2023",
+            "time": "21:33",
+            "value": -100,
+            "targetType": "e",
+            "targetId": 1
+        }
+    ],
+    "plannedTransactions": [
+        {
+            "id": 1,
+            "title": "Firm\u00f3wka",
+            "description": "Pierwsza impreza firmowa!",
+            "value": 500.99,
+            "date": "2023-09-01"
+        }
+    ]
+}

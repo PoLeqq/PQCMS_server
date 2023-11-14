@@ -1,0 +1,36 @@
+/*
+Style, które mają zastosowanie na każdej podstronie (navbar, pop-ups, scrollbar etc.)
+
+1. Główny kolor tła: #222222 (ciemnoszary)
+2. Nagłówki i wyróżnienia: #FFD700 (złoty)
+3. Tekst i zawartość: #FFFFFF (biały)
+4. Akcentowy kolor: #00BFFF (niebieski)
+5. Dodatkowy kolor 1: #FF4500 (pomarańczowy)
+6. Dodatkowy kolor 2: #8A2BE2 (fioletowy)
+*/
+
+body {
+    background-color: #222;
+    color: #fff;
+    font-family: 'Roboto', sans-serif;
+}
+
+nav, footer {
+    background-color: #333;
+    height: 10vh;
+}
+
+#main-link > img {
+    height: 50px;
+}
+
+#site-container {
+    position: relative;
+    min-height: 100vh;
+}
+
+footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+}

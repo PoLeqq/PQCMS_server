@@ -1,0 +1,20 @@
+{
+    "site": {
+        "*": {
+            "description": "Dostęp do całej strony (wszystkich bloków tekstów jak i grup)",
+            "default": false
+        },
+        "[group]": {
+            "*": {
+                "description": "Dostęp do bloków tekstów znajdujących się w grupie",
+                "default": false
+            }
+        },
+        "[id]": {
+            "*": {
+                "description": "Dostep do wszystkich bloków tekstów",
+                "default": false
+            }
+        }
+    }
+}

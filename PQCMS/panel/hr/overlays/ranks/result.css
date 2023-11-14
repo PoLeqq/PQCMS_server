@@ -1,0 +1,46 @@
+@import url('../../index.css');
+
+body {
+    background-size: 400% 400%;
+    animation: block-background 30s ease-in-out infinite;
+}
+
+main {
+    background-color: #333;
+}
+
+legend{
+    float:none;
+}
+
+legend,
+main {
+    background-color: #444;
+}
+
+#password{
+    width: 85%;
+}
+
+div > img {
+    width: 15%;
+    height: 50px;
+    cursor: pointer;
+    margin-left: -5px;
+    position: relative;
+    top:-4px;
+    border-left: none;
+    transition: all 0.5s;
+}
+
+@keyframes block-background {
+    0% {
+		background-position: 0% 50%;
+	}
+	50% {
+		background-position: 100% 50%;
+	}
+	100% {
+		background-position: 0% 50%;
+	}
+}

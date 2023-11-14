@@ -1,0 +1,35 @@
+PERMISJE:
+Posiadają w teorii 3 stany, w praktyce 2:
+- true
+- false
+- unset
+
+true - wartość przypisana na tak,
+false - wartość przypisana na nie,
+unset - wartość nieprzypisana (wtedy bierze się defaultowe permisje, w 99% będzie to false),
+
+Przykładowe permisje:
+- * dostep do wszystkiego
+- site.* (dostęp do edycji całej strony)
+- site.group.* (dostęp do edycji całej grupy)
+- site.group.id (id - int;dostęp do edycji wyznaczonego tekstu w grupie [tu będzie trzeba się pobawić, id jest wtedy liczone, ponieważ nigdzie nie będzie przechowywane bezpośrednio])
+- site.id (id - int; dostęp do edycji wyznaczonego tekstu)
+
+RANGA:
+
+Prioritet - im niższy, tym ranga jest ważniejsza, np:
+admin - 1
+zarządca - 10,
+gdy debil ustawi te same prio, prio wygrywa po niższym id (wcześniej utworzona)
+
+Ranga nadawana userowi to permisja, np.:
+
+User - Radosław (radoslaw1)
+Ranga - Zarzadca Tresci (zarzadca)
+
+Permisje radoslaw1:
+ranks.zarzadca
+...
+
+
+USER:
