@@ -72,14 +72,14 @@ class WebsiteUser
         $conn->close();
     }
 
-    public static function getWebsiteUserBy(string $col, mixed $value, int $websiteId = null): ?array {
+    public static function getWebsiteUserBy(string $col, mixed $value, int $websiteId = null): ?array
+    {
         $conn = Connection::getConnection();
 
-        {
-            if(is_string($value)) $value = "'".$value."'";
-            $sql = "SELECT id FROM websites_users WHERE $col = $value";
-            if($websiteId != null) $sql .= " AND website_id = $websiteId";
-        }
+        if(is_string($value)) $value = "'".$value."'";
+        $sql = "SELECT id FROM websites_users WHERE $col = $value";
+        if($websiteId != null) $sql .= " AND website_id = $websiteId";
+
         $query = $conn->query($sql);
         if($query->num_rows >= 1)
         {
