@@ -46,6 +46,18 @@ class Website
         return $this->getField("id") != null;
     }
 
+    public function generateSecureKey(): string
+    {
+        require_once("website/SecureKey.inc.php");
+        return SecureKey::generateSecureKey($this->id);
+    }
+
+    public function invalidateSecureKey($secure_key): void
+    {
+        require_once("website/SecureKey.inc.php");
+        SecureKey::invalidateSecureKey($this->id,$secure_key);
+    }
+
 //    Gettery, settery opierające się na obiekcie, wymagające bardziej złożonych operacji
 //    (działają na kilku tabelach, nie tylko na "websites"
 
@@ -107,6 +119,25 @@ class Website
         return $resp;
     }
 
+    public function isProperSecureKey(string $secureKey): bool
+    {
+        $conn = Connection::getConnection();
+        $result = $conn->query("SELECT secure_key FROM websites_keys WHERE website_id = $this->id AND used_time IS NULL");
+
+        $isProper = false;
+        while($row = mysqli_fetch_row($result))
+        {
+            if($row[0] == $secureKey)
+            {
+                $isProper = true;
+                break;
+            }
+        }
+
+        $conn->close();
+        return $isProper;
+    }
+
     public static function getWebsiteIDByMatching($column,$value): ?int
     {
         $conn = Connection::getConnection();
@@ -125,8 +156,8 @@ class Website
         $conn = Connection::getConnection();
 
         // Data transformation for SQL
-        if($blocked) $blocked = 1; else $blocked = 0;
-        if($license_expiration != null) $license_expiration = "'$license_expiration'";
+        if ($blocked) $blocked = 1; else $blocked = 0;
+        if ($license_expiration != null) $license_expiration = "'$license_expiration'";
         else $license_expiration = 'null';
 
         $sql = "INSERT INTO websites VALUES (null,'$domain','$login','$license_key',$license_expiration,$blocked)";
