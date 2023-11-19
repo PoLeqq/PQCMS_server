@@ -1,13 +1,16 @@
 <?php
-    require_once("../utils/database/Database.inc.php");
-    setupDefaultDatabase();
+require_once("../utils/database/Database.inc.php");
+$setupDatabase = (Database::setupDefaultDatabase());
+session_start();
+if(empty($_SESSION["pqcms-panel-username"]))
+    header("location: ../");
 ?>
 <!DOCTYPE html>
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ElectroCMS - Panel</title>
+    <title>PQCMS - Panel</title>
 
     <link rel="stylesheet" href="panel.css">
 
@@ -27,12 +30,12 @@
         <iframe id="panelMain" src="home/"></iframe>
     </div>
     <footer>
-        ElectroCMS &copy Wszelkie prawa zastrzeżone.<br>
+        PQCMS &copy Wszelkie prawa zastrzeżone.<br>
         Kontakt: xxx
     </footer>
 
     <script>
-        // Funkcja do odświeżania iframe "hr" w panelu
+        // Funkcja do odświeżania iframe "HR" w panelu
         function refreshHRFrame() {
             var hrFrame = document.getElementById("panelMain");
             hrFrame.src = hrFrame.src;
