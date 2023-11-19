@@ -2,21 +2,21 @@
 
 session_start();
 
-if(empty($_SESSION["electrocms-client-logged"]))
+if(empty($_SESSION["pqcms-client-logged"]))
     die("Nie jesteś zalogowany!");
 
 require_once(dirname(__DIR__, 2) . "/objects/Website.inc.php");
-$website = new Website($_SESSION["electrocms-client-website-id"]);
+$website = new Website($_SESSION["pqcms-client-website-id"]);
 if($website->getAdminId() != null)
 {
-    $_SESSION["electrocms-client-announce-panel"] = ["err" => "Ta domena posiada już konto administratora!"];
+    $_SESSION["pqcms-client-announce-panel"] = ["err" => "Ta domena posiada już konto administratora!"];
     die("Ta domena posiada już konto administratora! <a href=\"../\">Powrót</a>");
 }
 
 if(!isset($_POST["token"]))
     die("Nieprawidłowe przekierowanie.");
 
-if($_SESSION["electrocms-client-token-first-account"] != $_POST["token"])
+if($_SESSION["pqcms-client-token-first-account"] != $_POST["token"])
     die("Nieprawidłowy token.");
 
 if(empty($_POST["username"]) || empty($_POST["nickname"]) || empty($_POST["password"]))
@@ -32,6 +32,6 @@ if(strlen($_POST["password"]) < 8 || strlen($_POST["password"]) > 40)
     die("Hasło musi mieć od 8 do 40 znaków!");
 
 $website->addAdmin($_POST["username"],$_POST["nickname"],$_POST["password"]);
-$_SESSION["electrocms-client-announce-panel"] = ["suc" => "Dodano konto administratora!"];
+$_SESSION["pqcms-client-announce-panel"] = ["suc" => "Dodano konto administratora!"];
 header("location: ../");
 die("Dodano konto administatora. Błędne przekierowanie!");

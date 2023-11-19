@@ -3,13 +3,18 @@
 header("Content-Type: application/json; charset=utf-8");
 
 session_start();
-if(!isset($_SESSION["token-server-addwebsite"]) || !isset($_SESSION["token-server-addwebsite-expire"])) die("Wrong token. Reload the form.");
-if(time() >= $_SESSION["token-server-addwebsite-expire"]) die("Token has expired. Reload the form.");
-if($_SESSION["token-server-addwebsite"] != $_POST["token"]) die("Incorrect token.");
+if(!isset($_SESSION["pqcms-server-token-addwebsite"]) || !isset($_SESSION["pqcms-server-token-addwebsite-expire"]))
+    die("Wrong token. Reload the form.");
+if(time() >= $_SESSION["pqcms-server-token-addwebsite-expire"])
+    die("Token has expired. Reload the form.");
+if($_SESSION["pqcms-server-token-addwebsite"] != $_POST["token"])
+    die("Incorrect token.");
 
 require_once(dirname(__DIR__, 2) . "/objects/Website.inc.php");
-if(Website::getWebsiteIDByMatching("domain",$_POST["domain"]) != null) die("JSONWebsite identified by domain \"{$_POST["domain"]}\" actually exists in database!");
-if(Website::getWebsiteIDByMatching("login",$_POST["login"]) != null) die("JSONWebsite identified by login \"{$_POST["login"]}\" actually exists in database!");
+if(Website::getWebsiteIDByMatching("domain",$_POST["domain"]) != null)
+    die("Website identified by domain \"{$_POST["domain"]}\" actually exists in database!");
+if(Website::getWebsiteIDByMatching("login",$_POST["login"]) != null)
+    die("Website identified by login \"{$_POST["login"]}\" actually exists in database!");
 
 require_once(dirname(__DIR__, 2) . "/objects/website/LicenseKey.inc.php");
 if(isset($_POST["perm_license"])) $expDate = null;

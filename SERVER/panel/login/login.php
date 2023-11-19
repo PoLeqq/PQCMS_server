@@ -4,30 +4,32 @@
 
     session_start();
 
-    if(isset($_SESSION["electrocms-admin-logged"]) && $_SESSION["electrocms-admin-logged"]) {
+    if(isset($_SESSION["pqcms-server-admin-logged"]) && $_SESSION["pqcms-server-admin-logged"]) {
         header("location: ../");
         die("You are already logged in! If not redirected, try refreshing the page.");
     }
 
-    if(!isset($_SESSION["token-server-login"]) || !isset($_SESSION["token-server-login-expire"])) die("Wrong token. Reload the form.");
-    if(time() >= $_SESSION["token-server-login-expire"]) die("Token has expired. Reload the form.");
-    if($_SESSION["token-server-login"] != $_POST["token"]) die("Incorrect token.");
+    if(!isset($_SESSION["pqcms-server-token-login"]) || !isset($_SESSION["pqcms-server-token-login-expire"]))
+        die("Wrong token. Reload the form.");
+    if(time() >= $_SESSION["pqcms-server-token-login-expire"])
+        die("Token has expired. Reload the form.");
+    if($_SESSION["pqcms-server-token-login"] != $_POST["token"])
+        die("Incorrect token.");
 
-    if(!isset($_POST["username"]) || !isset($_POST["password"])) {
+    if(!isset($_POST["username"]) || !isset($_POST["password"]))
         die("Check your posts.");
-    }
 
     require_once(dirname(__DIR__, 2) . "/database/Connection.inc.php");
-
-    if(isBanned($_SERVER["REMOTE_ADDR"])) {
+    if(isBanned($_SERVER["REMOTE_ADDR"]))
         die("Your IP has been banned!");
-    }
 
     function addLoginHistory($ip, $username, $password, $logged): void
     {
         $conn = Connection::getConnection();
         if(!$logged) $logged = "0";
-        $conn->query("INSERT INTO login_history VALUES (null,'$ip','$username','$password',null,$logged)");
+        date_default_timezone_set('Europe/Warsaw');
+        $now = date("Y-m-d H:i:s");
+        $conn->query("INSERT INTO login_history VALUES (null,'$ip','$username','$password','$now',$logged)");
         $conn->close();
     }
 
@@ -74,10 +76,10 @@
                 {
                     addLoginHistory($ip,$username,$password,true);
 
-                    $_SESSION["electrocms-admin-id"] = $row["id"];
-                    $_SESSION["electrocms-admin-logged"] = true;
-                    unset($_SESSION["token-server-login"]);
-                    unset($_SESSION["token-server-login-expire"]);
+                    $_SESSION["pqcms-server-admin-id"] = $row["id"];
+                    $_SESSION["pqcms-server-admin-logged"] = true;
+                    unset($_SESSION["pqcms-server-token-login"]);
+                    unset($_SESSION["pqcms-server-token-login-expire"]);
 
                     $conn->close();
                     return true;

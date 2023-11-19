@@ -1,13 +1,13 @@
 <?php
 
     session_start();
-    if(!empty($_SESSION["electrocms-admin-logged"])) {
+    if(!empty($_SESSION["pqcms-server-admin-logged"])) {
         header("location: ../");
         die("<pre>You are already logged in! If not redirected, try refreshing the page.</pre>");
     }
 
-    $_SESSION["token-server-login"] = bin2hex(random_bytes(32));
-    $_SESSION["token-server-login-expire"] = time() + 600;
+    $_SESSION["pqcms-server-token-login"] = bin2hex(random_bytes(32));
+    $_SESSION["pqcms-server-token-login-expire"] = time() + 600;
 
 ?>
 
@@ -24,7 +24,7 @@
 </head>
 <body>
     <form action="login.php" method="post">
-        <input type="hidden" name="token" value="<?php echo $_SESSION['token-server-login'] ?>">
+        <input type="hidden" name="token" value="<?php echo $_SESSION['pqcms-server-token-login'] ?>">
 
         Username: <input type="text" name="username" required>
         Password: <input type="password" name="password" id="password" required>

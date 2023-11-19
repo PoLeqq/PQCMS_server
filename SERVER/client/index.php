@@ -1,7 +1,7 @@
 <?php
 
     session_start();
-    if(empty($_SESSION["electrocms-client-logged"])) {
+    if(empty($_SESSION["pqcms-client-logged"])) {
         header("location: ../");
         die("Nieprawidłowe przekierowanie.");
     }
@@ -11,9 +11,9 @@
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <title>ElectroCMS - Panel Klienta</title>
+    <title>PQCMS - Panel Klienta</title>
 
-    <link rel="icon" type="image/x-icon" href="../PQCMS/images/ElectroCMS.svg">
+    <link rel="icon" type="image/x-icon" href="../images/ElectroCMS.svg">
 
     <link rel="stylesheet" href="../../bs5/css/bootstrap.min.css">
     <link rel="stylesheet" href="../../default.css">
@@ -42,14 +42,14 @@
 </head>
 <body>
 <?php
-if(!empty($_SESSION["electrocms-client-announce-panel"]))
+if(!empty($_SESSION["pqcms-client-announce-panel"]))
 {
     $keys = ["err","suc"];
     $message = null;
     $messageKey = "";
     foreach($keys as $key)
-        if(key_exists($key,$_SESSION["electrocms-client-announce-panel"])){
-            $message = $_SESSION["electrocms-client-announce-panel"][$key];
+        if(key_exists($key,$_SESSION["pqcms-client-announce-panel"])){
+            $message = $_SESSION["pqcms-client-announce-panel"][$key];
             $messageKey = $key;
             break;
         }
@@ -60,17 +60,20 @@ if(!empty($_SESSION["electrocms-client-announce-panel"]))
 END;
 }
 
-unset($_SESSION["electrocms-client-announce-panel"]);
+unset($_SESSION["pqcms-client-announce-panel"]);
 
 ?>
 
     <?php
 
         require_once(dirname(__DIR__) . "/objects/Website.inc.php");
-        $website = new Website($_SESSION["electrocms-client-website-id"]);
+        $website = new Website($_SESSION["pqcms-client-website-id"]);
+
+//        echo "adminId:";
+//        var_dump($website->getAdminId());
         if($website->getAdminId() == null)
         {
-            $_SESSION["electrocms-client-token-first-account"] = bin2hex(random_bytes(32));
+            $_SESSION["pqcms-client-token-first-account"] = bin2hex(random_bytes(32));
             echo <<<END
     <form action="accounts/addAdminAccount.php" method="post">
         <h3>Konto administratora</h3>
@@ -78,7 +81,7 @@ unset($_SESSION["electrocms-client-announce-panel"]);
             To jest Twoje pierwsze konto! Ma ono dostęp do wszystkich zasobów i czynności, dlatego zalecamy, 
             aby <b><u>nikomu nie podawać danych do logowania!</u></b>
         </p>
-        <input type="hidden" name="token" value="{$_SESSION["electrocms-client-token-first-account"]}">
+        <input type="hidden" name="token" value="{$_SESSION["pqcms-client-token-first-account"]}">
 
         Login: <input type="text" name="username" required>
         Nazwa użytkownika: <input type="text" name="nickname" required>
@@ -90,27 +93,27 @@ END;
         }
         else
         {
-            $_SESSION["electrocms-client-token-next-account"] = bin2hex(random_bytes(32));
-            echo <<<END
-    <form action="accounts/addUserAccount.php" method="post">
-        <input type="hidden" name="token" value="{$_SESSION["electrocms-client-token-next-account"]}">
-
-        Login: <input type="text" name="username" required>
-        Nazwa użytkownika: <input type="text" name="nickname" required>
-        Hasło: <input type="text" name="password" required>
-        Permisje jakoś dodać ;d<br>
-        <div>
-            Aktywne:
-            <input type="checkbox" name="active">        
-        </div>
-        
-
-        <input type="submit" value="Dodaj konto pracownika">
-    </form>
-END;
+//            $_SESSION["pqcms-client-token-next-account"] = bin2hex(random_bytes(32));
+            echo "Na razie wszystko zrobione! Powróć do panelu na swojej stronie, aby dokończyć konfigurację.";
+//            echo <<<END
+//    <form action="accounts/addUserAccount.php" method="post">
+//        <input type="hidden" name="token" value="{$_SESSION["pqcms-client-token-next-account"]}">
+//
+//        Login: <input type="text" name="username" required>
+//        Nazwa użytkownika: <input type="text" name="nickname" required>
+//        Hasło: <input type="text" name="password" required>
+//        Permisje jakoś dodać ;d<br>
+//        <div>
+//            Aktywne:
+//            <input type="checkbox" name="active">
+//        </div>
+//
+//
+//        <input type="submit" value="Dodaj konto pracownika">
+//    </form>
+//END;
         }
     ?>
-
 
     <form method="post" action="account/logout.php">
         <input type="submit" value="Wyloguj">

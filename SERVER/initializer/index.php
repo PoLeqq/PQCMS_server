@@ -2,53 +2,50 @@
 header("content-type: application/json");
 
 session_start();
-unset($_SESSION["initializer-error"]);
-unset($_SESSION["initializer-success"]);
+unset($_SESSION["pqcms-initializer-error"]);
+unset($_SESSION["pqcms-initializer-success"]);
 
-if(!isset($_POST["electrocms-domain"]) || !isset($_POST["electrocms-username"]) || !isset($_POST["electrocms-license-key"]))
-{
-    header("location: error/");
-    die("Nieprawidłowe przekierowanie.");
-}
+if(!isset($_POST["pqcms-domain"]) || !isset($_POST["pqcms-username"]) || !isset($_POST["pqcms-license-key"]))
+    error("Przesłano niepoprawne wartości. Skontaktuj się z administratorem!");
 
-function error($errorDescription): void
-{
-    $_SESSION["initializer-error"] = $errorDescription;
-    header("location: error/");
-    die("Nieprawidłowe przekierowanie. ".$errorDescription);
-}
-
-if(empty($_POST["electrocms-domain"]) || empty($_POST["electrocms-username"]) || empty($_POST["electrocms-license-key"]))
+if(empty($_POST["pqcms-domain"]) || empty($_POST["pqcms-username"]) || empty($_POST["pqcms-license-key"]))
     error("Uzupełnij wszystkie pola!");
 
-if(strlen($_POST["electrocms-username"]) < 5 || strlen($_POST["electrocms-username"]) > 30)
+if(strlen($_POST["pqcms-username"]) < 5 || strlen($_POST["pqcms-username"]) > 30)
     error("Nazwa użytkownika musi mieć od 5 do 30 znaków!");
 
-if(!preg_match('/^[A-Z0-9]{5}-[A-Z0-9]{5}-[A-Z0-9]{5}-[A-Z0-9]{5}$/', $_POST["electrocms-license-key"]))
+if(!preg_match('/^[A-Z0-9]{5}-[A-Z0-9]{5}-[A-Z0-9]{5}-[A-Z0-9]{5}$/', $_POST["pqcms-license-key"]))
     error("Klucz licencyjny podany w nieprawidłowym formacie!");
 
 require_once(dirname(__DIR__) . "/api/website/license/LicenseChecker.inc.php");
-$response = checkLicense($_SERVER["REMOTE_ADDR"],$_SERVER["HTTP_REFERER"],$_POST["electrocms-domain"],$_POST["electrocms-username"],$_POST["electrocms-license-key"]);
-if(array_keys($response)[0] == "suc")
+$response = checkLicense($_SERVER["REMOTE_ADDR"],$_SERVER["HTTP_REFERER"],$_POST["pqcms-domain"],$_POST["pqcms-username"],$_POST["pqcms-license-key"]);
+if($response["suc"] == 1)
 {
-    $_SESSION["electrocms-client-domain"] = $_POST["electrocms-domain"];
-    $_SESSION["electrocms-client-username"] = $_POST["electrocms-username"];
-    $_SESSION["electrocms-client-license-key"] = $_POST["electrocms-license-key"];
-    $_SESSION["electrocms-client-logged"] = true;
+    $_SESSION["pqcms-client-domain"] = $_POST["pqcms-domain"];
+    $_SESSION["pqcms-client-username"] = $_POST["pqcms-username"];
+    $_SESSION["pqcms-client-license-key"] = $_POST["pqcms-license-key"];
+    $_SESSION["pqcms-client-logged"] = true;
 
     require_once(dirname(__DIR__) . "/objects/Website.inc.php");
-    $_SESSION["electrocms-client-website-id"] = Website::getWebsiteIDByMatching("domain",$_POST["electrocms-domain"]);
+    $_SESSION["pqcms-client-website-id"] = Website::getWebsiteIDByMatching("domain",$_POST["pqcms-domain"]);
 
-    $_SESSION["initializer-success"] = "Pomyślnie zalogowano! Za chwilę nastąpi przekierowanie...";
+    $_SESSION["pqcms-initializer-success"] = "Pomyślnie zalogowano! Za chwilę nastąpi przekierowanie...";
     header("location: success/");
     die("Niepoprawne przekierowanie. Pomyślnie zalogowano!");
 }
 else
 {
-    $sessionError = $response["err"];
+    $sessionError = $response["desc"];
     if(array_key_exists("tries_left",$response)) $sessionError .= " Pozostało prób: ".$response["tries_left"];
 //        $_SESSION["initializer-error"] = "Podano błędne dane/licencja wygasła! Pozostało Ci ".$response["tries_left"]." prób.";
-    $_SESSION["initializer-error"] = $sessionError;
+    $_SESSION["pqcms-initializer-error"] = $sessionError;
     header("location: error/");
     die("Niepoprawne przekierowanie. ".$_SESSION["initializer-error"]);
+}
+
+function error($errorDescription): void
+{
+    $_SESSION["pqcms-initializer-error"] = $errorDescription;
+    header("location: error/");
+    die("Nieprawidłowe przekierowanie. ".$errorDescription);
 }

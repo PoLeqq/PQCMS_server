@@ -1,16 +1,16 @@
 <?php
 
     session_start();
-    if(empty($_SESSION["electrocms-admin-logged"])) {
+    if(empty($_SESSION["pqcms-server-admin-logged"])) {
         header("location: login/");
         die("You need to be logged in to visit this resouce!");
     }
 
-    $_SESSION["token-server-addwebsite"] = bin2hex(random_bytes(32));
-    $_SESSION["token-server-addwebsite-expire"] = time() + 600;
+    $_SESSION["pqcms-server-token-addwebsite"] = bin2hex(random_bytes(32));
+    $_SESSION["pqcms-server-token-addwebsite-expire"] = time() + 600;
 
-    $_SESSION["token-server-checklicense"] = bin2hex(random_bytes(32));
-    $_SESSION["token-server-checklicense-expire"] = time() + 600;
+    $_SESSION["pqcms-server-token-checklicense"] = bin2hex(random_bytes(32));
+    $_SESSION["pqcms-server-token-checklicense-expire"] = time() + 600;
 
 ?>
 
@@ -27,7 +27,7 @@
 </head>
 <body>
     <form action="actions/addWebsite.php" method="post">
-        <input type="hidden" name="token" value="<?php echo $_SESSION["token-server-addwebsite"] ?>">
+        <input type="hidden" name="token" value="<?php echo $_SESSION["pqcms-server-token-addwebsite"] ?>">
 
         Domena: <input type="text" name="domain" required>
         Login: <input type="text" name="login" required>
@@ -42,7 +42,7 @@
     </form>
 
     <form action="actions/checkLicense.php" method="post">
-        <input type="hidden" name="token" value="<?php echo $_SESSION["token-server-checklicense"] ?>">
+        <input type="hidden" name="token" value="<?php echo $_SESSION["pqcms-server-token-checklicense"] ?>">
 
         IP serwera: <input name="server">
         Domena: <input name="domain">
@@ -53,7 +53,7 @@
 
     <form action="actions/checkLicense.php" method="post">
         Form do sprawdzania tabel<br>
-        <input type="hidden" name="token" value="<?php echo $_SESSION["token-server-checklicense"] ?>">
+        <input type="hidden" name="token" value="<?php echo $_SESSION["pqcms-server-token-checklicense"] ?>">
 
         Login: <input name="login">
         License Key: <input name="license_key">

@@ -1,5 +1,5 @@
 <?php
     session_start();
-    unset($_SESSION["electrocms-admin-logged"]);
-    unset($_SESSION["electrocms-admin-id"]);
+    unset($_SESSION["pqcms-server-admin-logged"]);
+    unset($_SESSION["pqcms-server-admin-id"]);
     header("location: ../login/");

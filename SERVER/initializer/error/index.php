@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>ElecroCMS - Inicjator</title>
 
-    <link rel="icon" type="image/x-icon" href="../../PQCMS/images/ElectroCMS.svg">
+    <link rel="icon" type="image/x-icon" href="../../images/ElectroCMS.svg">
 
     <link rel="stylesheet" href="../../../bs5/css/bootstrap.min.css">
     <link rel="stylesheet" href="../../../default.css">
@@ -13,24 +13,24 @@
 </head>
 <body>
     <div id="site-container" class="d-flex justify-content-center align-items-center text-center">
-        <form method="post" action="http://localhost/electrocms/server/initializer">
+        <div class="result">
             <header class="mb-4">
                 <a id="main-link" class="navbar-brand px-3 text-white" style="font-size: 40px!important;" href="../../../index.html">
                     ElectroCMS
-                    <img src="../../PQCMS/images/ElectroCMS.svg" alt="logo">
+                    <img src="../../images/ElectroCMS.svg" alt="logo">
                 </a>
             </header>
 
             <?php
                 session_start();
-                if(!isset($_SESSION["initializer-error"])) {
+                if(!isset($_SESSION["pqcms-initializer-error"])) {
                     header("location: ../../");
                     die("Niepoprawne przekierowanie.");
                 }
-                echo $_SESSION["initializer-error"];
-                unset($_SESSION["initializer-error"]);
+                echo $_SESSION["pqcms-initializer-error"];
+                unset($_SESSION["pqcms-initializer-error"]);
             ?>
-        </form>
+        </div>
     </div>
 </body>
 </html>

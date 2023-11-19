@@ -2,7 +2,7 @@
 
 session_start();
 
-if(empty($_SESSION["electrocms-client-logged"]))
+if(empty($_SESSION["pqcms-client-logged"]))
 {
     $_SESSION["electrocms-client-announce-panel"] = ["err" => "Najpierw musisz się zalogować, aby to zrobić!"];
     header("location: ../");
@@ -11,12 +11,12 @@ if(empty($_SESSION["electrocms-client-logged"]))
 
 if(!isset($_POST["token"]))
 {
-    $_SESSION["electrocms-client-announce-panel"] = ["err" => "Najpierw musisz się zalogować, aby to zrobić!"];
+    $_SESSION["pqcms-client-announce-panel"] = ["err" => "Najpierw musisz się zalogować, aby to zrobić!"];
     header("location: ../");
     die("Nieprawidłowe przekierowanie. ".$_SESSION["electrocms-client-announce-panel"]["err"]);
 }
 
-if($_SESSION["electrocms-client-token-next-account"] != $_POST["token"])
+if($_SESSION["pqcms-client-token-next-account"] != $_POST["token"])
 {
     $_SESSION["electrocms-client-announce-panel"] = ["err" => "Nieprawidłowy token."];
     header("location: ../");

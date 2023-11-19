@@ -2,9 +2,9 @@
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <title>ElecroCMS - Inicjator</title>
+    <title>PQCMS - Inicjator</title>
 
-    <link rel="icon" type="image/x-icon" href="../../PQCMS/images/ElectroCMS.svg">
+    <link rel="icon" type="image/x-icon" href="../../images/ElectroCMS.svg">
 
     <link rel="stylesheet" href="../../../bs5/css/bootstrap.min.css">
     <link rel="stylesheet" href="../../../default.css">
@@ -13,31 +13,32 @@
 </head>
 <body>
 <div id="site-container" class="d-flex justify-content-center align-items-center text-center">
-    <form method="post" action="http://localhost/electrocms/server/initializer">
+    <div class="result">
         <header class="mb-4">
             <a id="main-link" class="navbar-brand px-3 text-white" style="font-size: 40px!important;" href="../../../index.html">
                 ElectroCMS
-                <img src="../../PQCMS/images/ElectroCMS.svg" alt="logo">
+                <img src="../../images/ElectroCMS.svg" alt="logo">
             </a>
         </header>
 
         <?php
             session_start();
-            if(!isset($_SESSION["initializer-success"])) {
-                header("location: ../../server/client/");
+            if(!isset($_SESSION["pqcms-initializer-success"])) {
+                header("location: ../../");
                 die("Niepoprawne przekierowanie.");
             }
-            echo $_SESSION["initializer-success"];
-            unset($_SESSION["initializer-success"])
+            echo $_SESSION["pqcms-initializer-success"];
+            unset($_SESSION["pqcms-initializer-success"])
         ?>
+        Sukces
         <noscript>
-            <a href="http://localhost/electrocms/server/client/">Wykryto wyłączony JavaScript! Kliknij tutaj, aby przekierować.</a>
+            <a href="http://localhost/pqcms/server/client/">Wykryto wyłączony JavaScript! Kliknij tutaj, aby przekierować.</a>
         </noscript>
-    </form>
+    </div>
 
     <script>
         setTimeout(() => {
-             window.location.replace("http://localhost/electrocms/server/client/");
+             window.location.replace("http://localhost/pqcms/server/client/");
         },3000);
     </script>
 </div>
