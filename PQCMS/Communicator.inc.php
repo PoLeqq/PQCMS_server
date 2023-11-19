@@ -8,11 +8,10 @@ class Communicator
     /**
      *
      * @param string $path ścieżka linku do API (Najlepiej skorzystać z CommunicateURL)
-     * @param string $secureKey klucz licencyjny (podczas VERIFY_LICENSE przesłać pusty)
      * @param array $postData dane, które zostaną przesłane metodą POST. (podczas VERIFY_LICENSE przesłać pustą)
      * @return mixed|null zwraca return (json) z danego APIka (lub null, gdy połączenie nie powiedzie się)
      */
-    public static function communicate(string $path, string $secureKey, array $postData)
+    public static function communicate(string $path, array $postData): mixed
     {
         if($path == CommunicateURL::VERIFY_LICENSE)
         {
@@ -22,13 +21,16 @@ class Communicator
                 'domain' => $pqcms->getDomain(),
                 'login' => $pqcms->getLogin(),
                 'license_key' => $pqcms->getLicenseKey(),
-                'generate_secure_key' => true
+                'generate_secure_key' => $postData["generate_secure_key"] ?? null
             );
         }
         else
         {
             $postData["domain"] = $_SERVER["SERVER_NAME"];
-            $postData["secure_key"] = $secureKey;
+            $key = Communicator::communicate(CommunicateURL::VERIFY_LICENSE,["generate_secure_key" => true]);
+            if($key["suc"] == 0)
+                return["suc" => 0, "desc" => "Bład podczas generowania klucza zabezpieczającego: ".$key["desc"]];
+            $postData["secure_key"] = $key["secure_key"];
         }
 
         $options = array(
@@ -54,6 +56,8 @@ class Communicator
 class CommunicateURL
 {
     public const VERIFY_LICENSE = "website/license/VerifyLicense.php";
+    public const GET_CLIENT_VERSION = "system/version/GetClientVersion.php";
+    public const GET_SERVER_VERSION = "system/version/GetServerVersion.php";
+    public const DOES_ADMIN_EXISTS = "website/hr/admin/DoesAdminExists.php";
+    public const LOGIN_USER = "website/auth/LoginUser.php";
 }
-
-//var_dump(Communicator::communicate(CommunicateURL::VERIFY_LICENSE,"",[]));
