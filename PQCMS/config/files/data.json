@@ -1,12 +1,10 @@
 {
-    "database":
-    {
+    "database": {
         "host": "localhost",
         "user": "root",
         "password": ""
     },
-    "pqcms":
-    {
+    "pqcms": {
         "version": "dev-1.0.0",
         "domain": "localhost",
         "login": "localhost",
