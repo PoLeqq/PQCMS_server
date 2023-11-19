@@ -7,10 +7,14 @@ class Database
      */
     public static function getConnection(): bool|mysqli|null
     {
-        require_once(realpath(__DIR__ . "/../../") . "/config/JSONDatabase.php");
+        require_once(dirname(__DIR__,2) . "/config/data/JSONDatabase.php");
 
         $db = new JSONDatabase();
-        $connect = mysqli_connect($db->getHost(), $db->getUser(), $db->getPassword());
+        try{
+            $connect = mysqli_connect($db->getHost(), $db->getUser(), $db->getPassword());
+        } catch(Exception) {
+            return null;
+        }
 
         if (mysqli_errno($connect) != 0)
             return null;
@@ -79,31 +83,42 @@ class Database
 
     /**
      * Funkcja pobiera wszystkie pliki .sql dołączone do utils/database/tables i je wykonuje.
-     * @return bool poprawność wykonania operacji z plików sql
+     * @return array poprawność wykonania operacji z plików sql
      */
-    function setupDefaultDatabase(): bool
+    public static function setupDefaultDatabase(): array
     {
         $conn = Database::getConnection();
+        if(!$conn) return [];
 
-        $path = "tables/";
+        $resp = [];
+
+        $path = __DIR__."/tables/";
         $files = scandir($path);
         foreach ($files as $file) {
-            if (endsWith($file, '.sql')) {
-                $sqlFile = file_get_contents($path . $file);
-                echo "Executing file:<br>" . $path . $file . "<br><br>";
-                echo "SQL content:<br>" . $sqlFile . "<br><br>";
-                if (!$conn->multi_query($sqlFile))
-                    return false;
+            if(str_ends_with($file, '.sql')) {
+                $query = $conn->query("SHOW TABLES");
+                while($row = $query->fetch_row())
+                    if($row[0].".sql" == $file) {
+                        $resp[$file] = 0;
+                        continue 2;
+                    }
 
-                do {
-                    if ($result = $conn->store_result())
-                        $result->free_result();
-                } while ($conn->next_result());
+                $sqlFile = file_get_contents($path . $file);
+                if (!$conn->multi_query($sqlFile))
+                {
+                    $resp[$file] = -1;
+                    continue;
+                }
+
+                do if($result = $conn->store_result()) $result->free_result();
+                while ($conn->next_result());
+
+                $resp[$file] = 1;
             }
         }
 
         $conn->close();
-        return true;
+        return $resp;
     }
 
     /**
