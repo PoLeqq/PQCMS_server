@@ -1,6 +1,6 @@
 <?php
 
-header('Content-Type: application/json');
+header('Content-Type: application/json; charset=utf-8');
 
 // RODZAJE WERSJI:
 // alpha - niedokończona, wiele błędów. Testowana przez ogr. grupę
@@ -20,8 +20,11 @@ header('Content-Type: application/json');
 
 // "dev-1.0.0"
 
-require_once("Version.inc.php");
+require_once(dirname(__DIR__, 2) . "/utils/APIUtils.php");
+$response = APIUtils::validatePost($_POST);
+if($response["suc"] == 0)
+    die(json_encode($response,JSON_UNESCAPED_UNICODE));
 
-if(isset($_POST["complex"]) && $_POST["complex"]) $complex = true;
-else $complex = false;
-die(Version::getVersion("server",$complex));
+require_once("Version.inc.php");
+$response["version"] = Version::getVersion("server",!empty($_POST["complex"]));
+echo json_encode($response,JSON_UNESCAPED_UNICODE);
