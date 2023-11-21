@@ -1,2 +1,2 @@
 <?php
-    header('Location: ../electrocms/login');
+    header('Location: ../pqcms/login');
