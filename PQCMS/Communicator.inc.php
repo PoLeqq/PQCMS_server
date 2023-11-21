@@ -60,4 +60,6 @@ class CommunicateURL
     public const GET_SERVER_VERSION = "system/version/GetServerVersion.php";
     public const DOES_ADMIN_EXISTS = "website/hr/admin/DoesAdminExists.php";
     public const LOGIN_USER = "website/auth/LoginUser.php";
+    public const GET_SETTINGS = "website/settings/GetSettings.php";
+    public const UPDATE_SETTINGS = "website/settings/UpdateSettings.php";
 }
