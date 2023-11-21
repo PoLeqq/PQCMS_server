@@ -21,7 +21,7 @@ SET time_zone = "+00:00";
 -- Struktura tabeli dla tabeli `site_text`
 --
 
-CREATE TABLE IF NOT EXISTS `site_text` (
+CREATE TABLE IF NOT EXISTS `pqcms_site_text` (
   `id` int(11) NOT NULL,
   `name` varchar(50) NOT NULL,
   `group` int(11) DEFAULT NULL COMMENT 'Grupa, do której należy pole',
@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS `site_text` (
 --
 -- Indeksy dla tabeli `site_text`
 --
-ALTER TABLE `site_text`
+ALTER TABLE `pqcms_site_text`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -45,6 +45,6 @@ ALTER TABLE `site_text`
 --
 -- AUTO_INCREMENT dla tabeli `site_text`
 --
-ALTER TABLE `site_text`
+ALTER TABLE `pqcms_site_text`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 COMMIT;

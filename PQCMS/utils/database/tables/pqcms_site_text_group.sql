@@ -21,7 +21,7 @@ SET time_zone = "+00:00";
 -- Struktura tabeli dla tabeli `site_group`
 --
 
-CREATE TABLE IF NOT EXISTS `site_group` (
+CREATE TABLE IF NOT EXISTS `pqcms_site_text_group` (
   `id` int(11) NOT NULL,
   `name` varchar(50) NOT NULL COMMENT 'Nazwa grupy'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS `site_group` (
 --
 -- Indeksy dla tabeli `site_group`
 --
-ALTER TABLE `site_group`
+ALTER TABLE `pqcms_site_text_group`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -43,6 +43,6 @@ ALTER TABLE `site_group`
 --
 -- AUTO_INCREMENT dla tabeli `site_group`
 --
-ALTER TABLE `site_group`
+ALTER TABLE `pqcms_site_text_group`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 COMMIT;
