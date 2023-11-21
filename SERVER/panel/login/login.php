@@ -77,7 +77,6 @@
                     addLoginHistory($ip,$username,$password,true);
 
                     $_SESSION["pqcms-server-admin-id"] = $row["id"];
-                    $_SESSION["pqcms-server-admin-logged"] = true;
                     unset($_SESSION["pqcms-server-token-login"]);
                     unset($_SESSION["pqcms-server-token-login-expire"]);
 
