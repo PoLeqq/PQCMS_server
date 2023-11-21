@@ -13,6 +13,9 @@ Spis treści:
         - GetUser
       - license
         - [VerifyLicense](#verifylicense-wyjątek-post)
+      - settings
+        - [GetSettings](#getsettings)
+        - [UpdateSettings](#updatesettings)
 
 
 
@@ -23,20 +26,41 @@ Klient korzystając z /pqcms/Communicator.inc.php wykunuje wszelkie akcje.\
 **Wyjątkiem jest weryfikacja licensji - odczytywany jest domain, login, license_key**
 
 # PQCMS - API: Akcje
-Wszelkie API ma wymagane 2 posty (**[wyjątek](#verifylicense-wyjątek-post)**):
+#### Wszelkie API ma wymagane 2 posty (**[wyjątek](#verifylicense-wyjątek-post)**):
 - domain *(string, max 253)* - domena, z której wysłane zostało zapytanie
 - secure_key *(string, 128)* - klucz, który pozwala na wykonanie zapytania API
-- W dokumentacji dalej, jeżeli przy POST znajdzie się <b>(?)</b> oznacza to, że dany argument jest opcjonalny
+
+```json
+{
+  "domain": "localhost",
+  "secure_key": "1c4922116fe96f7565e5fd3b..."
+}
+```
+
+W dokumentacji, jeżeli przy POST znajdzie się <b>(?)</b> oznacza to, że dany argument jest opcjonalny.
+
+
 
 ### VerifyLicense (Wyjątek: POST)
 <details>
     <summary><b>(!)</b> POST</summary>
-    <ul>
-      <li>domain: string (max 253)</li>
-      <li>login: string (max 30)</li>
-      <li>license_key: string (23)</li>
-      <li><b>(?)</b> generate_secure_key: bool</li>
-    </ul>
+
+```json
+{
+  "domain": "localhost",
+  "login": "l0c@lh0st!", 
+  "license_key": "2023-11-09 20:07:35",
+  "generate_secure_key": true
+}
+```
+Gdzie:
+<ul>
+  <li>domain: <i>string (max 253)</i></li>
+  <li>login: <i>string (max 30)</i></li>
+  <li>license_key: <i>string (23)</i></li>
+  <li><b>(?)</b> generate_secure_key: <i>bool</i></li>
+</ul>
+
   </details>
 <details>
   <summary>RETURN</summary>
@@ -76,17 +100,27 @@ Wszelkie API ma wymagane 2 posty (**[wyjątek](#verifylicense-wyjątek-post)**):
       "secure_key": "1c4922116fe96f7565e5fd3b..."
     }
     ```
-    **expiry_date** może być null — oznacza to, że licencja jest nieograniczona czasowo
+    **expiry_date** może być null — oznacza to, że licencja jest nieograniczona czasowo\
     **secure_key** — jednorazowy klucz dostępowy do API. Oznacza to możliwość wykonania 1 operacji
     na API za jego pomocą (później jest unieważniany)
     </details>
 </details>
 
+
+
 ### GetClientVersion
 <details>
     <summary>POST</summary>
 
-- default *(domain, secure_key)*
+```json
+{
+  "domain": "localhost",
+  "secure_key": "1c4922116fe96f7565e5fd3b...",
+  "complex": true
+}
+```
+Gdzie:
+- [default](#wszelkie-api-ma-wymagane-2-posty-wyjątekverifylicense-wyjątek-post) *(domain, secure_key)*
 - <b>(?)</b> complex <i>(bool)</i>
   - Dla wartości **true** — zwróci wersję w formie dokładnej
   - Dla wartości **false** (lub null) — zwróci wersję w formie tekstu
@@ -99,15 +133,19 @@ Wszelkie API ma wymagane 2 posty (**[wyjątek](#verifylicense-wyjątek-post)**):
 
   ```json
   {
-    "type": "alpha",
-    "major": 1,
-    "minor": 0,
-    "patch": 0,
-    "date": 
+    "suc": 1,
+    "version": 
     {
-      "year": 2023,
-      "month": 10,
-      "day": 27
+      "type": "alpha",
+      "major": 1,
+      "minor": 0,
+      "patch": 0,
+      "date": 
+      {
+        "year": 2023,
+        "month": 10,
+        "day": 27
+      }
     }
   }
   ```
@@ -115,9 +153,13 @@ Wszelkie API ma wymagane 2 posty (**[wyjątek](#verifylicense-wyjątek-post)**):
 - <details>
   <summary>Wersja "tekstu"</summary>
 
+  ```json
+  {
+    "suc": 1,
+    "version": "alpha-1.0.0 (2023-10-27)"
+  }
   ```
-  alpha-1.0.0 (2023-10-27)
-  ```
+
   Wyjaśnienie: <b>type-major.minor.patch (year-month-day)</b>
   </details>
 </details>
@@ -126,7 +168,15 @@ Wszelkie API ma wymagane 2 posty (**[wyjątek](#verifylicense-wyjątek-post)**):
 <details>
     <summary>POST</summary>
 
-  - default *(domain, secure_key)*
+```json
+{
+  "domain": "localhost",
+  "secure_key": "1c4922116fe96f7565e5fd3b...",
+  "complex": true
+}
+```
+Gdzie:
+  - [default](#wszelkie-api-ma-wymagane-2-posty-wyjątekverifylicense-wyjątek-post) *(domain, secure_key)*
   - <b>(?)</b> complex <i>(bool)</i>
     - Dla wartości **true** — zwróci wersję w formie dokładnej
     - Dla wartości **false** (lub null) — zwróci wersję w formie tekstu
@@ -139,15 +189,19 @@ Wszelkie API ma wymagane 2 posty (**[wyjątek](#verifylicense-wyjątek-post)**):
 
     ```json
     {
-      "type": "alpha",
-      "major": 1,
-      "minor": 0,
-      "patch": 0,
-      "date":
+      "suc": 1,
+      "version": 
       {
-        "year": 2023,
-        "month": 11,
-        "day": 15
+        "type": "alpha",
+        "major": 1,
+        "minor": 0,
+        "patch": 0,
+        "date":
+        {
+          "year": 2023,
+          "month": 11,
+          "day": 15
+        }      
       }
     }
     ```
@@ -155,8 +209,11 @@ Wszelkie API ma wymagane 2 posty (**[wyjątek](#verifylicense-wyjątek-post)**):
   - <details>
     <summary>Wersja "tekstu"</summary>
 
-    ```
-    alpha-1.0.0 (2023-11-15)
+    ```json
+    {
+      "suc": 1,
+      "version": "alpha-1.0.0 (2023-11-15)" 
+    }
     ```
     Wyjaśnienie: <b>type-major.minor.patch (year-month-day)</b>
   </details>
@@ -166,7 +223,14 @@ Wszelkie API ma wymagane 2 posty (**[wyjątek](#verifylicense-wyjątek-post)**):
 <details>
     <summary>POST</summary>
 
-  - default *(domain, secure_key)*
+```json
+{
+  "domain": "localhost",
+  "secure_key": "1c4922116fe96f7565e5fd3b..."
+}
+```
+Gdzie:
+- [default](#wszelkie-api-ma-wymagane-2-posty-wyjątekverifylicense-wyjątek-post) *(domain, secure_key)*
   </details>
 <details>
   <summary>RETURN</summary>
@@ -178,13 +242,24 @@ Wszelkie API ma wymagane 2 posty (**[wyjątek](#verifylicense-wyjątek-post)**):
   }
   ```
   **"resp"** — response, zwraca wartość 1|0
+- 1 - admin strony instnieje
+- 0 - admin strony nie instnieje 
 </details>
 
 ### LoginUser
 <details>
     <summary>POST</summary>
 
-  - default *(domain, secure_key)*
+```json
+{
+  "domain": "localhost",
+  "secure_key": "1c4922116fe96f7565e5fd3b...",
+  "login": "admin123",
+  "password": "admin123"
+}
+```
+Gdzie:
+  - [default](#wszelkie-api-ma-wymagane-2-posty-wyjątekverifylicense-wyjątek-post) *(domain, secure_key)*
   - login: string (max: 30)
   - password (string: max: 50)
   </details>
@@ -194,13 +269,102 @@ Wszelkie API ma wymagane 2 posty (**[wyjątek](#verifylicense-wyjątek-post)**):
   ```json
   {
     "suc": 1,
-    "resp": 1
+    "resp": 1,
+    "desc": "Pomyślnie zalogowano!"
   }
   ```
   **"resp"** — response, zwraca wartość 1|0
+  - 1 - zalogowano
+  - 0 - nie zalogowano
 </details>
 
 
-- <sub>A,U,G</sub>AdminAccount *update mógłbym zrobić, że dopiero po tel. do mnie odblokowuje jednorazowy/czasowy update*\
-- <sub>A,U,G,D</sub>UserAccount\
-- <sub>G</sub>SecureKey\
+
+### GetSettings
+<details>
+    <summary>POST</summary>
+
+```json
+{
+  "domain": "localhost",
+  "secure_key": "1c4922116fe96f7565e5fd3b..."
+}
+```
+Gdzie:
+  - [default](#wszelkie-api-ma-wymagane-2-posty-wyjątekverifylicense-wyjątek-post) *(domain, secure_key)*
+  </details>
+<details>
+  <summary>RETURN</summary>
+
+  ```json
+  {
+    "suc": 1,
+    "resp":
+    {
+      "login_attempts": 5,
+      "token_lifespan": 600
+    }
+  }
+  ```
+  **"resp"** — response, zwraca wartości danych (podane wyżej są domyślne)
+  - login_attempts <i>(int)</i> - liczba prób do logowania na IP na dobę (po nieudanym logowaniu ofc.)
+    - 0 - zablokowane (w sumie to wynika, logika)
+    - \> 1 - dana ilość 
+  - token_lifespan <i>(int)</i> - czas żywotności tokenu CSRF (w sekundach)
+</details>
+
+
+### UpdateSettings
+<details>
+    <summary>POST</summary>
+
+```json
+{
+  "domain": "localhost",
+  "secure_key": "1c4922116fe96f7565e5fd3b...",
+  "login_count": 5,
+  "token_lifespan": 600,
+  "login_count_reset": 0,
+  "token_lifespan_reset": 1
+}
+```
+Gdzie:
+  - [default](#wszelkie-api-ma-wymagane-2-posty-wyjątekverifylicense-wyjątek-post) *(domain, secure_key)*
+  - login_count <i>(int)</i> - ilość prób logowań na IP na dobę
+  - token_lifespan <i>(int)</i> - czas żywotności tokenu CSRF (w sekundach)
+  - login_count_reset <i>(bool)</i> - (jeśli true) reset login_count do wartości defaultowej
+  - token_lifespan_reset <i>(bool)</i> - (jeśli true) reset token_lifespan do wartości defaultowej
+  </details>
+<details>
+  <summary>RETURN</summary>
+
+  ```json
+  {
+    "suc": 1,
+    "resp": 1,
+    "desc": "Zmieniono ustawienia strony!"
+  }
+  ```
+  **"resp"** — response, zwraca, czy zmieniono dane (jak na razie to zawsze jest true XD, bo dla suc: 0 nie występuje)
+</details>
+
+
+
+
+
+
+
+
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+- <sub>A,U,G</sub>AdminAccount *update mógłbym zrobić, że dopiero po tel. do mnie odblokowuje jednorazowy/czasowy update*
+- <sub>A,U,G,D</sub>UserAccount
+- <sub>G</sub>SecureKey
