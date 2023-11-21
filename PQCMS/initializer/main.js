@@ -1,1 +1,1 @@
-document.querySelector("#electrocms-domain").value = window.location.hostname;
+document.querySelector("#pqcms").value = window.location.hostname;
