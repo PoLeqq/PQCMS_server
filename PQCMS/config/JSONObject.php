@@ -61,7 +61,8 @@ class JSONObject
      * @param string $key klucz
      * @param mixed $value wartość
      */
-    public function setObject(string $key, mixed $value): void {
+    public function setObject(string $key, mixed $value): void
+    {
         // TODO Save do logów?
         $this->data[$key] = $value;
     }
