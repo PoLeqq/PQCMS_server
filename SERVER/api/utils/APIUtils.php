@@ -7,15 +7,16 @@ class APIUtils
     /**
      * Funkcja sprawdza, czy podana tablica posiada klucze: domain, secure_key (podstawowe dane API).
      * Jeżeli test przejdzie pomyślnie, klucz licencyjny zostaje unieważniony.
-     * @param $post array tablica $_POST
+     * @param array $post tablica $_POST
+     * @param string $apiName nazwa pliku API, na który weryfikuje dane (potrzebny do zużywania klucza licencyjnego, do opisu)
      * @return array odpowiedź: "suc": (0/1), dla 0 również "desc": "string: opis błędu"
      */
-    public static function validatePost(array $post): array
+    public static function validatePost(array $post, string $apiName): array
     {
         if(empty($post["domain"]) || empty($post["secure_key"]))
             return ["suc" => 0, "desc" => "Sprawdź poprawność post'ów!"];
 
-        require_once(dirname(__DIR__,2)."/utils/validators/Validator.inc.php");
+        require_once(dirname(__DIR__)."/utils/validators/Validator.inc.php");
         $fields = ["domain","secure_key"];
         $validatorResponse = Validator::validate([$post["domain"],$post["secure_key"]],["s","s(128)"]);
         if($validatorResponse["suc"] == 0)
@@ -24,7 +25,7 @@ class APIUtils
         $website = APIUtils::getWebsite($post);
         if(!$website->doesExists()) return ["suc" => 0, "desc" => "Nie znaleziono strony internetowej o podanej domenie!"];
         if(!$website->isProperSecureKey($post["secure_key"])) return ["suc" => 0, "desc" => "Niepoprawny klucz zabezpieczenia!"];
-        $website->invalidateSecureKey($post["secure_key"]);
+        $website->invalidateSecureKey($post["secure_key"],$apiName);
         
         return ["suc" => 1];
     }
