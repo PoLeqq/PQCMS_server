@@ -3,27 +3,24 @@
 header("Content-Type: application/json; charset=utf-8");
 
 require_once("LicenseChecker.inc.php");
-//require_once(dirname(__DIR__,3)."/panel/login/login.php");
 
 $httpReferer = null;
-if(isset($_SERVER["HTTP_REFERER"])) $httpReferer = $_SERVER["HTTP_REFERER"];
+if(!empty($_SERVER["HTTP_REFERER"])) $httpReferer = $_SERVER["HTTP_REFERER"];
 
 if(empty($_POST["domain"]) || empty($_POST["login"]) || empty($_POST["license_key"]))
-{
-    echo json_encode(["err" => "Got wrong data. Check your posts."]);
-    die();
-}
+    die(json_encode(["suc" => 0, "desc" => "Sprawdź poprawność post'ów."],JSON_UNESCAPED_UNICODE));
 
-$result = checkLicense($_SERVER["REMOTE_ADDR"], $httpReferer, $_POST["domain"], $_POST["login"], $_POST["license_key"]);
-if(array_keys($result)[0] == "suc" && isset($_POST["generate_secure_key"]) && $_POST["generate_secure_key"])
+require_once(dirname(__DIR__,2)."/utils/validators/Validator.inc.php");
+$validatorResponse = Validator::validate([$_POST["domain"],$_POST["login"],$_POST["license_key"]],["s","s","s(23)"]);
+if($validatorResponse["suc"] == 0)
+    die(json_encode($validatorResponse));
+
+$response = checkLicense($_SERVER["REMOTE_ADDR"], $httpReferer, $_POST["domain"], $_POST["login"], $_POST["license_key"]);
+if($response["suc"] == 1 && !empty($_POST["generate_secure_key"]))
 {
-    require_once(dirname(__DIR__,3)."/objects/website/SecureKey.inc.php");
     require_once(dirname(__DIR__,3)."/objects/Website.inc.php");
-    $result["secure_key"] = SecureKey::generateSecureKey(Website::getWebsiteIDByMatching("domain",$_POST["domain"]));
+    $website = new Website(Website::getWebsiteIDByMatching("domain",$_POST["domain"]));
+    $response["secure_key"] = $website->generateSecureKey();
 }
 
-echo json_encode($result);
-
-//    if(array_keys([0] == "suc") die(json_encode(["suc" => "License valid!"]));
-//    else die(json_encode(["err" => "License invalid!","triesLeft" => ));
-
+die(json_encode($response,JSON_UNESCAPED_UNICODE));
