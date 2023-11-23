@@ -2,7 +2,7 @@
 header('Content-Type: application/json; charset=utf-8');
 require_once(dirname(__DIR__,2)."/utils/APIUtils.php");
 
-$response = APIUtils::validatePost($_POST);
+$response = APIUtils::validatePost($_POST,basename(__FILE__));
 if($response["suc"] == 0) die(json_encode($response,JSON_UNESCAPED_UNICODE));
 
 if(empty($_POST["username"]) || empty($_POST["password"]))
@@ -14,16 +14,5 @@ $website = APIUtils::getWebsite($_POST);
 $loginUser = $website->loginUser($_POST["username"], $_POST["password"]);
 $response["resp"] = $loginUser["suc"];
 $response["desc"] = $loginUser["desc"];
-
-
-//if($website->loginUser($_POST["username"], $_POST["password"]))
-//{
-//    $response["desc"] = "Pomyślnie zalogowano!";
-//}
-//else
-//{
-//    $response["suc"] = 0;
-//    $response["desc"] = "Niepoprawne dane logowania!";
-//}
 
 die(json_encode($response,JSON_UNESCAPED_UNICODE));
