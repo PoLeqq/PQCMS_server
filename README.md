@@ -1,17 +1,17 @@
-# ElectroCMS
+# PQCMS
+Wcale nie PoLeqCMS, tylko Professional Quality CMS
 
 # MODUŁY (Funkcjonalności)
 
 ## Logowanie
-- [ ] Sesja użytkownika*(min.)
+- [x] Sesja użytkownika
 - [ ] Logi logowań
-- [ ] Zapamietanie loginu/hasła*(on/off)
 
 ## Dane
-- [ ] Podstawowe dane
-   - [x] przechowywane w pliku json (`electrocms/data/data.json`)
-   - [x] APIk do pobierania oraz edycji odpowiednich danych
-   - [ ] Zabezpieczenie przed nieautoryzowanym dostępem
+- [x] Podstawowe dane
+   - [x] przechowywane w pliku json
+   - [x] APIki do pobierania oraz edycji odpowiednich danych
+   - [x] Zabezpieczenie przed nieautoryzowanym dostępem
 
 ## Panel
 - [ ] Logi
@@ -24,11 +24,11 @@
 - [ ] Wejście na witrynę internetową od strony edytora 
 
 ## HR (Human Resources)
-- [ ] Użytkownicy (pracownicy) - cl. `User`
+- [x] Użytkownicy (pracownicy) - cl. `User`
    - [ ] Dodawanie/usuwanie/edytowanie
-   - [ ] Tymczasowa dezaktywacja konta
+   - [x] Tymczasowa dezaktywacja konta
 - [ ] Role (stanowiska) - cl. `Role`
    - [ ] Dodawanie/usuwanie/edytowanie
 
-cl. - nazwa klasy przedstawiająca dany obiekt
+cl. - nazwa klasy przedstawiająca dany obiekt\
 *(komentarz) - możliwe do zmiany przez klienta w panelu, w komentarzu sposób zarządzania (np. on/off, czas)
