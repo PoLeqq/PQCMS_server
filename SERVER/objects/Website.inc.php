@@ -52,10 +52,14 @@ class Website
         return SecureKey::generateSecureKey($this->id);
     }
 
-    public function invalidateSecureKey($secure_key): void
+    /**
+     * @param string $secure_key klucz bezpieczeństwa
+     * @param string $apiName nazwa API (dla nie-APIkowych plików po prostu pusty napis)
+     */
+    public function invalidateSecureKey(string $secure_key, string $apiName): void
     {
         require_once("website/SecureKey.inc.php");
-        SecureKey::invalidateSecureKey($this->id,$secure_key);
+        SecureKey::invalidateSecureKey($this->id,$secure_key,$apiName);
     }
 
 //    Gettery, settery opierające się na obiekcie, wymagające bardziej złożonych operacji
@@ -106,6 +110,37 @@ class Website
         return $result;
     }
 
+    public function loginUser(string $username, string $password): array
+    {
+        $conn = Connection::getConnection();
+        $query = $conn->query("SELECT password FROM websites_admins WHERE website_id = $this->id AND username = '$username'");
+
+        if($query->num_rows == 0)
+        {
+            $query = $conn->query("SELECT password FROM websites_users WHERE website_id = $this->id AND username = '$username' AND disabled = 0");
+            if($query->num_rows != 0)
+            {
+                if(password_verify($password, $query->fetch_row()[0]))
+                    $result = ["suc" => 1, "desc" => "Pomyślnie zalogowano!"];
+                else
+                    $result = ["suc" => 0, "desc" => "Niepoprawne dane logowania."];
+            }
+            else
+                $result = ["suc" => 0, "desc" => "Niepoprawne dane logowania."];
+        }
+        else
+        {
+            if(password_verify($password, $query->fetch_row()[0]))
+                $result = ["suc" => 1, "desc" => "Pomyślnie zalogowano!"];
+            else
+                $result = ["suc" => 0, "desc" => "Niepoprawne dane logowania."];
+        }
+
+        $query->close();
+        $conn->close();
+        return $result;
+    }
+
     protected function getField($column): mixed
     {
         $conn = Connection::getConnection();
@@ -138,6 +173,12 @@ class Website
         return $isProper;
     }
 
+    public function getSettings(): WebsiteSettings
+    {
+        require_once(__DIR__."/website/WebsiteSettings.php");
+        return new WebsiteSettings($this->id);
+    }
+
     public static function getWebsiteIDByMatching($column,$value): ?int
     {
         $conn = Connection::getConnection();
@@ -161,6 +202,10 @@ class Website
         else $license_expiration = 'null';
 
         $sql = "INSERT INTO websites VALUES (null,'$domain','$login','$license_key',$license_expiration,$blocked)";
+        $conn->query($sql);
+
+        $websiteId = mysqli_insert_id($conn);
+        $sql = "INSERT INTO websites_settings (website_id) VALUES ($websiteId)";
         $conn->query($sql);
         $conn->close();
     }
