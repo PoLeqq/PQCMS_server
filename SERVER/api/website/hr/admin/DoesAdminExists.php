@@ -1,7 +1,7 @@
 <?php
 
 require_once(dirname(__DIR__, 3) . "/utils/APIUtils.php");
-$response = APIUtils::validatePost($_POST);
+$response = APIUtils::validatePost($_POST,basename(__FILE__));
 if($response["suc"] == 0)
     die(json_encode($response,JSON_UNESCAPED_UNICODE));
 
