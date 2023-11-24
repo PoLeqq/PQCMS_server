@@ -1,6 +1,9 @@
 # PQCMS
 Wcale nie PoLeqCMS, tylko Professional Quality CMS
 
+# WAŻNE Zawrzeć BBCode w edytorze
+tutaj coś jest: https://github.com/chriskonnertz/bbcode
+
 # MODUŁY (Funkcjonalności)
 
 ## Logowanie
