@@ -1,5 +1,7 @@
 # PQCMS - API:
 
+# WAŻNE!!!! - do APIków dodać sprawdzenie, czy nie ma przerwy technicznej
+
 Spis treści:
 - [API - Akcje](#pqcms---api-akcje)
   - system
@@ -270,12 +272,25 @@ Gdzie:
   {
     "suc": 1,
     "resp": 1,
-    "desc": "Pomyślnie zalogowano!"
+    "desc": "Pomyślnie zalogowano!",
+    "auth_key": "1c4922116fe96f7565e5fd3b..."
   }
   ```
   **"resp"** — response, zwraca wartość 1|0
   - 1 - zalogowano
   - 0 - nie zalogowano
+
+  **"auth_key"** *(string, 128)* — klucz logowania, identyfikuje sesje logowania
+  Jeśli użytkownik jest już zalogowany (`auth_key` jest jeszcze ważne):
+
+  ```json
+  {
+    "suc": 1,
+    "resp": 1,
+    "desc": "Pomyślnie zalogowano!",
+    "auth_key": "1c4922116fe96f7565e5fd3b..."
+  }
+```
 </details>
 
 
