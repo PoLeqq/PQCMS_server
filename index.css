@@ -11,7 +11,8 @@
 }
 
 .block-foreground {
-    background-color: #222;
+    background-color: #fff;
+	color: black;
 }
 
 .block2-background {
@@ -28,4 +29,8 @@
 	100% {
 		background-position: 0 50%;
 	}
+}
+
+#projekt {
+	padding-top: 100px;
 }
