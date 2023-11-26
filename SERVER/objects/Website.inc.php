@@ -110,35 +110,79 @@ class Website
         return $result;
     }
 
-    public function loginUser(string $username, string $password): array
+    public function loginUser(string $ip, string $username, string $password): array
     {
         $conn = Connection::getConnection();
-        $query = $conn->query("SELECT password FROM websites_admins WHERE website_id = $this->id AND username = '$username'");
-
+        $query = $conn->query("SELECT id, password FROM websites_admins WHERE website_id = $this->id AND username = '$username'");
         if($query->num_rows == 0)
         {
-            $query = $conn->query("SELECT password FROM websites_users WHERE website_id = $this->id AND username = '$username' AND disabled = 0");
+            $query = $conn->query("SELECT id, password FROM websites_users WHERE website_id = $this->id AND username = '$username' AND disabled = 0");
+
             if($query->num_rows != 0)
             {
-                if(password_verify($password, $query->fetch_row()[0]))
-                    $result = ["suc" => 1, "desc" => "Pomyślnie zalogowano!"];
-                else
-                    $result = ["suc" => 0, "desc" => "Niepoprawne dane logowania."];
+                $result = $this->loginUserGetResponse($query->fetch_assoc(),$ip,$password,false);
+                $this->logUserLogin($ip,$username,$password,$result["proper_data"],$result["suc"]);
             }
             else
+            {
                 $result = ["suc" => 0, "desc" => "Niepoprawne dane logowania."];
+                $this->logUserLogin($ip,$username,$password,false,false);
+            }
         }
         else
         {
-            if(password_verify($password, $query->fetch_row()[0]))
-                $result = ["suc" => 1, "desc" => "Pomyślnie zalogowano!"];
-            else
-                $result = ["suc" => 0, "desc" => "Niepoprawne dane logowania."];
+            $result = $this->loginUserGetResponse($query->fetch_assoc(), $ip, $password, true);
+            $this->logUserLogin($ip, $username, $password, $result["proper_data"], $result["suc"]);
         }
 
         $query->close();
         $conn->close();
         return $result;
+    }
+
+    public function logoutUser(string $ip, string $authKey): bool
+    {
+        require_once("website/AuthKey.inc.php");
+        if(!AuthKey::isValidAuthKeyByIp($this->id, $ip, $authKey)) return false;
+
+        $conn = Connection::getConnection();
+        $now = date("Y-m-d H:i:s");
+        $conn->query("UPDATE websites_auth_keys
+                    SET expired_time = '$now', logout = 1
+                    WHERE website_id = $this->id
+                    AND auth_key = '$authKey'");
+        $conn->close();
+        return true;
+    }
+
+    private function loginUserGetResponse($row,$ip,$password,$adminAccount): array
+    {
+        if(password_verify($password, $row["password"]))
+        {
+            require_once(dirname(__DIR__)."/objects/website/AuthKey.inc.php");
+            $authKey = AuthKey::generateAuthKey($this->id, $ip, $row["id"], $adminAccount);
+            if($authKey === "") return ["suc" => 0, "proper_data" => 1, "desc" => "Sesja jest już aktywna!", "auth_key" => ""];
+            return ["suc" => 1, "proper_data" => 1, "desc" => "Pomyślnie zalogowano!", "auth_key" => $authKey];
+        }
+        else
+            return ["suc" => 0, "proper_data" => 0, "desc" => "Niepoprawne dane logowania."];
+    }
+
+    private function logUserLogin(string $ip, string $username, string $password, bool $properData, bool $logged): void
+    {
+        $conn = Connection::getConnection();
+
+//      Zamiana danych, aby pasowały do zapytania SQL
+        $properData = $properData ? 1 : 0;
+        $logged = $logged ? 1 : 0;
+        $now = date("Y-m-d H:i:s");
+        if($properData) $password = "";
+
+        $conn->query("INSERT INTO websites_login_history 
+                    (website_id, ip, username, password, date, proper_data, logged) 
+                    VALUES
+                    ($this->id, '$ip', '$username', '$password', '$now', $properData, $logged)");
+        $conn->close();
     }
 
     protected function getField($column): mixed
@@ -157,7 +201,7 @@ class Website
     public function isProperSecureKey(string $secureKey): bool
     {
         $conn = Connection::getConnection();
-        $result = $conn->query("SELECT secure_key FROM websites_keys WHERE website_id = $this->id AND used_time IS NULL");
+        $result = $conn->query("SELECT secure_key FROM websites_secure_keys WHERE website_id = $this->id AND used_time IS NULL");
 
         $isProper = false;
         while($row = mysqli_fetch_row($result))
