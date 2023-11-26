@@ -42,14 +42,17 @@ function addCheckLicenseHistory($ip, $requestDomain, $domain, $login, $licenseKe
 
 function checkLicense($remoteAddr, $httpReferer, $domain, $login, $license_key): array
 {
-    if (isBanned($remoteAddr)) return ["suc" => 0, "desc" => "To IP jest zablokowane!"];
-
     $requestDomain = null;
     $referer = parse_url($httpReferer);
     if (isset($referer["host"]))
         $requestDomain = $referer["host"];
 
     $clientServerIps = gethostbynamel($domain);
+
+    if (isBanned($remoteAddr)) {
+        addCheckLicenseHistory($remoteAddr, $requestDomain, $domain, $login, $license_key, false, "To IP jest zablokowane!");
+        return ["suc" => 0, "desc" => "To IP jest zablokowane!"];
+    }
 
 //        Tutaj jest jak podana domena (przez klienta i u nas) nie istnieje 😲 Jak to możliwe? Może się nigdy nie zdarzy :p
     if ($clientServerIps === false) {
