@@ -1,11 +1,6 @@
-.update {
-    font-weight: bold;
-}
-
-.ok {
-    color: lime;
-}
-
-.required {
-    color: red;
+iframe {
+    width: 100%;
+    height: 100vh;
+    border: none;
+    overflow: hidden;
 }
