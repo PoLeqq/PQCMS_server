@@ -59,7 +59,11 @@ class CommunicateURL
     public const GET_CLIENT_VERSION = "system/version/GetClientVersion.php";
     public const GET_SERVER_VERSION = "system/version/GetServerVersion.php";
     public const DOES_ADMIN_EXISTS = "website/hr/admin/DoesAdminExists.php";
+    public const ADD_USER = "website/hr/user/AddUser.php";
+    public const GET_USER = "website/hr/user/GetUser.php";
     public const LOGIN_USER = "website/auth/LoginUser.php";
+    public const LOGOUT_USER = "website/auth/LogoutUser.php";
+    public const IS_VALID_AUTH_KEY = "website/auth/IsValidAuthKey.php";
     public const GET_SETTINGS = "website/settings/GetSettings.php";
     public const UPDATE_SETTINGS = "website/settings/UpdateSettings.php";
 }
