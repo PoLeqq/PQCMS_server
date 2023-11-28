@@ -116,7 +116,7 @@ $websiteSettingsResponse = Communicator::communicate(CommunicateURL::GET_SETTING
                     END;
 
                     unset($_SESSION["pqcms-panel-settings-database-suc"]);
-                    unset($_SESSION["pqcms-panel-sefttings-database-desc"]);
+                    unset($_SESSION["pqcms-panel-settings-database-desc"]);
                 }
                 if(!empty($_SESSION["pqcms-panel-settings-database-warn"]))
                 {
