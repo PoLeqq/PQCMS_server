@@ -4,10 +4,25 @@ body {
     background: linear-gradient(135deg, #8a2be2, #793ee6, #00bfff,#8a2be2);
     background-size: 400% 400%;
     animation: block-background 30s ease-in-out infinite;
+    font-family: 'Roboto', sans-serif;
+    color: white;
 }
 
-form {
+#main-link > img {
+    height: 50px;
+    font-size: 40px!important;
+}
+
+#site-container {
+    position: relative;
+    min-height: 100vh;
+}
+
+form, div[class=result] {
     background-color: #333;
+    padding: 30px;
+    border-radius: 20px;
+    font-size: 20px;
 }
 
 legend{
@@ -21,7 +36,8 @@ fieldset {
 
 input[type=text],
 input[type=password]{
-    border: #FF4500 solid 2px;
+    border: #793ee6 solid 2px;
+    height: 50px;
 }
 
 input[type=text]:focus,
@@ -30,43 +46,25 @@ input[type=password]:focus {
     outline: white 1px solid;
 }
 
-#password{
+#password {
     width: 85%;
 }
 
-div > img{
+div > img {
     width: 15%;
     height: 50px;
     cursor: pointer;
-    margin-left: -5px;
 
-    position: relative;
-    top:-4px;
-
-    border: #FF4500 solid 2px;
+    border: #793ee6 solid 2px;
     border-left: none;
 
     transition: all 0.5s;
 }
 
-.hidePass{
-    content: url("../../SERVER/PQCMS/images/hidePass.svg");
+.hidePassword {
     background-color: #8A2BE2;
 }
 
-.showPass{
-    content: url("../../SERVER/PQCMS/images/showPass.svg");
+.showPassword {
     background-color: #e9ecef;
 }
-/* 
-@keyframes block-background {
-    0% {
-		background-position: 0% 50%;
-	}
-	50% {
-		background-position: 100% 50%;
-	}
-	100% {
-		background-position: 0% 50%;
-	}
-} */
