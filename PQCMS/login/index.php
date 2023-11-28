@@ -4,9 +4,12 @@
 //    $login = new JSONLogin();
 //    $_SESSION["loginAmount"] = $login->getAttempts();
 
-    session_start();
-    if(!empty($_SESSION["pqcms-panel-username"]))
-        header("location: ../panel");
+session_start();
+if(!empty($_SESSION["pqcms-panel-username"]))
+{
+    header("location: ../panel");
+    die("Sesja logowania jest już aktywna!");
+}
 
 //    require_once("loginUser.php");
 //    if(isset($_POST["submit"])){
@@ -24,10 +27,10 @@
     <meta name="description" content="Panel logowania do systemu PQCMS">
     <meta name="author" content='Wiktor "PoLeq" Soliński'>
     <meta http-equiv="X-Ua-Compatible" content="IE=edge">
-    <link rel="icon" type="image/x-icon" href="../../images/ElectroCMS.svg">
+    <link rel="icon" type="image/x-icon" href="../../images/PQCMS.svg">
 
-    <link rel="stylesheet" href="../../bs5/css/bootstrap.min.css">
-    <link rel="stylesheet" href="../../default.css">
+    <link rel="stylesheet" href="../bs5/css/bootstrap.min.css">
+<!--    <link rel="stylesheet" href="../../default.css">-->
     <link rel="stylesheet" href="index.css">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -41,50 +44,46 @@
 
         <form method="POST" class="p-4 w-25" action="Login.php">
             <header class="mb-4">
-                <a id="main-link" class="navbar-brand fs-2 px-3 link-nav text-white" style="font-size: 40px!important;" href="../../index.html">
+                <a id="main-link" class="navbar-brand fs-2 px-3 link-nav text-white" style="font-size: 40px!important;" href="../../">
                     PQCMS
-                    <img src="../../images/ElectroCMS.svg" alt="logo">
+                    <img src="../../images/PQCMS.svg" alt="logo">
                 </a>
             </header>
 
             <fieldset class="form-group border border-white d-flex flex-column justify-content-center align-items-center" >
                 <legend class="w-75 h2 pb-2 border border-white">Logowanie</legend>
 
-<!--                <p class="text-danger mt-2">--><?php //echo @$error;?><!--</p>-->
-
                 <label class="mt-1">Nazwa użytkownika</label>
                 <input type="text" name="username" class="w-75 form-control-lg m-2 rounded-0" placeholder="nazwa użytkownika" value="<?php echo @$_POST['username'];?>" />
 
                 <label class="mt-3">Hasło</label>
-                <div class="w-75 m-0">
+                <div class="d-flex w-75 justify-content-center align-items-center">
                     <input type="password" id="password" name="password" class="form-control-lg my-2 rounded-0" placeholder="hasło" value="<?php echo @$_POST['password'];?>" />
-<!--                    TODO (raczej SEO też zalicza, bo niby to też jest jakoś dostępna strona - trzeba przerobić, żeby było src w img -->
-                    <img id="showPass" class="hidePass showPass">
+                    <img id="showPassword" class="showPassword hidePassword" src="../images/showPassword.svg" alt="oko" tabindex="0">
                 </div>
 
                 <input type="submit" name="submit" class="btn btn-primary my-4 rounded-0" value="Zaloguj">
 
             </fieldset>
             <?php
-               require_once(dirname(__DIR__)."/initializer/Checker.php");
-               if(is_null(isFirstTime()))
-                   echo "Błąd API! Skontaktuj się z administratorem PQCMS!";
-               if(isFirstTime()) {
-                   echo<<<END
-                        <div style="text-align: left">
-                            Pierwszy raz? <a href="../initializer/">Kliknij tutaj!</a>
-                        </div>
-                   END;
-               }
-            ?>
-            <?php
-                if(!empty($_SESSION["pqcms-panel-login-error"]))
-                    echo<<<END
-                        <div style="color: red">
-                            {$_SESSION["pqcms-panel-login-error"]}
-                        </div>
-                    END;
+            require_once(dirname(__DIR__)."/initializer/Checker.php");
+            $isFirstTime = isFirstTime();
+            if(is_null($isFirstTime))
+               echo "Błąd API! Skontaktuj się z administratorem PQCMS!";
+            else if($isFirstTime)
+               echo<<<END
+                <div style="text-align: left">
+                    Pierwszy raz? <a href="../initializer/">Kliknij tutaj!</a>
+                </div>
+               END;
 
+            if(!empty($_SESSION["pqcms-panel-login-error"]))
+                echo<<<END
+                <div style="color: red">
+                    {$_SESSION["pqcms-panel-login-error"]}
+                </div>
+                END;
+            unset($_SESSION["pqcms-panel-login-error"]);
             ?>
         </form>
         
