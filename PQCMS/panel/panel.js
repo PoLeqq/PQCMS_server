@@ -14,6 +14,10 @@ internalLinks.forEach(e => {
     e.addEventListener('click',function() {
         updateMain(e.getAttribute("internalLink"))
     })
+    e.addEventListener('keypress',function(event) {
+        if(event.keyCode === 13 || event.key === "Enter")
+            updateMain(e.getAttribute("internalLink"))
+    })
 })
 
 /**
@@ -29,7 +33,7 @@ function updateMain(path) {
 // COOKIES
 
 /**
- * Funkcja zapisująca ciasteckzo
+ * Funkcja zapisująca ciasteczko
  * @param {string} cname nazwa
  * @param {string} cvalue wartość
  * @param {int} exdays wygasa w dniach
@@ -44,9 +48,9 @@ function setCookie(cname, cvalue, exdays, exhours, exminutes) {
   }
   
 /**
- * Zwraca wartość ciasteczka (lub pusty null)
- * @param {string} cname 
- * @returns ciasteczko (lub null)
+ * Zwraca wartość ciasteczka (lub null)
+ * @param {string} cname nazwa ciastka
+ * @returns string|null ciasteczko
  */
 function getCookie(cname) {
     let name = cname + "="
@@ -61,3 +65,39 @@ function getCookie(cname) {
     }
     return null;
 }
+
+// function checkAuthKeyValidity()
+// {
+//     var xmlHttp = new XMLHttpRequest();
+//
+//     // xmlHttp.setRequestHeader("Content-Type", "application/json");
+//     // var postData = JSON.stringify({ domain: window.location.hostname, klucz2: "wartosc2" });
+//
+//     // TODO do zmiany! Na razie jak działam na localhoscie tak musi być, ale na prodzie zmienić na 2.
+//     xmlHttp.open( "GET", window.location.origin+"/pqcms/pqcms/panel/scripts/IsValidUserSession.php", true ); // false for synchronous request
+//     // xmlHttp.open( "GET", window.location.origin+"/pqcms/panel/scripts/IsValidUserSession.php", true ); // false for synchronous request
+//     xmlHttp.send( null );
+//     return xmlHttp.responseText;
+// }
+
+function checkAuthKeyValidity() {
+    var xmlHttp = new XMLHttpRequest();
+    xmlHttp.open("GET", window.location.origin + "/pqcms/pqcms/panel/scripts/IsValidUserSession.php", true);
+
+    xmlHttp.onreadystatechange = function() {
+        if (xmlHttp.readyState === 4) {
+            if (xmlHttp.status === 200) {
+                console.log(xmlHttp.responseText);
+            } else {
+                console.error("Błąd żądania: " + xmlHttp.statusText);
+            }
+        }
+    };
+
+    xmlHttp.send(null);
+    return xmlHttp.responseText;
+}
+
+// let ar = JSON.parse(httpGet("http://localhost/electrocms/server/test/test.php"));
+// let ar = JSON.parse(httpGet("http://localhost/pqcms/server/GetVersion.php"));
+// console.log(ar);

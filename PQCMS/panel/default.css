@@ -3,10 +3,24 @@ body {
     background-color: rgba(0,0,0,0);
 }
 
+.success {
+    color: green;
+    display: block;
+}
+
+.error {
+    color: red;
+    display: block;
+}
+
+.warning {
+    color: orange;
+    display: block;
+}
+
 .disableSelect {
     user-select: none; /* Chrome, Opera */
    -webkit-user-select: none; /* Safari */
-   -khtml-user-select: none; /* Konqueror HTML */
    -moz-user-select: none; /* Firefox */
    -ms-user-select: none; /* IE */
 }
