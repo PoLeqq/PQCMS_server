@@ -10,7 +10,7 @@ function getTries($ip): int
     date_default_timezone_set("Europe/Warsaw");
     $date = date("Y-m-d");
 
-    $result = $conn->query("SELECT date FROM check_license_history WHERE ip='$ip' AND date LIKE '$date%' AND successful=0");
+    $result = $conn->query("SELECT date FROM check_license_history WHERE ip='$ip' AND date LIKE '$date%' AND successful=0 AND description != 'To IP jest zablokowane!'");
     $res = 5 - $result->num_rows;
     $conn->close();
     return $res;
@@ -51,6 +51,11 @@ function checkLicense($remoteAddr, $httpReferer, $domain, $login, $license_key):
 
     if (isBanned($remoteAddr)) {
         addCheckLicenseHistory($remoteAddr, $requestDomain, $domain, $login, $license_key, false, "To IP jest zablokowane!");
+
+//        usunięcie sesji logowania (auth key)
+        $conn =  Connection::getConnection();
+
+
         return ["suc" => 0, "desc" => "To IP jest zablokowane!"];
     }
 
