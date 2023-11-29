@@ -9,10 +9,10 @@
     <link rel="stylesheet" href="homepage.css">
 </head>
 <body>
-    <h1>ElectroCMS</h1>
+    <h1>PQCMS</h1>
     <section>
         <p>
-            <b>Witaj w głównym panelu systemu! Bardzo cieszymy się, że korzystasz z naszysz usług. Naszym priorytetem jest, aby ElectroCMS był najwydajniejszy, 
+            <b>Witaj w głównym panelu systemu! Bardzo cieszymy się, że korzystasz z naszysz usług. Naszym priorytetem jest, aby PQCMS był najwydajniejszy,
             a jednocześnie spełniał wszystkie warunki bezpieczeństwa.</b> Tutaj jeszcze jakieś inne bzdury ładnie wyglądające.
 
         </p>
