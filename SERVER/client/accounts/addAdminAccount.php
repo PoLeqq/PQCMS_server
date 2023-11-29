@@ -25,10 +25,10 @@ if(empty($_POST["username"]) || empty($_POST["nickname"]) || empty($_POST["passw
 if(strlen($_POST["username"]) < 5 || strlen($_POST["username"]) > 30)
     die("Login musi mieć od 5 do 30 znaków!");
 
-if(strlen($_POST["nickname"]) < 5 || strlen($_POST["nickname"]) > 30)
-    die("Nazwa użytkownika musi mieć od 5 do 30 znaków!");
+if(strlen($_POST["nickname"]) < 2 || strlen($_POST["nickname"]) > 30)
+    die("Nazwa użytkownika musi mieć od 2 do 30 znaków!");
 
-if(strlen($_POST["password"]) < 8 || strlen($_POST["password"]) > 40)
+if(strlen($_POST["password"]) < 8 || strlen($_POST["password"]) > 50)
     die("Hasło musi mieć od 8 do 40 znaków!");
 
 $website->addAdmin($_POST["username"],$_POST["nickname"],$_POST["password"]);
