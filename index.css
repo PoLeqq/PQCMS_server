@@ -8,6 +8,7 @@
     background: linear-gradient(135deg, #8a2be2, #793ee6, #00bfff,#8a2be2);
 	background-size: 400% 400%;
 	animation: block-background 30s ease-in-out infinite;
+	padding: 100px 0;
 }
 
 .block-foreground {
@@ -31,6 +32,13 @@
 	}
 }
 
-#projekt {
-	padding-top: 100px;
+.wave {
+	position: relative;
+	top: 100px;
+}
+
+.wave_reversed {
+	transform: rotate(180deg);
+	position: relative;
+	top: -100px;
 }

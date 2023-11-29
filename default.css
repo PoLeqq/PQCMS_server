@@ -17,6 +17,9 @@ body {
 
 nav, footer {
     background: rgba(50,50,50,.8);
+	color: white;
+	z-index: 1000;
+	backdrop-filter: blur(10px);
 }
 
 nav {
