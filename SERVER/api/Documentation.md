@@ -5,14 +5,21 @@
 Spis treści:
 - [API - Akcje](#pqcms---api-akcje)
   - system
-    - [GetClientVersion](#getclientversion)
-    - [GetServerVersion](#getserverversion)
+    - version
+      - [GetClientVersion](#getclientversion)
+      - [GetServerVersion](#getserverversion)
   - website
+    - auth
+      - IsValidAuthKey
+      - [LoginUser](#loginuser)
+      - LogoutUser
     - data
       - hr
         - admin
-          - DoesAminExists
-        - GetUser
+          - [DoesAminExists](#doesadminexists)
+        - user
+          - AddUser
+          - GetUser
       - license
         - [VerifyLicense](#verifylicense-wyjątek-post)
       - settings
@@ -286,9 +293,52 @@ Gdzie:
   ```json
   {
     "suc": 1,
-    "resp": 1,
-    "desc": "Pomyślnie zalogowano!",
-    "auth_key": "1c4922116fe96f7565e5fd3b..."
+    "resp": 0,
+    "desc": "Sesja jest już aktywna!",
+    "auth_key": ""
+  }
+```
+</details>
+
+
+
+### LogoutUser
+<details>
+    <summary>POST</summary>
+
+```json
+{
+  "domain": "localhost",
+  "secure_key": "1c4922116fe96f7565e5fd3b...",
+  "auth_key": "1c4922116fe96f7565e5fd3b..."
+}
+```
+Gdzie:
+  - [default](#wszelkie-api-ma-wymagane-2-posty-wyjątekverifylicense-wyjątek-post) *(domain, secure_key)*
+  - auth_key: <i>string (128)</i> - klucz identyfikujący sesję użytkownika
+  </details>
+<details>
+  <summary>RETURN</summary>
+
+  Dla poprawnego wylogowania użytkownika
+  ```json
+  {
+    "suc": 1,
+    "resp": 1
+  }
+  ```
+  **"resp"** — response, zwraca wartość 1|0
+  - 1 - wylogowano
+  - 0 - nie wylogowano
+
+  **"auth_key"** *(string, 128)* — klucz logowania, identyfikuje sesje logowania.
+  Jeśli nie przesłano auth_key (lub jest puste):
+
+  ```json
+  {
+    "suc": 1,
+    "resp": 0,
+    "desc": "Nie przesłano klucza uwierzytelniającego!",
   }
 ```
 </details>
