@@ -9,6 +9,6 @@ class Connection
 
     public static function getConnection(): bool|mysqli
     {
-        return mysqli_connect(Connection::$database_host,Connection::$database_username,Connection::$database_password,Connection::$database_name);
+        return new mysqli(Connection::$database_host,Connection::$database_username,Connection::$database_password,Connection::$database_name);
     }
 }
