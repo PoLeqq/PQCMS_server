@@ -111,11 +111,11 @@
                         Jego głównym celem jest umożliwienie użytkownikom, w tym pracownikom, wygodnej i bezpiecznej edycji tekstów na stronie oraz zarządzanie
                         rangami i uprawnieniami dostępu.
                     </p>
-                    <img src="images/panel.png" width="800" height="auto">
+                    <img src="images/panel.png" alt="panel" width="800" height="auto">
                 </section>
             </div>
             <div class="wave">
-                <img src="images/wave1.svg">
+                <img src="images/wave1.svg" alt="fala">
             </div>
         </div>
 
@@ -184,7 +184,7 @@
 
         <div class="block-background">
             <div class="wave_reversed">
-                <img src="images/wave2.svg">
+                <img src="images/wave2.svg" alt="fala">
             </div>
             <div class="col-8 offset-3 p-5 block-foreground">
                 <div class="block-foreground">
@@ -197,7 +197,7 @@
                 </div>
             </div>
             <div class="wave">
-                <img src="images/wave3.svg">
+                <img src="images/wave3.svg" alt="fala">
             </div>
         </div>
 
@@ -241,9 +241,6 @@
         </div>
     </div>
 
-    <!-- <?php
-    require_once('site-elements/footer.php');
-    ?> -->
     <footer class="d-flex justify-content-center align-items-center hei">
         PQCMS &copy Wszelkie prawa zastrzeżone
     </footer>
