@@ -48,11 +48,14 @@ class WebsiteAdmin
         return $result;
     }
 
-    public static function unsafe_addWebsiteAdmin(int $websiteId, string $username, string $nickname, string $password): void
+    public static function unsafe_addWebsiteAdmin(int $websiteId, string $username, string $nickname, string $password): int
     {
         $conn = Connection::getConnection();
         $password = password_hash($password,PASSWORD_DEFAULT);
         $conn->query("INSERT INTO websites_admins VALUES (null,$websiteId,'$username','$nickname','$password')");
+
+        $errno = $conn->errno;
         $conn->close();
+        return $errno;
     }
 }
