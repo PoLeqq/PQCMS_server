@@ -1,7 +1,7 @@
 <?php
 
     session_start();
-    if(empty($_SESSION["pqcms-server-admin-logged"])) {
+    if(empty($_SESSION["pqcms-server-admin-id"])) {
         header("location: login/");
         die("You need to be logged in to visit this resouce!");
     }
