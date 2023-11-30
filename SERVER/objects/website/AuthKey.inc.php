@@ -76,25 +76,31 @@ class AuthKey
         return $result;
     }
 
-    public static function isValidAuthKeyByIp(int $websiteId, string $ip, string $authKey): bool
+    public static function isValidAuthKeyByIp(int $websiteId, string $ip, string $authKey): array
     {
         $conn = Connection::getConnection();
-        $query = $conn->query("SELECT expired_time, auth_key FROM websites_auth_keys 
+        $query = $conn->query("SELECT expired_time, auth_key, invalid FROM websites_auth_keys 
                               WHERE website_id = $websiteId
                               AND logout = 0
                               AND ip = '$ip'
+                              ORDER BY expired_time DESC
                               LIMIT 1");
 
         if($query->num_rows == 0)
-            $result = false;
+            $result = ["valid" => false, "outdated" => false, "invalidated" => false];
         else
         {
             $row = $query->fetch_row();
             $expiredTime = $row[0];
             $expiredDate = strtotime($expiredTime);
 
-            if($expiredDate < time()) $result = false;
-            else $result = $row[1] === $authKey;
+            $valid = $row[1] === $authKey;
+            $outdated = $expiredDate < time();
+            $invalidated = (bool) $row[2];
+
+            if($outdated || $invalidated) $valid = false;
+
+            $result = ["valid" => $valid, "outdated" => $outdated, "invalidated" => $invalidated];
         }
 
         $query->close();
@@ -119,8 +125,9 @@ class AuthKey
                     WHERE website_id = $websiteId 
                     AND $column = $userId
                     AND logout = 0 
-                    ORDER BY expired_time 
-                    DESC LIMIT 1");
+                    AND invalid = 0
+                    ORDER BY expired_time DESC 
+                    LIMIT 1");
 
         if($query->num_rows == 0)
             $result = false;
@@ -150,5 +157,56 @@ class AuthKey
                               WHERE website_id = $website_id 
                               AND auth_key = '$authKey'");
         $conn->close();
+    }
+
+    /**
+     * Zwraca aktywny auth_key dla podanego IP oraz zwraca jego wartość. Jeśli nie znajdzie, funckcja zwraca pusty łańcuch
+     * @param int $websiteId
+     * @param string $ip
+     * @return string aktywne auth_key
+     */
+    public static function getActiveAuthKey(int $websiteId, string $ip): string {
+        $conn = Connection::getConnection();
+
+        $query = $conn->query("SELECT expired_time, auth_key FROM websites_auth_keys
+                    WHERE logout = 0
+                    AND website_id = $websiteId
+                    ORDER BY expired_time DESC
+                    LIMIT 1");
+
+        $resp = "";
+        if($query->num_rows != 0)
+        {
+            $row = $query->fetch_row();
+            if(strtotime($row[0]) > strtotime("now"))
+                $resp = $row[1];
+        }
+
+        $conn->close();
+        return $resp;
+    }
+
+    public static function isAdminAuthKey(int $websiteId, string $authKey): bool
+    {
+//        TODO walidacja - authKey tylko 0-9 a-f
+        $conn = Connection::getConnection();
+
+        $query = $conn->query("SELECT admin_id, expired_time FROM websites_auth_keys
+                    WHERE logout = 0
+                    AND website_id = $websiteId
+                    AND auth_key = '$authKey' 
+                    ORDER BY expired_time DESC
+                    LIMIT 1");
+
+        $resp = false;
+        if($query->num_rows != 0)
+        {
+            $row = $query->fetch_row();
+            if(!is_null($row[0]) && strtotime($row[1]) > strtotime("now"))
+                $resp = true;
+        }
+
+        $conn->close();
+        return $resp;
     }
 }
