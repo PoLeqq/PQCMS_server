@@ -59,17 +59,38 @@ class WebsiteUser
         return $result;
     }
 
-    public static function unsafe_addWebsiteUser(int $websiteId, string $username, string $nickname, string $password, ?array $perms, bool $disabled = false): void
+    public static function unsafe_addWebsiteUser(int $websiteId, string $username, string $nickname, string $password, ?array $perms, bool $disabled = false): array
     {
+        if(strlen($username) < 5 || strlen($username) > 30)
+            return ["suc" => 0, "desc" => "Login musi mieć od 5 do 30 znaków!"];
+        if(strlen($nickname) < 2 || strlen($nickname) > 30)
+            return ["suc" => 0, "desc" => "Nazwa użytkownika musi mieć od 2 do 30 znaków!"];
+        if(strlen($password) < 8 || strlen($password) > 50)
+            return ["suc" => 0, "desc" => "Hasło musi mieć od 8 do 30 znaków!"];
+
         $conn = Connection::getConnection();
 
-        $disabled = (int) $disabled;
-        $perms = json_encode($perms);
+        $query = $conn->query("SELECT username FROM websites_admins WHERE website_id = $websiteId");
+        if($query->fetch_row()[0] !== $username)
+        {
+            $query = $conn->query("SELECT id FROM websites_users WHERE website_id = $websiteId AND username = '$username'");
+            if($query->num_rows == 0)
+            {
+                $disabled = (int) $disabled;
+                $perms = json_encode($perms);
 
-        $password = password_hash($password,PASSWORD_DEFAULT);
+                $password = password_hash($password,PASSWORD_DEFAULT);
 
-        $conn->query("INSERT INTO websites_users VALUES (null,$websiteId,'$username','$nickname','$password','$perms',$disabled)");
-        $conn->close();
+                $conn->query("INSERT INTO websites_users VALUES (null,$websiteId,'$username','$nickname','$password','$perms',$disabled)");
+                if($conn->errno === 0) $resp = ["suc" => 1, "desc" => "Dodano użytkownika!"];
+                else $resp = ["suc" => 0, "desc" => "Błąd podczas dodawania użytkownika. Kod błędu: ".($conn->errno*2)."!"];
+                $conn->close();
+            }
+            else $resp = ["suc" => 0, "desc" => "Już istnieje użytkownik o takim loginie!"];
+        }
+        else $resp = ["suc" => 0, "desc" => "Już istnieje użytkownik o takim loginie (administrator)!"];
+
+        return $resp;
     }
 
     public static function getWebsiteUserBy(string $col, mixed $value, int $websiteId = null): ?array
