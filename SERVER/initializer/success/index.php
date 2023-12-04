@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>PQCMS - Inicjator</title>
 
-    <link rel="icon" type="image/x-icon" href="../../images/ElectroCMS.svg">
+    <link rel="icon" type="image/x-icon" href="../../../images/PQCMS.svg">
 
     <link rel="stylesheet" href="../../../bs5/css/bootstrap.min.css">
     <link rel="stylesheet" href="../../../default.css">
@@ -15,9 +15,9 @@
 <div id="site-container" class="d-flex justify-content-center align-items-center text-center">
     <div class="result">
         <header class="mb-4">
-            <a id="main-link" class="navbar-brand px-3 text-white" style="font-size: 40px!important;" href="../../../index.html">
-                ElectroCMS
-                <img src="../../images/ElectroCMS.svg" alt="logo">
+            <a id="main-link" class="navbar-brand px-3 text-white" style="font-size: 40px!important;" href="../../../">
+                PQCMS
+                <img src="../../../images/PQCMS.svg" alt="logo">
             </a>
         </header>
 
