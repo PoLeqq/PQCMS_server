@@ -94,13 +94,14 @@ class AuthKey
             $expiredTime = $row[0];
             $expiredDate = strtotime($expiredTime);
 
+            date_default_timezone_set('Europe/Warsaw');
             $valid = $row[1] === $authKey;
             $outdated = $expiredDate < time();
             $invalidated = (bool) $row[2];
 
             if($outdated || $invalidated) $valid = false;
 
-            $result = ["valid" => $valid, "outdated" => $outdated, "invalidated" => $invalidated];
+            $result = ["valid" => (int) $valid, "outdated" => (int) $outdated, "invalidated" => (int) $invalidated];
         }
 
         $query->close();
