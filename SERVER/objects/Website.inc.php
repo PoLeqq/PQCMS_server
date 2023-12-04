@@ -43,7 +43,7 @@ class Website
 
     public function doesExists(): bool
     {
-        return $this->getField("id") != null;
+        return !is_null($this->getField("id"));
     }
 
     public function generateSecureKey(): string
@@ -79,31 +79,44 @@ class Website
         return $result;
     }
 
-    public function addAdmin(string $username, string $nickname, string $password): void
+    public function addAdmin(string $username, string $nickname, string $password): int
     {
         require_once(dirname(__DIR__) . "/objects/website/WebsiteAdmin.inc.php");
-        WebsiteAdmin::unsafe_addWebsiteAdmin($this->id,$username,$nickname,$password);
+        return WebsiteAdmin::unsafe_addWebsiteAdmin($this->id,$username,$nickname,$password);
     }
 
-    public function addUser(string $username, string $nickname, string $password, array $perms, bool $disabled): void
+    public function addUser(string $username, string $nickname, string $password, array $perms, bool $disabled): int
     {
         require_once(dirname(__DIR__) . "/objects/website/WebsiteUser.inc.php");
-        WebsiteUser::unsafe_addWebsiteUser($this->id,$username,$nickname,$password, $perms, $disabled);
+        return WebsiteUser::unsafe_addWebsiteUser($this->id,$username,$nickname,$password, $perms, $disabled);
     }
 
-    public function getUsers(): ?array
+    public function getUsersIds(): array
     {
         $conn = Connection::getConnection();
         $query = $conn->query("SELECT id FROM websites_users WHERE website_id = $this->id");
 
-        if($query->num_rows == 0)
-            $result = null;
-        else
-        {
-            $result = [];
-            foreach($query->fetch_row() as $row)
-                $result[] = $row[0];
-        }
+        $result = [];
+        foreach($query->fetch_row() as $row)
+            $result[] = $row[0];
+
+        $query->close();
+        $conn->close();
+        return $result;
+    }
+
+    public function getUsers(): array
+    {
+        $conn = Connection::getConnection();
+        $query = $conn->query("SELECT username, nickname, perms, disabled FROM websites_users WHERE website_id = $this->id");
+
+        $result = [];
+        while($row = $query->fetch_row())
+            $result[] = ["username" => $row[0], "nickname" => $row[1], "perms" => json_decode($row[2]), "disabled" => $row[3]];
+
+        $query = $conn->query("SELECT username, nickname FROM websites_admins WHERE website_id = $this->id");
+        if($row = $query->fetch_row())
+            $result[] = ["username" => $row[0], "nickname" => $row[1]];
 
         $query->close();
         $conn->close();
@@ -113,10 +126,15 @@ class Website
     public function loginUser(string $ip, string $username, string $password): array
     {
         $conn = Connection::getConnection();
-        $query = $conn->query("SELECT id, password FROM websites_admins WHERE website_id = $this->id AND username = '$username'");
+        $query = $conn->query("SELECT id, password FROM websites_admins 
+                    WHERE website_id = $this->id 
+                      AND username = '$username'");
         if($query->num_rows == 0)
         {
-            $query = $conn->query("SELECT id, password FROM websites_users WHERE website_id = $this->id AND username = '$username' AND disabled = 0");
+            $query = $conn->query("SELECT id, password FROM websites_users 
+                    WHERE website_id = $this->id 
+                      AND username = '$username' 
+                      AND disabled = 0");
 
             if($query->num_rows != 0)
             {
@@ -148,7 +166,8 @@ class Website
         $conn = Connection::getConnection();
         $now = date("Y-m-d H:i:s");
         $conn->query("UPDATE websites_auth_keys
-                    SET expired_time = '$now', logout = 1
+                    SET expired_time = '$now', 
+                    logout = 1
                     WHERE website_id = $this->id
                     AND auth_key = '$authKey'");
         $conn->close();
@@ -161,7 +180,7 @@ class Website
         {
             require_once(dirname(__DIR__)."/objects/website/AuthKey.inc.php");
             $authKey = AuthKey::generateAuthKey($this->id, $ip, $row["id"], $adminAccount);
-            if($authKey === "") return ["suc" => 0, "proper_data" => 1, "desc" => "Sesja jest już aktywna!", "auth_key" => ""];
+            if($authKey === "") return ["suc" => 0, "proper_data" => 1, "desc" => "Sesja tego konta jest już aktywna! (jeżeli uważasz, że to błąd, jak najszybciej skontaktuj się z administratorem!)", "auth_key" => ""];
             return ["suc" => 1, "proper_data" => 1, "desc" => "Pomyślnie zalogowano!", "auth_key" => $authKey];
         }
         else
@@ -201,7 +220,9 @@ class Website
     public function isProperSecureKey(string $secureKey): bool
     {
         $conn = Connection::getConnection();
-        $result = $conn->query("SELECT secure_key FROM websites_secure_keys WHERE website_id = $this->id AND used_time IS NULL");
+        $result = $conn->query("SELECT secure_key FROM websites_secure_keys 
+                  WHERE website_id = $this->id 
+                    AND used_time IS NULL");
 
         $isProper = false;
         while($row = mysqli_fetch_row($result))
