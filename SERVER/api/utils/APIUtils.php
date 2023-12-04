@@ -1,9 +1,11 @@
 <?php
 
 require_once(dirname(__DIR__,2)."/objects/Website.inc.php");
+require_once(dirname(__DIR__)."/utils/validators/Validator.inc.php");
 
 class APIUtils
 {
+//    dodać może pola post, apiname fields (z 22) i validatorData (22, zamiast ["s","s(128)"])?
     /**
      * Funkcja sprawdza, czy podana tablica posiada klucze: domain, secure_key (podstawowe dane API).
      * Jeżeli test przejdzie pomyślnie, klucz licencyjny zostaje unieważniony.
@@ -16,14 +18,14 @@ class APIUtils
         if(empty($post["domain"]) || empty($post["secure_key"]))
             return ["suc" => 0, "desc" => "Sprawdź poprawność post'ów!"];
 
-        require_once(dirname(__DIR__)."/utils/validators/Validator.inc.php");
+
         $fields = ["domain","secure_key"];
         $validatorResponse = Validator::validate([$post["domain"],$post["secure_key"]],["s","s(128)"]);
         if($validatorResponse["suc"] == 0)
             return ["suc" => 0, "desc" => "Walidacja nie powiodła się dla pola \"{$fields[$validatorResponse["element_index"]]}\""];
 
         $website = APIUtils::getWebsite($post);
-        if(!$website->doesExists()) return ["suc" => 0, "desc" => "Nie znaleziono strony internetowej o podanej domenie!"];
+        if(!$website->doesExists()) return ["suc" => 0, "desc" => "Nie znaleziono strony o podanej domenie!"];
         if(!$website->isProperSecureKey($post["secure_key"])) return ["suc" => 0, "desc" => "Niepoprawny klucz zabezpieczenia!"];
         $website->invalidateSecureKey($post["secure_key"],$apiName);
         
