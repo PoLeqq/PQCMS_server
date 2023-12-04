@@ -1,5 +1,11 @@
 <?php
 
+// NAPISZE TUTAJ, BO JUŻ RAZ DOSTAŁEM MINDFUCKA...
+// zwraca wszystko true/false:
+// valid - czy poprawne (inny klucz, niż obecny || (outdated || validated) == 1)
+// outdated - czy przestarzały
+// invalidated - czy admin (klient/pqcms) zamknął sesję
+
 header('Content-Type: application/json; charset=utf-8');
 require_once(dirname(__DIR__, 2) . "/utils/APIUtils.php");
 
