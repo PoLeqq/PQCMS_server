@@ -3,7 +3,7 @@
 require_once(dirname(__DIR__)."/JSONObject.php");
 
 /**
- * Przedstawia dział "electrocms" w electrocms/config/config.json - dane o systemie
+ * Przedstawia dział "pqcms" w electrocms/config/config.json - dane o systemie
  */
 class JSONPQCMS extends JSONObject {
     function __construct() {
