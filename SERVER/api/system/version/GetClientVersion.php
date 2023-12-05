@@ -1,6 +1,6 @@
 <?php
 
-header('Content-Type: application/json');
+header('Content-Type: application/json; charset=utf-8');
 
 require_once(dirname(__DIR__, 2) . "/utils/APIUtils.php");
 $response = APIUtils::validatePost($_POST,basename(__FILE__));
