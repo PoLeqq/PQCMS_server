@@ -25,7 +25,7 @@ class APIUtils
             return ["suc" => 0, "desc" => "Walidacja nie powiodła się dla pola \"{$fields[$validatorResponse["element_index"]]}\""];
 
         $website = APIUtils::getWebsite($post);
-        if(!$website->doesExists()) return ["suc" => 0, "desc" => "Nie znaleziono strony o podanej domenie!"];
+        if(is_null($website) || !$website->doesExists()) return ["suc" => 0, "desc" => "Nie znaleziono strony o podanej domenie!"];
         if(!$website->isProperSecureKey($post["secure_key"])) return ["suc" => 0, "desc" => "Niepoprawny klucz zabezpieczenia!"];
         $website->invalidateSecureKey($post["secure_key"],$apiName);
         
@@ -42,7 +42,7 @@ class APIUtils
     public static function getWebsite($post): ?Website
     {
         $id = Website::getWebsiteIDByMatching("domain",$post["domain"]);
-        if($id == null) return null;
+        if(is_null($id)) return null;
 
         $website = new Website($id);
         if(!$website->doesExists()) return null;
