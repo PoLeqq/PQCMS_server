@@ -13,7 +13,7 @@
     <meta charset="UTF-8">
     <title>PQCMS - Panel Klienta</title>
 
-    <link rel="icon" type="image/x-icon" href="../../images/PQCMS.svg">
+    <link rel="icon" type="image/x-icon" href="../images/PQCMS.svg">
 
     <link rel="stylesheet" href="../../bs5/css/bootstrap.min.css">
     <link rel="stylesheet" href="../../default.css">
