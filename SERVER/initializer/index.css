@@ -1,3 +1,21 @@
+/*
+Style, które mają zastosowanie na każdej podstronie (navbar, pop-ups, scrollbar etc.)
+
+1. Główny kolor tła: #222222 (ciemnoszary)
+2. Nagłówki i wyróżnienia: #FFD700 (złoty)
+3. Tekst i zawartość: #FFFFFF (biały)
+4. Akcentowy kolor: #00BFFF (niebieski)
+5. Dodatkowy kolor 1: #FF4500 (pomarańczowy)
+6. Dodatkowy kolor 2: #8A2BE2 (fioletowy)
+*/
+
+@import url('https://fonts.googleapis.com/css2?family=Courier+Prime:ital@1&family=Nanum+Myeongjo&family=Roboto&display=swap');
+body {
+    background-color: #fff;
+    font-family: 'Roboto', sans-serif;
+    color: white;
+}
+
 form, div[class=result] {
     background-color: #333;
     padding: 30px;

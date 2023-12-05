@@ -6,7 +6,7 @@ unset($_SESSION["pqcms-initializer-error"]);
 unset($_SESSION["pqcms-initializer-success"]);
 
 if(!isset($_POST["pqcms-domain"]) || !isset($_POST["pqcms-username"]) || !isset($_POST["pqcms-license-key"]))
-    error("Przesłano niepoprawne wartości. Skontaktuj się z administratorem!");
+    error("Przesłano niepoprawne wartości. Skontaktuj się z administratorem PQCMS!");
 
 if(empty($_POST["pqcms-domain"]) || empty($_POST["pqcms-username"]) || empty($_POST["pqcms-license-key"]))
     error("Uzupełnij wszystkie pola!");
