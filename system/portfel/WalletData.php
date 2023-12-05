@@ -3,7 +3,7 @@
     const WALLET_FILEPATH = __DIR__."/data.json";
 
     /**
-     * Klasa umożliwiająca operację na obiekcie o podanej nazwie z pliku electrocms/config/config.json
+     * Klasa umożliwiająca operację na obiekcie o podanej nazwie z pliku pqcms/config/files/config.json
      */
     class WalletData {
         /**

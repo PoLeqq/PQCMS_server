@@ -12,7 +12,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portfel - ElectroCMS</title>
+    <title>Portfel - PQCMS</title>
 
     <link rel="stylesheet" href="../../bs5/css/bootstrap.min.css">
     <link rel="stylesheet" href="../../default.css">
@@ -130,7 +130,7 @@
                         <td>Imię</td>
                         <td>Nazwisko</td>
                         <td>Reputacja</td>
-                        <td><abbr title="<p><b>Ogólnie:</b> Super pracownik, na prawdę przykłada się do rozwoju ElectroCMS</p><p>**[-]** Zjadł cukierka po kryjomu, aby nikogo nie częstować</p>" class="initialism">Opis</abbr></td>
+                        <td><abbr title="<p><b>Ogólnie:</b> Super pracownik, na prawdę przykłada się do rozwoju PQCMSCMS</p><p>**[-]** Zjadł cukierka po kryjomu, aby nikogo nie częstować</p>" class="initialism">Opis</abbr></td>
                         <td>Godziny</td>
                         <td>Wynagrodzenie</td>
                     </tr>
