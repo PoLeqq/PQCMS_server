@@ -1,4 +1,5 @@
 <?php
+// todo dodanie sprawdzania z ustawieniem: login_attempts, auth_key_lifespan (ten do dodania)
 header('Content-Type: application/json; charset=utf-8');
 require_once(dirname(__DIR__,2)."/utils/APIUtils.php");
 

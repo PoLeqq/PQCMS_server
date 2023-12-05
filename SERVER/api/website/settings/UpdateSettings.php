@@ -13,6 +13,11 @@ if((!isset($_POST["login_count"]) && empty($_POST["login_count_reset"])) || (!is
 require_once(dirname(__DIR__,3)."/objects/Website.inc.php");
 $website = APIUtils::getWebsite($_POST);
 
+//if(!Validator::validate($_POST["auth_key"],["s(128)"])["suc"])
+//    die(json_encode(["suc" =>]))
+
+require_once(dirname(__DIR__,3)."/objects/website/AuthKey.inc.php");
+AuthKey::isAdminAuthKey($website->getId(),$_POST["auth_key"]);
 $settings = $website->getSettings();
 if(!empty($_POST["login_count_reset"])) $settings->resetLoginAttempts();
 else $settings->setLoginAttempts($_POST["login_count"]);

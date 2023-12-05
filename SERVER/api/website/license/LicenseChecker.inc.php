@@ -1,7 +1,5 @@
 <?php
 
-header("Content-Type: application/json; charset=utf-8");
-
 require_once(dirname(__DIR__, 3) . "/objects/Website.inc.php");
 function getTries($ip): int
 {
@@ -47,33 +45,38 @@ function checkLicense($remoteAddr, $httpReferer, $domain, $login, $license_key):
     if (isset($referer["host"]))
         $requestDomain = $referer["host"];
 
-    $clientServerIps = gethostbynamel($domain);
-
     if (isBanned($remoteAddr)) {
         addCheckLicenseHistory($remoteAddr, $requestDomain, $domain, $login, $license_key, false, "To IP jest zablokowane!");
 
-//        usunięcie sesji logowania (auth key)
-        $conn =  Connection::getConnection();
+//        TODO usunięcie sesji logowania (auth key)
+        $conn = Connection::getConnection();
+//        $conn->query("UPDATE");
 
 
         return ["suc" => 0, "desc" => "To IP jest zablokowane!"];
     }
 
-//        Tutaj jest jak podana domena (przez klienta i u nas) nie istnieje 😲 Jak to możliwe? Może się nigdy nie zdarzy :p
-    if ($clientServerIps === false) {
-        addCheckLicenseHistory($remoteAddr, $requestDomain, $domain, $login, $license_key, false, "Nieprawidłowa nazwa hosta.");
-        return ["suc" => 0, "desc" => "Nieprawidłowa nazwa hosta."];
-    }
+    if($domain !== "localhost.localhost")
+    {
+        $clientServerIps = gethostbynamel($domain);
+    //        Tutaj jest jak podana domena (przez klienta i u nas) nie istnieje 😲 Jak to możliwe? Może się nigdy nie zdarzy :p
+
+        if ($clientServerIps === false) {
+            addCheckLicenseHistory($remoteAddr, $requestDomain, $domain, $login, $license_key, false, "Nieprawidłowa nazwa hosta.");
+            return ["suc" => 0, "desc" => "Nieprawidłowa nazwa hosta."];
+        }
 
 //        TODO do wywalenia
-    $clientServerIps[] = "::1";
+//    $clientServerIps[] = "::1";
 
-    if (!in_array($remoteAddr, $clientServerIps)) {
+
+        if (!in_array($remoteAddr, $clientServerIps)) {
 //        do logów sk..syna XD
 //        nie ma nic za darmo, niech płaci
-        addCheckLicenseHistory($remoteAddr, $requestDomain, $domain, $login, $license_key, false, "SCAM? Nieprawidłowa nazwa hosta. Czy na pewno masz pliki na odpowiednim serwerze?");
-        return ["suc" => 0, "desc" => "Nieprawidłowa nazwa hosta. Czy na pewno masz pliki na odpowiednim serwerze?"];
+            addCheckLicenseHistory($remoteAddr, $requestDomain, $domain, $login, $license_key, false, "SCAM? Nieprawidłowa nazwa hosta. Czy na pewno masz pliki na odpowiednim serwerze?");
+            return ["suc" => 0, "desc" => "Nieprawidłowa nazwa hosta. Czy na pewno masz pliki na odpowiednim serwerze?"];
 //        return["suc" => 0, "desc" => "Nieprawidłowa nazwa hosta. Czy na pewno masz pliki na odpowiednim serwerze? DEBUG: TwojeIP:".$remoteAddr.";ZnalezioneIP:".join(",",$clientServerIps)];
+        }
     }
 
     $websiteID = Website::getWebsiteIDByMatching("domain", $domain);
@@ -92,6 +95,12 @@ function checkLicense($remoteAddr, $httpReferer, $domain, $login, $license_key):
         addCheckLicenseHistory($remoteAddr, $requestDomain, $domain, $login, $license_key, false, "Niepoprawny klucz");
         return (["suc" => 0, "desc" => "Autoryzacja nie powiodła się.", "tries_left" => getTries($remoteAddr)]);
     }
+
+    if($website->isBlocked()) {
+        addCheckLicenseHistory($remoteAddr, $requestDomain, $domain, $login, $license_key, false, "Strona zablokowana");
+        return (["suc" => 0, "desc" => "Strona jest zablokowana.", "tries_left" => getTries($remoteAddr)]);
+    }
+
 
     $licenseExpiration = $website->getLicenseExpiration();
 
