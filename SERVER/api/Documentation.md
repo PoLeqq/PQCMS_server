@@ -251,8 +251,10 @@ Gdzie:
   }
   ```
   **"resp"** — response, zwraca wartość 1|0
-- 1 - admin strony instnieje
-- 0 - admin strony nie instnieje 
+  - 1 - admin strony instnieje
+  - 0 - admin strony nie instnieje
+
+  Dla suc = 0 zwraca również **"desc": "opis"**, gdzie opis to opis błędu licencji 
 </details>
 
 ### LoginUser
@@ -338,7 +340,7 @@ Gdzie:
   {
     "suc": 1,
     "resp": 0,
-    "desc": "Nie przesłano klucza uwierzytelniającego!",
+    "desc": "Nie przesłano klucza uwierzytelniającego!"
   }
 ```
 </details>
