@@ -49,7 +49,7 @@ function checkLicense($remoteAddr, $httpReferer, $domain, $login, $license_key):
         addCheckLicenseHistory($remoteAddr, $requestDomain, $domain, $login, $license_key, false, "To IP jest zablokowane!");
 
 //        TODO usunięcie sesji logowania (auth key)
-        $conn = Connection::getConnection();
+//        $conn = Connection::getConnection();
 //        $conn->query("UPDATE");
 
 
@@ -61,7 +61,8 @@ function checkLicense($remoteAddr, $httpReferer, $domain, $login, $license_key):
         $clientServerIps = gethostbynamel($domain);
     //        Tutaj jest jak podana domena (przez klienta i u nas) nie istnieje 😲 Jak to możliwe? Może się nigdy nie zdarzy :p
 
-        if ($clientServerIps === false) {
+        if($clientServerIps === false)
+        {
             addCheckLicenseHistory($remoteAddr, $requestDomain, $domain, $login, $license_key, false, "Nieprawidłowa nazwa hosta.");
             return ["suc" => 0, "desc" => "Nieprawidłowa nazwa hosta."];
         }
@@ -69,8 +70,8 @@ function checkLicense($remoteAddr, $httpReferer, $domain, $login, $license_key):
 //        TODO do wywalenia
 //    $clientServerIps[] = "::1";
 
-
-        if (!in_array($remoteAddr, $clientServerIps)) {
+        if(!in_array($remoteAddr, $clientServerIps))
+        {
 //        do logów sk..syna XD
 //        nie ma nic za darmo, niech płaci
             addCheckLicenseHistory($remoteAddr, $requestDomain, $domain, $login, $license_key, false, "SCAM? Nieprawidłowa nazwa hosta. Czy na pewno masz pliki na odpowiednim serwerze?");
