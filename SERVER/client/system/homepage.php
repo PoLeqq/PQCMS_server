@@ -1,107 +1,219 @@
-<!DOCTYPE html>
-<html lang="pl">
+<!doctype html>
+<html lang="pl-PL">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <title>PQCMS - Homepage for clients</title>
-    <!-- <link rel="stylesheet" href="../default.css"> -->
+    <title>Panel klienta | PQCMS</title>
+    <meta name="description" content="Oficjalna strona systemu PQCMS">
+    <meta name="keywords" content="">
+    <meta name="author" content='Wiktor "PoLeq" Soliński'>
+    <meta http-equiv="X-Ua-Compatible" content="IE=edge">
+    <link rel="icon" type="image/x-icon" href="../../../images/PQCMS.svg">
+
+    <link rel="stylesheet" href="../../../bs5/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../../../default.css">
+    <link rel="stylesheet" href="../../../index.css">
     <link rel="stylesheet" href="homepage.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400&display=swap" rel="stylesheet">
+
+    <meta content="PQCMS" property="og:title" />
+    <meta content="Prosty a zarazem szybki i niezawodny system CMS, który jest ciągle rozwijany!" property="og:description" />
+    <!-- <meta content="https://poleq.pl/" property="og:url" /> -->
+    <!-- <meta content="https://poleq.pl/img/trex.jpg" property="og:image" /> -->
+    <!-- <meta content="#6204dd" config-react-helmet="true" name="theme-color" /> -->
+
 </head>
 <body>
-    <h1>PQCMS</h1>
-    <section>
-        <p>
-            <b>Witaj w głównym panelu systemu! Bardzo cieszymy się, że korzystasz z naszysz usług. Naszym priorytetem jest, aby PQCMS był najwydajniejszy,
-            a jednocześnie spełniał wszystkie warunki bezpieczeństwa.</b> Tutaj jeszcze jakieś inne bzdury ładnie wyglądające.
 
-        </p>
-    </section>
-    <section>
-        <h2>Aktualizacja:</h2>
-        <span class="updade ok">System zaaktualizowany do najnowszej wersji!</span><br>
-        <span class="updade required">Musisz zaaktualizować system!</span>
-    </section>
-    <section>
-        <h2>Nowości</h2>
-        Dodano:
-        <ul>
-            <li>x</li>
-            <li>d</li>
-        </ul>
-        Usunięto:
-        <ul>
-            <li>u</li>
-            <li>w</li>
-            <li>u</li>
-        </ul>
-        Zmieniono:
-        <ul>
-            <li>l</li>
-            <li>o</li>
-            <li>l</li>
-        </ul>
-    </section>
+<noscript>
+    UWAGA! Korzystanie ze strony z wyłączonym JavaScriptem uniemożliwia korzystanie ze strony w pełni pięknej i funkcjonalnej! Rób jak uważasz!
+</noscript>
 
-    <section>
-        <h2>Nowości</h2>
-        Dodano:
-        <ul>
-            <li>x</li>
-            <li>d</li>
-        </ul>
-        Usunięto:
-        <ul>
-            <li>u</li>
-            <li>w</li>
-            <li>u</li>
-        </ul>
-        Zmieniono:
-        <ul>
-            <li>l</li>
-            <li>o</li>
-            <li>l</li>
-        </ul>
-    </section>
-    <section>
-        <h2>Nowości</h2>
-        Dodano:
-        <ul>
-            <li>x</li>
-            <li>d</li>
-        </ul>
-        Usunięto:
-        <ul>
-            <li>u</li>
-            <li>w</li>
-            <li>u</li>
-        </ul>
-        Zmieniono:
-        <ul>
-            <li>l</li>
-            <li>o</li>
-            <li>l</li>
-        </ul>
-    </section>
-    <section>
-        <h2>Nowości</h2>
-        Dodano:
-        <ul>
-            <li>x</li>
-            <li>d</li>
-        </ul>
-        Usunięto:
-        <ul>
-            <li>u</li>
-            <li>w</li>
-            <li>u</li>
-        </ul>
-        Zmieniono:
-        <ul>
-            <li>l</li>
-            <li>o</li>
-            <li>l</li>
-        </ul>
-    </section>
+<div id="site-container">
+
+    <nav class="navbar navbar-expand-lg navbar-dark">
+
+        <div class="container-fluid px-5">
+
+            <a id="main-link" class="navbar-brand fs-2 link-nav" href="#">
+                Panel PQCMS
+                <img src="../../../images/PQCMS.svg" alt="logo">
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
+
+                <ul class="navbar-nav mb-2 mb-lg-0 fs-4">
+
+                    <li class="nav-item link-nav">
+                        <a class="nav-link" href="#zalety">Pomoc</a>
+                    </li>
+
+                    <li class="nav-item link-nav">
+                        <a class="nav-link" aria-current="page" href="#projekt">Zgłoszenie</a>
+                    </li>
+
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div id="site">
+        <div id="start" class="block-background">
+            <div class="col-10 offset-1 p-5 block-foreground">
+                <section>
+                    <h1 class="mb-4">Wybierz akcję</h1>
+                    <i>Szukasz czegoś innego? Zjedź niżej!</i>
+                    <div class="row gx-5 mt-4">
+                        <div class="pqcms-action col m-3 p-3">
+                            <div class="pqcms-action-content">
+                                <h2>Pomoc</h2>
+                                Ta sekcja jest potrzebna, gdy nie wiesz jak coś zrobić lub nie do końca rozumiesz np.
+                                funkcjonalność programu. Nasz zespół pomocy technicznej jest zawsze do usług!
+                            </div>
+                            <a href="report/help.php" class="mt-2">
+                                <div class="pqcms-action-button">
+                                    Utwórz zgłoszenie
+                                </div>
+                            </a>
+                        </div>
+                        <div class="pqcms-action col m-3 p-3">
+                            <div class="pqcms-action-content">
+                                <h2>Błąd</h2>
+                                Gdy w systemie znajdzie się błąd, jak najszybciej go zgłoś! Bezpieczeństwo oraz wygoda
+                                użytkowania to priorytety systemu PQCMS.
+                            </div>
+                            <a href="report/bug.php" class="mt-2">
+                                <div class="pqcms-action-button">
+                                    Utwórz zgłoszenie
+                                </div>
+                            </a>
+                        </div>
+                        <div class="pqcms-action col m-3 p-3">
+                            <div class="pqcms-action-content">
+                                <h2>Propozycja</h2>
+                                Uważasz, że coś powinno działać w inny sposób lub masz nowy pomysł jak rozwinąć
+                                system? Jesteśmy do usług! Ważne jest dla nas, aby to klienci byli zadowoleni
+                                z użytkowania systemu.
+                            </div>
+                            <a href="report/suggestion.php" class="mt-2">
+                                <div class="pqcms-action-button">
+                                    Utwórz zgłoszenie
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </section>
+            </div>
+            <div class="wave">
+                <img src="../../../images/wave1.svg" alt="fala">
+            </div>
+        </div>
+        <div class="block2-background">
+            <div class="block2-foreground">
+                <section id="zalety" class="d-flex flex-column justify-content-center align-items-center">
+                    <h1>Zalety</h1>
+                    <div class="col-12 my-5">
+                        <div class="row col-12 p-5">
+                            <div class="col-6 d-flex justify-content-center align-items-center flex-column">
+                                <h3>Prostota</h3>
+                                Od użytkowników systemu nie wymaga się żadnej specjalistycznej wiedzy - panel administracyjny jest intuicyjny, a co za tym idzie - prosty w obsłudze.
+                                Łatwość w zarządzaniu stroną internetową jest dla nas priotytetem.
+                            </div>
+
+                            <div class="col-6 d-flex justify-content-center align-items-center flex-column">
+                                <h3>Wspierany projekt</h3>
+                                Nasz system jest ciągle wspierany oraz aktualizowany.
+                            </div>
+                        </div>
+                        <div class="row col-12 px-5">
+                            <div class="col-6 d-flex justify-content-center align-items-center flex-column">
+                                <h3>Pomoc techniczna</h3>
+                                coś tam jest team jest super
+                            </div>
+
+                            <div class="col-6 d-flex justify-content-center align-items-center flex-column">
+                                <h3>Bezpieczeństwo</h3>
+                                Program korzysta z wielu funkcjonalności zabezpieczających.
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <div class="block-background">
+            <div class="wave_reversed">
+                <img src="../../../images/wave2.svg" alt="fala">
+            </div>
+            <div class="col-8 offset-3 p-5 block-foreground">
+                <div class="block-foreground">
+                    <section id="projekt">
+                        <h1>O projekcie</h1>
+                        <div class="col-12 d-flex justify-content-center align-items-center my-5">
+                            dlaczego powstał projekt
+                        </div>
+                    </section>
+                </div>
+            </div>
+            <div class="wave">
+                <img src="../../../images/wave3.svg" alt="fala">
+            </div>
+        </div>
+
+        <div class="block2-background">
+            <div class="block2-foreground">
+                <section id="koszty" class="col-10 offset-1">
+                    <h1>Koszty</h1>
+                    <h5>Pierwszy miesiąc licencji jest zawsze bezpłatny, aby nasi klienci mogli przetestować system</h5>
+                    <div class="col-12 d-flex justify-content-center my-4 flex-column">
+                        Do kosztów strony wlicza się:
+                        <ul>
+                            <li>
+                                <b>~500zł - Wykonanie strony internetowej</b>
+                            </li>
+                            <li>
+                                <b>50zł miesięcznie - Miesięczna licencja PQCMS</b> (opcjonalnie)
+                            </li>
+                            <li>
+                                <b>
+                                    ~100zł rocznie -
+                                    <div class="tooltip">Domena
+                                        <span class="tooltiptext">np. google.com , youtube.com</span>
+                                    </div>
+                                </b>
+                                (w zależności od dostawcy)
+                            </li>
+                            <li>
+                                <b>
+                                    ~90-345zł rocznie -
+                                    <div class="tooltip">Hosting
+                                        <span class="tooltiptext">jest to serwer, który odpowiada za funkcjonowanie strony internetowej</span>
+                                    </div>
+                                </b>
+                                (w zależności od dostawcy oraz wymagań)
+                            </li>
+
+                        </ul>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <footer class="d-flex justify-content-center align-items-center hei">
+        PQCMS &copy Wszelkie prawa zastrzeżone
+    </footer>
+</div>
+
+<script src="../../../bs5/js/bootstrap.min.js"></script>
 </body>
 </html>
+<!--            <b>Witaj w głównym panelu systemu! Bardzo cieszymy się, że korzystasz z naszysz usług. Naszym priorytetem jest, aby PQCMS był najwydajniejszy,-->
+<!--            a jednocześnie spełniał wszystkie warunki bezpieczeństwa.</b> Tutaj jeszcze jakieś inne bzdury ładnie wyglądające.-->

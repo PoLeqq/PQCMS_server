@@ -1,11 +1,26 @@
-body {
-    padding: 10px;
+.pqcms-action {
+    border: 3px solid black;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
-.ok {
-    color: green;
+.pqcms-action > a {
+    width: 100%;
+    display: flex;
+    justify-content: center;
 }
 
-.required {
-    color: red;
+.pqcms-action > a:hover {
+    text-decoration: none;
+}
+
+.pqcms-action-button {
+    width: 90%;
+    height: 35px;
+    background: #0d6efd;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
