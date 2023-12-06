@@ -104,7 +104,7 @@ class Website
         return WebsiteAdmin::unsafe_addWebsiteAdmin($this->id,$username,$nickname,$password);
     }
 
-    public function addUser(string $username, string $nickname, string $password, array $perms, bool $disabled): int
+    public function addUser(string $username, string $nickname, string $password, array $perms, bool $disabled): array
     {
         require_once(dirname(__DIR__) . "/objects/website/WebsiteUser.inc.php");
         return WebsiteUser::unsafe_addWebsiteUser($this->id,$username,$nickname,$password, $perms, $disabled);
