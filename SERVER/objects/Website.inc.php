@@ -41,6 +41,25 @@ class Website
         return $this->getField("blocked");
     }
 
+    public function isExpired(): bool
+    {
+        $licenseExpiration = $this->getLicenseExpiration();
+
+        if($licenseExpiration == null)
+            return false;
+
+        $licenseTime = strtotime($licenseExpiration);
+
+        date_default_timezone_set('Europe/Warsaw');
+        $nowTime = strtotime(date("Y-m-d H:i:s"));
+
+        var_dump($nowTime);
+        var_dump($licenseTime);
+
+        if($nowTime >= $licenseTime) return true;
+        return false;
+    }
+
     public function doesExists(): bool
     {
         return !is_null($this->getField("id"));
@@ -246,6 +265,7 @@ class Website
 
     public static function getWebsiteIDByMatching($column,$value): ?int
     {
+//        TODO unsafe
         $conn = Connection::getConnection();
         $result = $conn->query("SELECT id FROM websites WHERE $column = '$value'");
 
