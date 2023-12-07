@@ -9,11 +9,11 @@
     <meta name="keywords" content="">
     <meta name="author" content='Wiktor "PoLeq" Soliński'>
     <meta http-equiv="X-Ua-Compatible" content="IE=edge">
-    <link rel="icon" type="image/x-icon" href="../../../images/PQCMS.svg">
+    <link rel="icon" type="image/x-icon" href="../../images/PQCMS.svg">
 
-    <link rel="stylesheet" href="../../../bs5/css/bootstrap.min.css">
-    <link rel="stylesheet" href="../../../default.css">
-    <link rel="stylesheet" href="../../../index.css">
+    <link rel="stylesheet" href="../../bs5/css/bootstrap.min.css">
+    <link rel="stylesheet" href="default.css">
+    <link rel="stylesheet" href="index.css">
     <link rel="stylesheet" href="homepage.css">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -41,7 +41,7 @@
 
             <a id="main-link" class="navbar-brand fs-2 link-nav" href="#">
                 Panel PQCMS
-                <img src="../../../images/PQCMS.svg" alt="logo">
+                <img src="../../images/PQCMS.svg" alt="logo">
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -112,7 +112,7 @@
                 </section>
             </div>
             <div class="wave">
-                <img src="../../../images/wave1.svg" alt="fala">
+                <img src="../../images/wave1.svg" alt="fala">
             </div>
         </div>
         <div class="block2-background">
@@ -150,7 +150,7 @@
 
         <div class="block-background">
             <div class="wave_reversed">
-                <img src="../../../images/wave2.svg" alt="fala">
+                <img src="../../images/wave2.svg" alt="fala">
             </div>
             <div class="col-8 offset-3 p-5 block-foreground">
                 <div class="block-foreground">
@@ -163,7 +163,7 @@
                 </div>
             </div>
             <div class="wave">
-                <img src="../../../images/wave3.svg" alt="fala">
+                <img src="../../images/wave3.svg" alt="fala">
             </div>
         </div>
 
@@ -212,7 +212,7 @@
     </footer>
 </div>
 
-<script src="../../../bs5/js/bootstrap.min.js"></script>
+<script src="../../bs5/js/bootstrap.min.js"></script>
 </body>
 </html>
 <!--            <b>Witaj w głównym panelu systemu! Bardzo cieszymy się, że korzystasz z naszysz usług. Naszym priorytetem jest, aby PQCMS był najwydajniejszy,-->

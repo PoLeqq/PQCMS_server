@@ -1,0 +1,44 @@
+.block-background, .block2-background {
+    width: 100%;
+}
+
+.block-background {
+    /* background: linear-gradient(135deg, #8a2be2,#793ee6,#00bfff); */
+    /* animation: block-background 5s infinite ease-in-out; */
+    background: linear-gradient(135deg, #8a2be2, #793ee6, #00bfff,#8a2be2);
+    background-size: 400% 400%;
+    animation: block-background 30s ease-in-out infinite;
+    padding: 100px 0;
+}
+
+.block-foreground {
+    background-color: #fff;
+    color: black;
+}
+
+.block2-background {
+    padding: 3vh 10vw;
+}
+
+@keyframes block-background {
+    0% {
+        background-position: 0 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0 50%;
+    }
+}
+
+.wave {
+    position: relative;
+    top: 100px;
+}
+
+.wave_reversed {
+    transform: rotate(180deg);
+    position: relative;
+    top: -100px;
+}
