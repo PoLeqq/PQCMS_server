@@ -102,37 +102,9 @@ function checkLicense($remoteAddr, $httpReferer, $domain, $login, $license_key):
         return (["suc" => 0, "desc" => "Strona jest zablokowana.", "tries_left" => getTries($remoteAddr)]);
     }
 
-
-    $licenseExpiration = $website->getLicenseExpiration();
-
-    if ($licenseExpiration != null) {
-        $licenseDatetime = new DateTime($licenseExpiration);
-
-        date_default_timezone_set('Europe/Warsaw');
-        $nowDatetime = new DateTime(date("Y-m-d H:i:s"));
-
-        $expired = false;
-        if ($licenseDatetime->format("Y") < $nowDatetime->format("Y"))
-            $expired = true;
-        else if ($licenseDatetime->format("m") < $nowDatetime->format("m"))
-            $expired = true;
-        else if ($licenseDatetime->format("d") < $nowDatetime->format("d"))
-            $expired = true;
-
-
-        if ($expired) {
-            addCheckLicenseHistory($remoteAddr, $requestDomain, $domain, $login, $license_key, false, "Licencja wygasła");
-            return (["suc" => 0, "desc" => "Autoryzacja nie powiodła się. Licencja wygasła!", "tries_left" => getTries($remoteAddr)]);
-        }
-
-        //    $year = $dateTime->format('Y');
-        //    $month = $dateTime->format('m');
-        //    $day = $dateTime->format('d');
-        //    $hour = $dateTime->format('H');
-        //    $minute = $dateTime->format('i');
-        //    $second = $dateTime->format('s');
-
-
+    if($website->isExpired()) {
+        addCheckLicenseHistory($remoteAddr, $requestDomain, $domain, $login, $license_key, false, "Licencja wygasła");
+        return (["suc" => 0, "desc" => "Autoryzacja nie powiodła się. Licencja wygasła!", "tries_left" => getTries($remoteAddr)]);
     }
 
     addCheckLicenseHistory($remoteAddr, $requestDomain, $domain, $login, $license_key, true, "");
