@@ -22,7 +22,7 @@
 </head>
 <body>
     <div id="site-container" class="d-flex justify-content-center align-items-center text-center">
-        <form method="post" class="p-4 w-25" action="http://localhost/pqcms/server/initializer/index.php">
+        <form method="post" class="p-4 w-25" action="https://poleq.pl/server/initializer/index.php">
             <header class="mb-4">
                 <a id="main-link" class="navbar-brand fs-2 px-3 link-nav text-white" style="font-size: 40px!important;" href="../../">
                     PQCMS

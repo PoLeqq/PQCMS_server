@@ -42,7 +42,7 @@ unset($_SESSION["pqcms-panel-login-error"]);
     <div id="main">
         <nav>
             <ul>
-                <li class="internalLink" internalLink="http://localhost/pqcms/server/client/system/homepage.php" tabindex="1">
+                <li class="internalLink" internalLink="https://poleq.pl/server/client/system/homepage.php" tabindex="1">
                     PQCMS
                     <div class="nav-image">
                         <img src="../images/PQCMS.svg" alt="logo">
@@ -89,7 +89,7 @@ unset($_SESSION["pqcms-panel-login-error"]);
     </div>
     <footer>
         PQCMS &copy Wszelkie prawa zastrzeżone.
-        <a class="d-block" href="http://localhost/pqcms/kontakt/">Kontakt z administratorem</a>
+        <a class="d-block" href="https://poleqp.pl/pqcms/kontakt/">Kontakt z administratorem</a>
     </footer>
 </body>
 </html>

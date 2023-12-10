@@ -22,7 +22,7 @@ if(empty($_SESSION["pqcms-logged_out"]))
     <div id="site-container" class="d-flex justify-content-center align-items-center text-center">
         <div class="result">
             <header class="mb-4">
-                <a id="main-link" class="navbar-brand fs-2 px-3 link-nav text-white" style="font-size: 40px!important;" href="http://localhost/pqcms/">
+                <a id="main-link" class="navbar-brand fs-2 px-3 link-nav text-white" style="font-size: 40px!important;" href="https://poleq.pl/pqcms/">
                     PQCMS
                     <img src="../../../images/PQCMS.svg" alt="logo">
                 </a>
