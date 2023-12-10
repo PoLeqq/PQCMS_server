@@ -53,9 +53,6 @@ class Website
         date_default_timezone_set('Europe/Warsaw');
         $nowTime = strtotime(date("Y-m-d H:i:s"));
 
-        var_dump($nowTime);
-        var_dump($licenseTime);
-
         if($nowTime >= $licenseTime) return true;
         return false;
     }
@@ -142,6 +139,62 @@ class Website
         return $result;
     }
 
+    /**
+     * Funkcja do wewnętrznego logowania użytkownika (używana do logowania na serwerach PQCMS). Nie działa na sesjach
+     * auth_key, przez co jest jedynie dozwolone na wspomnianych wcześnej serwerach PQCMS.
+     * @param string $ip ip
+     * @param string $username nazwa użytkownika
+     * @param string $password hasło
+     * @return array response
+     */
+    public function internalLoginUser(string $ip, string $username, string $password): array
+    {
+        $conn = Connection::getConnection();
+        $query = $conn->query("SELECT id, password FROM websites_admins 
+                    WHERE website_id = $this->id 
+                      AND username = '$username'");
+        if($query->num_rows == 0)
+        {
+            $query = $conn->query("SELECT id, password FROM websites_users 
+                    WHERE website_id = $this->id 
+                      AND username = '$username' 
+                      AND disabled = 0");
+
+            if($query->num_rows != 0)
+            {
+                $row = $query->fetch_assoc();
+                $result = $this->internalLoginUserGetResponse($row,$ip,$password,false);
+                if($result["suc"] == 1)
+                {
+                    $result["admin"] = 0;
+                    $result["id"] = (int) $row["id"];
+                }
+                $this->logUserLogin($ip,$username,$password,$result["proper_data"],$result["suc"]);
+            }
+            else
+            {
+                $result = ["suc" => 0, "desc" => "Niepoprawne dane logowania."];
+                $this->logUserLogin($ip,$username,$password,false,false);
+            }
+        }
+        else
+        {
+            $row = $query->fetch_assoc();
+            $result = $this->internalLoginUserGetResponse($row, $ip, $password, true);
+            if($result["suc"] == 1)
+            {
+                $result["admin"] = 1;
+                $result["id"] = (int) $row["id"];
+            }
+            $this->logUserLogin($ip, $username, $password, $result["proper_data"], $result["suc"]);
+        }
+
+        $query->close();
+        $conn->close();
+
+        return $result;
+    }
+
     public function loginUser(string $ip, string $username, string $password): array
     {
         $conn = Connection::getConnection();
@@ -193,6 +246,13 @@ class Website
         return true;
     }
 
+    private function internalLoginUserGetResponse($row,$ip,$password,$adminAccount): array
+    {
+        if(password_verify($password, $row["password"]))
+            return ["suc" => 1, "proper_data" => 1];
+        else return ["suc" => 0, "proper_data" => 0];
+    }
+
     private function loginUserGetResponse($row,$ip,$password,$adminAccount): array
     {
         if(password_verify($password, $row["password"]))
@@ -202,8 +262,7 @@ class Website
             if($authKey === "") return ["suc" => 0, "proper_data" => 1, "desc" => "Sesja tego konta jest już aktywna! (jeżeli uważasz, że to błąd, jak najszybciej skontaktuj się z administratorem!)", "auth_key" => ""];
             return ["suc" => 1, "proper_data" => 1, "desc" => "Pomyślnie zalogowano!", "auth_key" => $authKey];
         }
-        else
-            return ["suc" => 0, "proper_data" => 0, "desc" => "Niepoprawne dane logowania."];
+        else return ["suc" => 0, "proper_data" => 0, "desc" => "Niepoprawne dane logowania."];
     }
 
     private function logUserLogin(string $ip, string $username, string $password, bool $properData, bool $logged): void
