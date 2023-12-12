@@ -139,6 +139,34 @@ class Website
         return $result;
     }
 
+    public function hasPermission(string $remoteAddr, string $authKey): array
+    {
+        require_once(dirname(__DIR__)."/objects/website/AuthKey.inc.php");
+        if(!AuthKey::isValidAuthKeyByIp($this->id,$remoteAddr,$authKey))
+            return ["suc" => 0, "desc" => "Klucz bezpieczeństwa jest niepoprawny!"];
+
+        $conn = Connection::getConnection();
+        $query = $conn->query("SELECT admin_id, user_id FROM websites_auth_keys 
+                         WHERE auth_key = '$authKey' 
+                           AND website_id = $this->id");
+//        raczej się nie wydarzy, ale na wszelki wypadek
+        if($query->num_rows === 0)
+            $resp = ["suc" => 0, "desc" => "Klucz bezpieczeństwa jest niepoprawny!"];
+        else
+        {
+            $row = $query->fetch_row();
+            if(!is_null($row[0]))
+                $resp = ["suc" => 1];
+            else
+//                jakieś sprawdzenie fajne permisji, na razie user nie ma do niczego dostępu, admin ma do wszystkiego
+                $resp = ["suc" => 0, "desc" => "Nie masz permisji!"];
+        }
+
+        $query->close();
+        $conn->close();
+        return $resp;
+    }
+
     /**
      * Funkcja do wewnętrznego logowania użytkownika (używana do logowania na serwerach PQCMS). Nie działa na sesjach
      * auth_key, przez co jest jedynie dozwolone na wspomnianych wcześnej serwerach PQCMS.
@@ -163,7 +191,7 @@ class Website
             if($query->num_rows != 0)
             {
                 $row = $query->fetch_assoc();
-                $result = $this->internalLoginUserGetResponse($row,$ip,$password,false);
+                $result = $this->internalLoginUserGetResponse($row,$password);
                 if($result["suc"] == 1)
                 {
                     $result["admin"] = 0;
@@ -180,7 +208,7 @@ class Website
         else
         {
             $row = $query->fetch_assoc();
-            $result = $this->internalLoginUserGetResponse($row, $ip, $password, true);
+            $result = $this->internalLoginUserGetResponse($row, $password);
             if($result["suc"] == 1)
             {
                 $result["admin"] = 1;
@@ -246,10 +274,9 @@ class Website
         return true;
     }
 
-    private function internalLoginUserGetResponse($row,$ip,$password,$adminAccount): array
+    private function internalLoginUserGetResponse(array $row, string $password): array
     {
-        if(password_verify($password, $row["password"]))
-            return ["suc" => 1, "proper_data" => 1];
+        if(password_verify($password, $row["password"])) return ["suc" => 1, "proper_data" => 1];
         else return ["suc" => 0, "proper_data" => 0];
     }
 
