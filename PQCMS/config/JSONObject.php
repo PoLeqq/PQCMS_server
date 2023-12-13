@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Klasa umożliwiająca operację na obiekcie o podanej nazwie z pliku electrocms/config/config.json
+ * Klasa umożliwiająca operację na obiekcie o podanej nazwie z pliku pqcms/config/files/config.json
  */
 class JSONObject
 {
@@ -19,7 +19,7 @@ class JSONObject
     protected string $name;
 
     /**
-     * Pobiera plik electrocms/config/$name.json i zwraca obiekt o podanej nazwie
+     * Pobiera plik pqcms/config/files/$name.json i zwraca obiekt o podanej nazwie
      * $name - nazwa modułu (głównego elementu w JSONie)
      * $dir - nazwa pliku
      */
