@@ -1,3 +1,14 @@
+<?php
+
+session_start();
+if(empty($_SESSION["pqcms-client-system-user_id"]))
+{
+    $_SESSION["pqcms-client-system-login_redirect"] = "help";
+    header("location: ../login/");
+    die("Najpierw się zaloguj. Niepoprawne przekierowanie!");
+}
+
+?>
 <!doctype html>
 <html lang="pl-PL">
 <head>
