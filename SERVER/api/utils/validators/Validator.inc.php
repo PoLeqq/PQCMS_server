@@ -57,7 +57,7 @@ class Validator
      *  ```
      * gdzie:
      * <ul>
-     *     <li>s — int: 0 lub 1 (1 - walidacja przebiegła pomyślnie</li>
+     *     <li>s — int: 0 lub 1 (1 - walidacja przebiegła pomyślnie)</li>
      *     <li>d — string: opis błędu, sukcesu</li>
      *     <li>i — int: indeks elementu, w którym zaszedł błąd. <b>UWAGA!</b> Nie występuje on w każdym returnie</li>
      * </ul>
