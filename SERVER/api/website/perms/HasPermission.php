@@ -7,6 +7,8 @@ $response = APIUtils::validatePost($_POST,basename(__FILE__));
 if($response["suc"] == 0) die(json_encode($response,JSON_UNESCAPED_UNICODE));
 
 $validatorResponse = Validator::validate([$_POST["auth_key"],$_POST["perm"]],["s(128)","s"]);
+if($validatorResponse["suc"] === 0)
+    die(json_encode(["suc" => 0, "desc" => "Walidacja nie powiodła się! (auth_key | perm)"]));
 
 require_once(dirname(__DIR__,3)."/objects/Website.inc.php");
 $website = APIUtils::getWebsite($_POST);
