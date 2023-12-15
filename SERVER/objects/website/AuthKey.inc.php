@@ -1,5 +1,11 @@
 <?php
 
+// NAPISZE TUTAJ, BO JUŻ RAZ DOSTAŁEM MINDFUCKA...
+// zwraca wszystko true/false:
+// valid - czy poprawne (inny klucz, niż obecny || (outdated || validated) == 1)
+// outdated - czy przestarzały
+// invalidated - czy admin (klient/pqcms) zamknął sesję
+
 require_once(dirname(__DIR__,2)."/database/Connection.inc.php");
 class AuthKey
 {
@@ -79,29 +85,27 @@ class AuthKey
     public static function isValidAuthKeyByIp(int $websiteId, string $ip, string $authKey): array
     {
         $conn = Connection::getConnection();
-        $query = $conn->query("SELECT expired_time, auth_key, invalid FROM websites_auth_keys 
+        $query = $conn->query("SELECT expired_time, invalid, logout FROM websites_auth_keys 
                               WHERE website_id = $websiteId
-                              AND logout = 0
                               AND ip = '$ip'
-                              ORDER BY expired_time DESC
+                              AND auth_key = '$authKey'
+                              ORDER BY id DESC
                               LIMIT 1");
 
         if($query->num_rows == 0)
-            $result = ["valid" => false, "outdated" => false, "invalidated" => false];
+            $result = ["valid" => 0, "outdated" => 0, "invalidated" => 0];
         else
         {
             $row = $query->fetch_row();
+
             $expiredTime = $row[0];
             $expiredDate = strtotime($expiredTime);
 
             date_default_timezone_set('Europe/Warsaw');
-            $valid = $row[1] === $authKey;
             $outdated = $expiredDate < time();
-            $invalidated = (bool) $row[2];
+            $invalidated = $row[1] || $row[2];
 
-            if($outdated || $invalidated) $valid = false;
-
-            $result = ["valid" => (int) $valid, "outdated" => (int) $outdated, "invalidated" => (int) $invalidated];
+            $result = ["valid" => !($outdated || $invalidated), "outdated" => (int) $outdated, "invalidated" => (int) $invalidated];
         }
 
         $query->close();
@@ -147,12 +151,22 @@ class AuthKey
         return $result;
     }
 
-    public static function invalidateAuthKey(int $website_id, string $authKey): void
+    /**
+     * @param int $website_id id strony
+     * @param string $authKey auth_key
+     * @param bool $logout czy wylogowanie "dobrowolne" (1 - wylogowanie, 0 - działanie admina)
+     * @return void
+     */
+    public static function invalidateAuthKey(int $website_id, string $authKey, bool $logout): void
     {
         $conn = Connection::getConnection();
 
         date_default_timezone_set('Europe/Warsaw');
         $now = date("Y-m-d H:i:s");
+
+        if($logout)
+            $sql =
+
         $conn->query("UPDATE websites_auth_keys 
                               SET expired_time = '$now', logout = 1 
                               WHERE website_id = $website_id 
