@@ -53,8 +53,10 @@ class Website
         date_default_timezone_set('Europe/Warsaw');
         $nowTime = strtotime(date("Y-m-d H:i:s"));
 
-        if($nowTime >= $licenseTime) return true;
-        return false;
+        return $nowTime >= $licenseTime;
+//        if($nowTime >= $licenseTime)
+//            return true;
+//        return false;
     }
 
     public function doesExists(): bool
