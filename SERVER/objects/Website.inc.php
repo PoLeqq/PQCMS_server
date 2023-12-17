@@ -144,10 +144,18 @@ class Website
         return $result;
     }
 
-    public function hasPermission(string $remoteAddr, string $authKey): array
+    /**
+     * Funkcja
+     * @param string $remoteAddr
+     * @param string $authKey
+     * @param array $perms
+     * @return array|int[]
+     */
+    public function hasPermission(string $remoteAddr, string $authKey, array $perms): array
     {
+//        Sprawdzenie, czy w ogóle istnieje wygenerowany auth_key dla tego IP
         require_once(dirname(__DIR__)."/objects/website/AuthKey.inc.php");
-        if(!AuthKey::isValidAuthKeyByIp($this->id,$remoteAddr,$authKey))
+        if(!AuthKey::isValidAuthKeyForIp($this->id,$remoteAddr,$authKey))
             return ["suc" => 0, "desc" => "Klucz bezpieczeństwa jest niepoprawny!"];
 
         $conn = Connection::getConnection();
@@ -160,15 +168,37 @@ class Website
         else
         {
             $row = $query->fetch_row();
+//            jakieś sprawdzenie fajne permisji, na razie user nie ma do niczego dostępu, admin ma do wszystkiego
             if(!is_null($row[0]))
                 $resp = ["suc" => 1];
             else
-//                jakieś sprawdzenie fajne permisji, na razie user nie ma do niczego dostępu, admin ma do wszystkiego
-                $resp = ["suc" => 0, "desc" => "Nie masz permisji!"];
+            {
+                $getUserPermsQuery = $conn->query("SELECT perms FROM websites_users 
+                                            WHERE website_id = $this->id 
+                                              AND id = ${row[1]}");
+
+                $userPerms = json_decode($getUserPermsQuery->fetch_row()[0],true);
+
+                $permsResponse = [];
+                foreach($perms as $perm)
+                {
+//                    to nie działa w 100%, trzeba dodać że jeżeli ma np.
+//                    site.* = true
+//                    site.1 = false
+//                    ale unset na site.2, to ma permisje do site.2, ale nie do site.1
+//                    $hasPermission
+                    $hasPermission = in_array($perm, $userPerms) && $userPerms[$perm] == true;
+
+                    $permsResponse[$perm] = $hasPermission;
+                }
+
+                $resp = ["suc" => 0, "desc" => "Nie masz permisji!", "user_perms" => $userPerms, "perms" => $permsResponse];
+            }
         }
 
         $query->close();
         $conn->close();
+
         return $resp;
     }
 
