@@ -212,6 +212,11 @@ class Website
      */
     public function internalLoginUser(string $ip, string $username, string $password): array
     {
+        require_once(dirname(__DIR__)."/utils/SQLSecurity.php");
+        $insecureCharsResponse = SQLSecurity::generateResponseForAPI(SQLSecurity::doesStringContains($username),"username");
+        if(sizeof($insecureCharsResponse) !== 0)
+            return $insecureCharsResponse;
+
         $conn = Connection::getConnection();
         $query = $conn->query("SELECT id, password FROM websites_admins 
                     WHERE website_id = $this->id 
@@ -260,10 +265,16 @@ class Website
 
     public function loginUser(string $ip, string $username, string $password): array
     {
+        require_once(dirname(__DIR__)."/utils/SQLSecurity.php");
+        $insecureCharsResponse = SQLSecurity::generateResponseForAPI(SQLSecurity::doesStringContains($username),"username");
+        if(sizeof($insecureCharsResponse) !== 0)
+            return $insecureCharsResponse;
+
         $conn = Connection::getConnection();
         $query = $conn->query("SELECT id, password FROM websites_admins 
                     WHERE website_id = $this->id 
                       AND username = '$username'");
+
         if($query->num_rows == 0)
         {
             $query = $conn->query("SELECT id, password FROM websites_users 
