@@ -13,6 +13,8 @@ if(empty($_POST["domain"]) || empty($_POST["login"]) || empty($_POST["password"]
     die("Przesłano nieprawidłowe dane (posts). Jeśli uważasz, że to błąd, skontaktuj się z administratorem PQCMS!");
 
 require_once(dirname(__DIR__,3)."/objects/Website.inc.php");
+if($_POST["domain"] === "localhost")
+    $_POST["domain"] = "localhost.localhost";
 $websiteId = Website::getWebsiteIDByMatching("domain",$_POST["domain"]);
 if(is_null($websiteId))
     die("Nie odnaleziono strony o podanej domenie");
