@@ -106,8 +106,10 @@ class Website
 
     public function addUser(string $username, string $nickname, string $password, array $perms, bool $disabled): array
     {
-        require_once(dirname(__DIR__) . "/objects/website/WebsiteUser.inc.php");
-        return WebsiteUser::unsafe_addWebsiteUser($this->id,$username,$nickname,$password, $perms, $disabled);
+        if(sizeof($this->getUsersIds()) >= 20)
+            return ["suc" => 0, "desc" => "Strona osiągnęła limit użytkowników (20)!"];
+        require_once(dirname(__DIR__)."/objects/website/WebsiteUser.inc.php");
+        return WebsiteUser::unsafe_addWebsiteUser($this->id, $username, $nickname, $password, $perms, $disabled);
     }
 
     public function getUsersIds(): array
