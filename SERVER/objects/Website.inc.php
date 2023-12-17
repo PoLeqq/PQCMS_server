@@ -1,6 +1,6 @@
 <?php
 
-require_once(dirname(__DIR__) . "/database/Connection.inc.php");
+require_once(dirname(__DIR__)."/database/Connection.inc.php");
 
 class Website
 {
@@ -90,7 +90,8 @@ class Website
 
         if($query->num_rows == 0)
             $result = null;
-        else $result = $query->fetch_row()[0];
+        else
+            $result = $query->fetch_row()[0];
 
         $query->close();
         $conn->close();
@@ -99,7 +100,7 @@ class Website
 
     public function addAdmin(string $username, string $nickname, string $password): int
     {
-        require_once(dirname(__DIR__) . "/objects/website/WebsiteAdmin.inc.php");
+        require_once(dirname(__DIR__)."/objects/website/WebsiteAdmin.inc.php");
         return WebsiteAdmin::unsafe_addWebsiteAdmin($this->id,$username,$nickname,$password);
     }
 
