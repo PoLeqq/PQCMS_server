@@ -11,6 +11,7 @@ $settings = $website->getSettings();
 
 $response["resp"] = [
     "login_attempts" => $settings->getLoginAttempts(),
+    "login_session_time" => $settings->getLoginSessionTime(),
     "token_lifespan" => $settings->getTokenLifespan()
 ];
 
