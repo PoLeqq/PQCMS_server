@@ -68,14 +68,19 @@
         <div id="start" class="block-background">
             <div class="col-10 offset-1 p-5 block-foreground">
                 <section>
-                    <h1 class="mb-4">Wybierz akcję</h1>
+                    <h1 class="mb-3">Oficjalny panel PQCMS</h1>
+                    <span style="color: red">
+                        Na tej stronie zobaczysz tylko rzeczy, które są związane tylko z PQCMS. Jeśli chcesz edytować
+                        swoją stronę, zobacz menu znajdujące się po prawej stronie.
+                    </span>
+                    <br>
                     <i>Szukasz czegoś innego? Zjedź niżej!</i>
-                    <div class="row gx-5 mt-4">
+                    <div class="row gx-5">
                         <div class="pqcms-action col m-3 p-3">
                             <div class="pqcms-action-content">
                                 <h2>Pomoc</h2>
                                 Ta sekcja jest potrzebna, gdy nie wiesz jak coś zrobić lub nie do końca rozumiesz np.
-                                funkcjonalność programu. Nasz zespół pomocy technicznej jest zawsze do usług!
+                                funkcjonalności programu. Nasz zespół pomocy technicznej jest zawsze do usług!
                             </div>
                             <a href="report/help.php" class="mt-2">
                                 <div class="pqcms-action-button">
