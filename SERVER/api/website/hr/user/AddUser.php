@@ -11,6 +11,5 @@ if(empty($_POST["username"]) || empty($_POST["nickname"]) || empty($_POST["passw
     die(json_encode(["suc" => 1, "resp" => 0, "desc" => "Uzupełnij wszystkie pola!"],JSON_UNESCAPED_UNICODE));
 
 $website = APIUtils::getWebsite($_POST);
-// TODO sprawdzenie maxa użytkowników przypisane do strony
-$errno = $website->addUser($_POST["username"], $_POST["nickname"], $_POST["password"], [], $_POST["disabled"]);
-echo json_encode(["suc" => 1, "resp" => $errno == 0, "desc" => $errno],JSON_UNESCAPED_UNICODE);
+//if($website->hasPermission($_SERVER["REMOTE_ADDR"],))
+echo json_encode($website->addUser($_POST["username"], $_POST["nickname"], $_POST["password"], [], $_POST["disabled"]),JSON_UNESCAPED_UNICODE);

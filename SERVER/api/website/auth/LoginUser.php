@@ -13,8 +13,7 @@ require_once(dirname(__DIR__,3)."/objects/Website.inc.php");
 $website = APIUtils::getWebsite($_POST);
 
 $loginUser = $website->loginUser($_SERVER["REMOTE_ADDR"],$_POST["username"], $_POST["password"]);
-$response["resp"] = $loginUser["suc"];
-$response["desc"] = $loginUser["desc"];
+$response = $loginUser;
 if(isset($loginUser["auth_key"])) $response["auth_key"] = $loginUser["auth_key"];
 
 die(json_encode($response,JSON_UNESCAPED_UNICODE));

@@ -108,5 +108,6 @@ function checkLicense($remoteAddr, $httpReferer, $domain, $login, $license_key):
     }
 
     addCheckLicenseHistory($remoteAddr, $requestDomain, $domain, $login, $license_key, true, "");
-    return ["suc" => 1, "desc" => "Autoryzacja powiodła się!", "expiry_date" => $licenseExpiration];
+//    todo do wywalenia? żeby np taki pracownik nie miał dostępu do expiry_date
+    return ["suc" => 1, "desc" => "Autoryzacja powiodła się!", "expiry_date" => $website->getLicenseExpiration()];
 }

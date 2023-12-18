@@ -18,5 +18,7 @@ if(empty($_POST["auth_key"]))
 require_once(dirname(__DIR__, 3) . "/objects/website/AuthKey.inc.php");
 $website = APIUtils::getWebsite($_POST);
 
-$response["resp"] = AuthKey::isValidAuthKeyByIp($website->getId(),$_SERVER["REMOTE_ADDR"],$_POST["auth_key"]);
+$isValidAuthKeyForIP = AuthKey::isValidAuthKeyForIp($website->getId(),$_SERVER["REMOTE_ADDR"],$_POST["auth_key"]);
+//if(isset($isValidAuthKeyForIP["not_secure"]) && $isValidAuthKeyForIP["not_secure"] === 1)
+$response["resp"] = $isValidAuthKeyForIP;
 die(json_encode($response, JSON_UNESCAPED_UNICODE));
