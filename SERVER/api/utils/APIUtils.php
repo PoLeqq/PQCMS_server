@@ -1,7 +1,8 @@
 <?php
 
-require_once(dirname(__DIR__,2)."/objects/Website.inc.php");
 require_once(dirname(__DIR__)."/utils/validators/Validator.inc.php");
+require_once(dirname(__DIR__,2)."/objects/Website.inc.php");
+require_once(dirname(__DIR__,2)."/utils/SQLSecurity.php");
 
 class APIUtils
 {
@@ -24,9 +25,19 @@ class APIUtils
         if($validatorResponse["suc"] == 0)
             return ["suc" => 0, "desc" => "Walidacja nie powiodła się dla pola \"{$fields[$validatorResponse["element_index"]]}\""];
 
+//        Różne "sprawdzacze"
         $website = APIUtils::getWebsite($post);
-        if(is_null($website) || !$website->doesExists()) return ["suc" => 0, "desc" => "Nie znaleziono strony o podanej domenie!"];
-        if(!$website->isProperSecureKey($post["secure_key"])) return ["suc" => 0, "desc" => "Niepoprawny klucz zabezpieczenia!"];
+        if(is_null($website) || !$website->doesExists())
+            return ["suc" => 0, "desc" => "Nie znaleziono strony o podanej domenie!"];
+
+//        Sprawdzenie, czy klucz ma wartości tylko 0-9,a-f
+        $insecureCharsResponse = SQLSecurity::generateResponseForAPI(SQLSecurity::doesStringContains($post["secure_key"],SQLSecurity::getKeyCharacters(),true),"secure_key");
+        if(sizeof($insecureCharsResponse) !== 0)
+            return $insecureCharsResponse;
+
+        if(!$website->isProperSecureKey($post["secure_key"]))
+            return ["suc" => 0, "desc" => "Niepoprawny klucz zabezpieczenia!"];
+//        Unieważnienie klucza
         $website->invalidateSecureKey($post["secure_key"],$apiName);
         
         return ["suc" => 1];
