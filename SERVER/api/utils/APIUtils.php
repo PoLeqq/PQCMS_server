@@ -87,7 +87,11 @@ class APIUtils
      */
     public static function getWebsite($post): ?Website
     {
-        $id = Website::getWebsiteIDByMatching("domain",$post["domain"]);
+        if($post["domain"] === "localhost")
+            $domain = "localhost.localhost";
+        else
+            $domain = $post["domain"];
+        $id = Website::getWebsiteIDByMatching("domain",$domain);
         if(is_null($id)) return null;
 
         $website = new Website($id);
