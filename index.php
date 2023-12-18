@@ -19,7 +19,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400&display=swap" rel="stylesheet">
 
-    <meta content="PQCMS" property="og:title" />
+    <meta content="PQCMS" property="og:title"/>
     <meta content="Prosty a zarazem szybki i niezawodny system CMS, który jest ciągle rozwijany!" property="og:description" />
     <!-- <meta content="https://poleq.pl/" property="og:url" /> -->
     <!-- <meta content="https://poleq.pl/img/trex.jpg" property="og:image" /> -->
