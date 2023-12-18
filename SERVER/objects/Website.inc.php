@@ -98,10 +98,10 @@ class Website
         return $result;
     }
 
-    public function addAdmin(string $username, string $nickname, string $password): int
+    public function addAdmin(string $username, string $nickname, string $password): array
     {
         require_once(dirname(__DIR__)."/objects/website/WebsiteAdmin.inc.php");
-        return WebsiteAdmin::unsafe_addWebsiteAdmin($this->id,$username,$nickname,$password);
+        return WebsiteAdmin::addWebsiteAdmin($this->id,$username,$nickname,$password);
     }
 
     public function addUser(string $username, string $nickname, string $password, array $perms, bool $disabled): array
@@ -109,7 +109,7 @@ class Website
         if(sizeof($this->getUsersIds()) >= 20)
             return ["suc" => 0, "desc" => "Strona osiągnęła limit użytkowników (20)!"];
         require_once(dirname(__DIR__)."/objects/website/WebsiteUser.inc.php");
-        return WebsiteUser::unsafe_addWebsiteUser($this->id, $username, $nickname, $password, $perms, $disabled);
+        return WebsiteUser::addWebsiteUser($this->id, $username, $nickname, $password, $perms, $disabled);
     }
 
     public function getUsersIds(): array
@@ -307,7 +307,7 @@ class Website
     public function logoutUser(string $ip, string $authKey): bool
     {
         require_once("website/AuthKey.inc.php");
-        if(!AuthKey::isValidAuthKeyByIp($this->id, $ip, $authKey)) return false;
+        if(!AuthKey::isValidAuthKeyForIp($this->id, $ip, $authKey)) return false;
 
         $conn = Connection::getConnection();
         $now = date("Y-m-d H:i:s");
@@ -332,7 +332,8 @@ class Website
         {
             require_once(dirname(__DIR__)."/objects/website/AuthKey.inc.php");
             $authKey = AuthKey::generateAuthKey($this->id, $ip, $row["id"], $adminAccount);
-            if($authKey === "") return ["suc" => 0, "proper_data" => 1, "desc" => "Sesja tego konta jest już aktywna! (jeżeli uważasz, że to błąd, jak najszybciej skontaktuj się z administratorem!)", "auth_key" => ""];
+            if($authKey === "")
+                return ["suc" => 0, "proper_data" => 1, "desc" => "Sesja tego konta jest już aktywna! (jeżeli uważasz, że to błąd, jak najszybciej skontaktuj się z administratorem!)"];
             return ["suc" => 1, "proper_data" => 1, "desc" => "Pomyślnie zalogowano!", "auth_key" => $authKey];
         }
         else return ["suc" => 0, "proper_data" => 0, "desc" => "Niepoprawne dane logowania."];
@@ -370,19 +371,22 @@ class Website
 
     public function isProperSecureKey(string $secureKey): bool
     {
+        $insecureCharsResponse = SQLSecurity::generateResponseForAPI(SQLSecurity::doesStringContains($secureKey,SQLSecurity::getKeyCharacters(),true),"secure_key");
+        if(sizeof($insecureCharsResponse) !== 0)
+            return false;
         $conn = Connection::getConnection();
-        $result = $conn->query("SELECT secure_key FROM websites_secure_keys 
+        $result = $conn->query("SELECT generated_time FROM websites_secure_keys 
                   WHERE website_id = $this->id 
-                    AND used_time IS NULL");
+                    AND used_time IS NULL
+                    AND secure_key = '$secureKey'");
 
         $isProper = false;
-        while($row = mysqli_fetch_row($result))
+        if($result->num_rows !== 0)
         {
-            if($row[0] == $secureKey)
-            {
+            $row = mysqli_fetch_row($result);
+
+            if(strtotime($row[0]) + 30 > time())
                 $isProper = true;
-                break;
-            }
         }
 
         $conn->close();
