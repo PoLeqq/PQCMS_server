@@ -64,7 +64,7 @@ class Validator
      */
     public static function validate(array $values, array $patterns): array
     {
-        if (count($values) != count($patterns))
+        if(count($values) != count($patterns))
             return ["suc" => 0, "desc" => "Liczba wartości nie zgadza się z liczbą szablonów!"];
 
         $patternTypes = ["s" => "string", "i" => "integer", "b" => "boolean", "d" => "double"];
@@ -74,10 +74,23 @@ class Validator
                 return ["suc" => 0, "desc" => "Nie znaleziono typu: $pat[0]"];
 
             $value = $values[$i];
-            if (gettype($value) != $patternTypes[$pat[0]])
-                return ["suc" => 0, "desc" => "Wartość nie spełnia wymogu typu!", "element_index" => $i];
+            if(gettype($value) != $patternTypes[$pat[0]])
+            {
+                $respErrorTypes = true;
+                $errGetType = gettype($value);
 
-            if (strlen($patterns[$i]) != 1) {
+                if($pat[0] === "i") {
+                    $int_value = ctype_digit($value) ? intval($value) : null;
+                    if(!is_null($int_value))
+                        $respErrorTypes = false;
+                }
+//                todo decimal
+
+                if($respErrorTypes)
+                    return ["suc" => 0, "desc" => "Wartość nie spełnia wymogu typu! (oczekiwano:${patternTypes[$pat[0]]}, dostarczono: ${errGetType}", "element_index" => $i];
+            }
+
+            if(strlen($patterns[$i]) != 1) {
                 if ($pat[0] == "s") {
                     if (preg_match('/s\((\d+)-(\d+)\)/', $pat, $matches)) {
                         if ($matches[1] > $matches[2])
@@ -88,7 +101,7 @@ class Validator
                     } else if (preg_match('/s\((\d+)\)/', $pat, $matches)) {
                         if (strlen($value) != $matches[1])
                             return ["suc" => 0, "desc" => "Napis nie spełnia wymogu długości!", "element_index" => $i];
-//                            return ["suc" => 0, "desc" => "Napis nie spełnia wymogu długości! (znaleziono: ".strlen($value).", oczekiwano: ".$matches[1], "element_index" => $i];
+//                            return ["suc" => 0, "desc" => "Napis nie spełnia wymogu długości! (znaleziono: ".strlen($value).", oczekiwano: ".$matches[1].")", "element_index" => $i];
                     } else if (preg_match('/s\((.*?)\)/', $pat, $matches)) {
                         if ($matches[1] != $value)
                             return ["suc" => 0, "desc" => "Napis nie jest równy wzorowi!", "element_index" => $i];
@@ -103,16 +116,32 @@ class Validator
                     else if ($pat == "b(0)" && $value)
                         return ["suc" => 0, "desc" => "Wartość logiczna nie jest równa wzorowi!", "element_index" => $i];
                 } else if ($pat[0] == "i") {
-                    if (preg_match('/i\((\d+)-(\d+)\)/', $pat, $matches)) {
-                        if ($matches[1] > $matches[2])
+                    if (preg_match('/i\((-?\d+)-(-?\d+)\)/', $pat, $matches))
+                    {
+                        $matches[1] = (int)($matches[1]);
+                        $matches[2] = (int)($matches[2]);
+                        if($matches[1] > $matches[2])
                             return ["suc" => 0, "desc" => "(Wzór) Pierwsza wartość jest większa od drugiej!", "element_index" => $i];
-                        if ($value < $matches[1] || $value > $matches[2])
+                        if($value < $matches[1] || $value > $matches[2])
                             return ["suc" => 0, "desc" => "Liczba nie spełnia wymogu zakresu!", "element_index" => $i];
-                    } else if (preg_match('/i\((.*?)\)/', $pat, $matches)) {
-                        if ($matches[1] != $value)
+                    }
+                    elseif (preg_match('/i\((-?\d+)\)/', $pat, $matches))
+                    {
+                        if($matches[1] != $value)
                             return ["suc" => 0, "desc" => "Liczba nie jest równa wzorowi!", "element_index" => $i];
-                    } else
+                    }
+                    else
                         return ["suc" => 0, "desc" => "(Wzór) Błędny wzór na integer!", "element_index" => $i];
+//                    if (preg_match('/i\((\d+)-(\d+)\)/', $pat, $matches)) {
+//                        if ($matches[1] > $matches[2])
+//                            return ["suc" => 0, "desc" => "(Wzór) Pierwsza wartość jest większa od drugiej!", "element_index" => $i];
+//                        if ($value < $matches[1] || $value > $matches[2])
+//                            return ["suc" => 0, "desc" => "Liczba nie spełnia wymogu zakresu!", "element_index" => $i];
+//                    } else if (preg_match('/i\((.*?)\)/', $pat, $matches)) {
+//                        if ($matches[1] != $value)
+//                            return ["suc" => 0, "desc" => "Liczba nie jest równa wzorowi!", "element_index" => $i];
+//                    } else
+//                        return ["suc" => 0, "desc" => "(Wzór) Błędny wzór na integer!", "element_index" => $i];
                 }
 //                TODO decimal
             }
