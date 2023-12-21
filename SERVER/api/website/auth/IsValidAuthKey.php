@@ -12,6 +12,10 @@ require_once(dirname(__DIR__, 2) . "/utils/APIUtils.php");
 $response = APIUtils::validatePost($_POST, basename(__FILE__));
 if($response["suc"] == 0) die(json_encode($response, JSON_UNESCAPED_UNICODE));
 
+$authKeyValidate = APIUtils::validatePostForAuthKey($_POST);
+if($authKeyValidate["suc"] === 0)
+    die(json_encode($authKeyValidate,JSON_UNESCAPED_UNICODE));
+
 if(empty($_POST["auth_key"]))
     die(json_encode(["suc" => 0, "desc" => "Uzupełnij wszystkie pola!"], JSON_UNESCAPED_UNICODE));
 
