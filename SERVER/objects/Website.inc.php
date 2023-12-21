@@ -144,14 +144,23 @@ class Website
         return $result;
     }
 
+    public function hasPermission(string $remoteAddr, string $authKey, string $perm): bool
+    {
+        $hasPermissions = $this->hasPermissions($remoteAddr,$authKey,[$perm]);
+        if($hasPermissions["suc"] == 0)
+            return false;
+        return $hasPermissions["perms"][$perm];
+    }
+
     /**
-     * Funkcja
+     * Funkcja sprawdzająca, czy użytkownik posiada podane permisje
+     * "suc" w returnie oznacza, czy nie ma żadnych błędów (0 - błąd; nie, czy user ma permisje!)
      * @param string $remoteAddr
      * @param string $authKey
      * @param array $perms
      * @return array|int[]
      */
-    public function hasPermission(string $remoteAddr, string $authKey, array $perms): array
+    public function hasPermissions(string $remoteAddr, string $authKey, array $perms): array
     {
 //        Sprawdzenie, czy w ogóle istnieje wygenerowany auth_key dla tego IP
         require_once(dirname(__DIR__)."/objects/website/AuthKey.inc.php");
@@ -161,7 +170,11 @@ class Website
         $conn = Connection::getConnection();
         $query = $conn->query("SELECT admin_id, user_id FROM websites_auth_keys 
                          WHERE auth_key = '$authKey' 
-                           AND website_id = $this->id");
+                           AND website_id = $this->id
+                           AND invalid = 0
+                           AND logout = 0
+                           ORDER BY id DESC
+                           LIMIT 1");
 //        raczej się nie wydarzy, ale na wszelki wypadek
         if($query->num_rows === 0)
             $resp = ["suc" => 0, "desc" => "Nie odnaleziono użytkownika powiązanego z tym \"auth_key\"!"];
@@ -170,7 +183,12 @@ class Website
             $row = $query->fetch_row();
 //            jakieś sprawdzenie fajne permisji, na razie user nie ma do niczego dostępu, admin ma do wszystkiego
             if(!is_null($row[0]))
-                $resp = ["suc" => 1];
+            {
+                $permsResponse = [];
+                foreach($perms as $perm)
+                    $permsResponse[$perm] = true;
+                $resp = ["suc" => 1, "perms" => $permsResponse];
+            }
             else
             {
                 $getUserPermsQuery = $conn->query("SELECT perms FROM websites_users 
@@ -187,12 +205,18 @@ class Website
 //                    site.1 = false
 //                    ale unset na site.2, to ma permisje do site.2, ale nie do site.1
 //                    $hasPermission
-                    $hasPermission = in_array($perm, $userPerms) && $userPerms[$perm] == true;
 
-                    $permsResponse[$perm] = $hasPermission;
+                    if(!is_array($userPerms))
+                        $permsResponse[$perm] = false;
+                    else
+                    {
+                        $hasPermission = in_array($perm, $userPerms) && $userPerms[$perm] == true;
+                        $permsResponse[$perm] = $hasPermission;
+                    }
                 }
 
-                $resp = ["suc" => 0, "desc" => "Nie masz permisji!", "user_perms" => $userPerms, "perms" => $permsResponse];
+//                $resp = ["suc" => 0, "desc" => "Nie masz permisji!", "user_perms" => $userPerms, "perms" => $permsResponse];
+                $resp = ["suc" => 0, "desc" => "Nie masz permisji!", "perms" => $permsResponse];
             }
         }
 
