@@ -45,7 +45,7 @@ class Website
     {
         $licenseExpiration = $this->getLicenseExpiration();
 
-        if($licenseExpiration == null)
+        if ($licenseExpiration == null)
             return false;
 
         $licenseTime = strtotime($licenseExpiration);
