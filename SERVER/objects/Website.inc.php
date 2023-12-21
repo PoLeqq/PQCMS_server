@@ -77,7 +77,7 @@ class Website
     public function invalidateSecureKey(string $secure_key, string $apiName): void
     {
         require_once("website/SecureKey.inc.php");
-        SecureKey::invalidateSecureKey($this->id,$secure_key,$apiName);
+        SecureKey::invalidateSecureKey($this->id, $secure_key, $apiName);
     }
 
 //    Gettery, settery opierające się na obiekcie, wymagające bardziej złożonych operacji
@@ -100,15 +100,15 @@ class Website
 
     public function addAdmin(string $username, string $nickname, string $password): array
     {
-        require_once(dirname(__DIR__)."/objects/website/WebsiteAdmin.inc.php");
-        return WebsiteAdmin::addWebsiteAdmin($this->id,$username,$nickname,$password);
+        require_once(dirname(__DIR__) . "/objects/website/WebsiteAdmin.inc.php");
+        return WebsiteAdmin::addWebsiteAdmin($this->id, $username, $nickname, $password);
     }
 
     public function addUser(string $username, string $nickname, string $password, array $perms, bool $disabled): array
     {
-        if(sizeof($this->getUsersIds()) >= 20)
+        if (sizeof($this->getUsersIds()) >= 20)
             return ["suc" => 0, "desc" => "Strona osiągnęła limit użytkowników (20)!"];
-        require_once(dirname(__DIR__)."/objects/website/WebsiteUser.inc.php");
+        require_once(dirname(__DIR__) . "/objects/website/WebsiteUser.inc.php");
         return WebsiteUser::addWebsiteUser($this->id, $username, $nickname, $password, $perms, $disabled);
     }
 
@@ -118,7 +118,7 @@ class Website
         $query = $conn->query("SELECT id FROM websites_users WHERE website_id = $this->id");
 
         $result = [];
-        foreach($query->fetch_row() as $row)
+        foreach ($query->fetch_row() as $row)
             $result[] = $row[0];
 
         $query->close();
@@ -132,11 +132,11 @@ class Website
         $query = $conn->query("SELECT username, nickname, perms, disabled FROM websites_users WHERE website_id = $this->id");
 
         $result = [];
-        while($row = $query->fetch_row())
+        while ($row = $query->fetch_row())
             $result[] = ["username" => $row[0], "nickname" => $row[1], "perms" => json_decode($row[2]), "disabled" => $row[3]];
 
         $query = $conn->query("SELECT username, nickname FROM websites_admins WHERE website_id = $this->id");
-        if($row = $query->fetch_row())
+        if ($row = $query->fetch_row())
             $result[] = ["username" => $row[0], "nickname" => $row[1]];
 
         $query->close();
@@ -164,7 +164,7 @@ class Website
                            AND website_id = $this->id");
 //        raczej się nie wydarzy, ale na wszelki wypadek
         if($query->num_rows === 0)
-            $resp = ["suc" => 0, "desc" => "Klucz bezpieczeństwa jest niepoprawny!"];
+            $resp = ["suc" => 0, "desc" => "Nie odnaleziono użytkownika powiązanego z tym \"auth_key\"!"];
         else
         {
             $row = $query->fetch_row();
