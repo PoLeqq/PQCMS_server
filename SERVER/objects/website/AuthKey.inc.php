@@ -165,7 +165,7 @@ class AuthKey
         $now = date("Y-m-d H:i:s");
 
         if($logout)
-            $sql =
+            $sql = "";
 
         $conn->query("UPDATE websites_auth_keys 
                               SET expired_time = '$now', logout = 1 
