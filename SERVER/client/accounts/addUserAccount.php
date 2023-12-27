@@ -54,7 +54,14 @@ if(strlen($_POST["password"]) < 8 || strlen($_POST["password"]) > 40)
 require_once(dirname(__DIR__, 2) . "/objects/Website.inc.php");
 require_once(dirname(__DIR__, 2) . "/objects/website/WebsiteUser.inc.php");
 $website = new Website($_SESSION["pqcms-client-website-id"]);
-if(WebsiteUser::getWebsiteUserBy("username",$_POST["username"],$_SESSION["pqcms-client-website-id"]) != null)
+
+// Walidacja - anti SQL injection
+require_once(dirname(__DIR__,2)."/utils/SQLSecurity.php");
+$insecureCharsResponse = SQLSecurity::generateResponseForAPI(SQLSecurity::doesStringContains($_POST["username"]),"username");
+if(sizeof($insecureCharsResponse) !== 0)
+    die(json_encode($insecureCharsResponse,JSON_UNESCAPED_UNICODE));
+
+if(WebsiteUser::unsafe_getWebsiteUserBy("username",$_POST["username"],$_SESSION["pqcms-client-website-id"]) != null)
 {
     $_SESSION["pqcms-client-announce-panel"] = ["err" => "Ta domena posiada już konto o podanej nazwie użytkownika!"];
     header("location: ../");
