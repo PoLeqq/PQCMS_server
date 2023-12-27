@@ -105,7 +105,7 @@ class AuthKey
             $outdated = $expiredDate < time();
             $invalidated = $row[1] || $row[2];
 
-            $result = ["valid" => !($outdated || $invalidated), "outdated" => (int) $outdated, "invalidated" => (int) $invalidated];
+            $result = ["valid" => (int) (!($outdated || $invalidated)), "outdated" => (int) $outdated, "invalidated" => (int) $invalidated];
         }
 
         $query->close();
