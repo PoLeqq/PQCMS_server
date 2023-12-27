@@ -39,8 +39,24 @@ class WebsiteSettings
         $this->unsafe_setField("token_lifespan",null);
     }
 
+    public function getLoginSessionTime(): int
+    {
+        return $this->unsafe_getField("login_session_time");
+    }
+
+    public function setLoginSessionTime(?int $loginSessionTime): void
+    {
+        $this->unsafe_setField("login_session_time",$loginSessionTime);
+    }
+
+    public function resetLoginSessionTime(): void
+    {
+        $this->unsafe_setField("login_session_time",null);
+    }
+
     private function unsafe_setField(string $column, mixed $value): void
     {
+//        W przypadku, gdy będą tu stringi (raczej nie będzie), trzeba zabezpieczyć kod z utils/SQLSecurity.php)
         if(is_string($value)) $value = "'$value'";
         if(is_null($value)) $value = "DEFAULT";
 
