@@ -14,6 +14,7 @@ class AuthKey
      * @param int $userId id użytkownika (lub administratora)
      * @param bool $admin czy jest administratorem
      * @return string auth_key (pusty w przypadku, gdy to konto posiada już aktywną sesję (auth_key))
+     * @throws Exception raczej nigdy lol
      */
     public static function generateAuthKey(int $website_id, string $ip, int $userId, bool $admin): string
     {
@@ -82,8 +83,23 @@ class AuthKey
         return $result;
     }
 
-    public static function isValidAuthKeyByIp(int $websiteId, string $ip, string $authKey): array
+    public static function isProperAuthKey(string $authKey): bool
     {
+        if(strlen($authKey) != 128)
+            return false;
+        $properChars = ['0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f'];
+        foreach(str_split($authKey) as $char)
+        {
+            if(!in_array($char,$properChars))
+                return false;
+        }
+        return true;
+    }
+
+    public static function isValidAuthKeyForIp(int $websiteId, string $ip, string $authKey): array
+    {
+        if(!self::isProperAuthKey($authKey))
+            return["valid" => 0, "outdated" => 0, "invalidated" => 0, "not_secure" => 1];
         $conn = Connection::getConnection();
         $query = $conn->query("SELECT expired_time, invalid, logout FROM websites_auth_keys 
                               WHERE website_id = $websiteId
