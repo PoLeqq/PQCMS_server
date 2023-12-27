@@ -48,14 +48,22 @@ class WebsiteAdmin
         return $result;
     }
 
-    public static function unsafe_addWebsiteAdmin(int $websiteId, string $username, string $nickname, string $password): int
+    public static function addWebsiteAdmin(int $websiteId, string $username, string $nickname, string $password): array
     {
+        require_once(dirname(__DIR__,2)."/utils/SQLSecurity.php");
+        $insecureCharsResponse = SQLSecurity::generateResponseForAPI(SQLSecurity::doesStringContains($username),"username");
+        if(sizeof($insecureCharsResponse) !== 0)
+            return $insecureCharsResponse;
+        $insecureCharsResponse = SQLSecurity::generateResponseForAPI(SQLSecurity::doesStringContains($nickname),"nickname");
+        if(sizeof($insecureCharsResponse) !== 0)
+            return $insecureCharsResponse;
+
         $conn = Connection::getConnection();
         $password = password_hash($password,PASSWORD_DEFAULT);
         $conn->query("INSERT INTO websites_admins VALUES (null,$websiteId,'$username','$nickname','$password')");
 
         $errno = $conn->errno;
         $conn->close();
-        return $errno;
+        return ["suc" => $errno == 1, "desc" => $errno];
     }
 }
