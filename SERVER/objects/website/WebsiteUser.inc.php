@@ -131,7 +131,7 @@ class WebsiteUser
         return $resp;
     }
 
-    public static function getWebsiteUserBy(string $col, mixed $value, int $websiteId = null): ?array
+    public static function unsafe_getWebsiteUserBy(string $col, mixed $value, int $websiteId = null): ?array
     {
         $conn = Connection::getConnection();
 
