@@ -59,14 +59,52 @@ class WebsiteUser
         return $result;
     }
 
-    public static function unsafe_addWebsiteUser(int $websiteId, string $username, string $nickname, string $password, ?array $perms, bool $disabled = false): array
+    public static function addWebsiteUser(int $websiteId, string $username, string $nickname, string $password, ?array $perms, bool $disabled = false): array
     {
+//        Walidacja długości
         if(strlen($username) < 5 || strlen($username) > 30)
             return ["suc" => 0, "desc" => "Login musi mieć od 5 do 30 znaków!"];
         if(strlen($nickname) < 2 || strlen($nickname) > 30)
             return ["suc" => 0, "desc" => "Nazwa użytkownika musi mieć od 2 do 30 znaków!"];
         if(strlen($password) < 8 || strlen($password) > 50)
             return ["suc" => 0, "desc" => "Hasło musi mieć od 8 do 30 znaków!"];
+
+//        Walidacja - anti SQL injection
+        require_once(dirname(__DIR__,2)."/utils/SQLSecurity.php");
+        $insecureCharsResponse = SQLSecurity::generateResponseForAPI(SQLSecurity::doesStringContains($username),"username");
+        if(sizeof($insecureCharsResponse) !== 0)
+            return $insecureCharsResponse;
+        $insecureCharsResponse = SQLSecurity::generateResponseForAPI(SQLSecurity::doesStringContains($nickname),"nickname");
+        if(sizeof($insecureCharsResponse) !== 0)
+            return $insecureCharsResponse;
+
+        //        todo foreach isProperPermission (validator {string}.{string}.* {string}.{int}.* itp
+        function iterateArray($array): bool
+        {
+            foreach ($array as $key => $value)
+            {
+                if (is_array($value))
+                    // Jeśli wartość jest arrayem, wywołaj funkcję rekurencyjnie
+                    return iterateArray($value);
+                else
+                {
+                    // W przeciwnym razie, $key zawiera string, a $value true/false
+//                    return
+                    $insecureCharsResponse = SQLSecurity::generateResponseForAPI(SQLSecurity::doesStringContains($perm),"perms");
+                    if(sizeof($insecureCharsResponse) !== 0)
+                        return $insecureCharsResponse;
+                }
+            }
+        }
+
+        iterateArray($perms);
+
+
+
+        foreach($perms as $perm)
+        {
+
+        }
 
         $conn = Connection::getConnection();
 
