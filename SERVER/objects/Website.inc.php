@@ -211,6 +211,71 @@ class Website
     }
 
     /**
+     * Funkcja sprawdzająca, czy użytkownik posiada ustawione podane permisje.
+     * Ustawione oznacza, że liczy się KONKRETNA wartość. Rodzice permisji NIE SĄ brane pod uwagę.
+     * UWAGA! Administrator ma zawsze ustawione wszystkie permisje (nawet, gdy nie ma :p).
+     * "suc" w returnie oznacza, czy nie ma żadnych błędów (0 - błąd; nie, czy user ma permisje!)
+     * @param string $remoteAddr
+     * @param string $authKey
+     * @param array $perms
+     * @return array|int[]
+     */
+    public function issetPermissions(string $remoteAddr, string $authKey, array $perms): array
+    {
+//        Sprawdzenie, czy w ogóle istnieje wygenerowany auth_key dla tego IP
+        require_once(dirname(__DIR__)."/objects/website/AuthKey.inc.php");
+        if(!AuthKey::isValidAuthKeyForIp($this->id,$remoteAddr,$authKey))
+            return ["suc" => 0, "desc" => "Klucz bezpieczeństwa jest niepoprawny!"];
+
+        $conn = Connection::getConnection();
+        $query = $conn->query("SELECT admin_id, user_id FROM websites_auth_keys 
+                         WHERE auth_key = '$authKey' 
+                           AND website_id = $this->id
+                           AND invalid = 0
+                           AND logout = 0
+                           ORDER BY id DESC
+                           LIMIT 1");
+//        raczej się nie wydarzy, ale na wszelki wypadek
+        if($query->num_rows === 0)
+            $resp = ["suc" => 0, "desc" => "Nie odnaleziono użytkownika powiązanego z podanym \"auth_key\"!"];
+        else
+        {
+            $row = $query->fetch_row();
+            $permsResponse = [];
+            if(!is_null($row[0]))
+            {
+//                Administrator ma zawsze ustawione permisje (nawet, gdy nie ma 😝)
+                foreach($perms as $perm)
+                    $permsResponse[$perm] = 1;
+            }
+            else
+            {
+                $getUserPermsQuery = $conn->query("SELECT perms FROM websites_users 
+                                            WHERE website_id = $this->id 
+                                              AND id = ${row[1]}");
+                $userPerms = json_decode($getUserPermsQuery->fetch_row()[0],true);
+
+                require_once("website/WebsitePermissions.php");
+
+                foreach($perms as $perm)
+                {
+                    if(array_key_exists($perm, $userPerms))
+                        $permsResponse[$perm] = 1;
+                    else
+                        $permsResponse[$perm] = 0;
+                }
+
+            }
+            $resp = ["suc" => 1, "perms" => $permsResponse];
+        }
+
+        $query->close();
+        $conn->close();
+
+        return $resp;
+    }
+
+    /**
      * Funkcja do wewnętrznego logowania użytkownika (używana do logowania na serwerach PQCMS). Nie działa na sesjach
      * auth_key, przez co jest jedynie dozwolone na wspomnianych wcześnej serwerach PQCMS.
      * @param string $ip ip
