@@ -197,26 +197,10 @@ class Website
 
                 $userPerms = json_decode($getUserPermsQuery->fetch_row()[0],true);
 
-                $permsResponse = [];
-                foreach($perms as $perm)
-                {
-//                    to nie działa w 100%, trzeba dodać że jeżeli ma np.
-//                    site.* = true
-//                    site.1 = false
-//                    ale unset na site.2, to ma permisje do site.2, ale nie do site.1
-//                    $hasPermission
+                require_once("website/WebsitePermissions.php");
+                $permsResponse = WebsitePermissions::hasPermissions($userPerms,$perms);
 
-                    if(!is_array($userPerms))
-                        $permsResponse[$perm] = false;
-                    else
-                    {
-                        $hasPermission = in_array($perm, $userPerms) && $userPerms[$perm] == true;
-                        $permsResponse[$perm] = $hasPermission;
-                    }
-                }
-
-//                $resp = ["suc" => 0, "desc" => "Nie masz permisji!", "user_perms" => $userPerms, "perms" => $permsResponse];
-                $resp = ["suc" => 0, "desc" => "Nie masz permisji!", "perms" => $permsResponse];
+                $resp = ["suc" => 1, "perms" => $permsResponse];
             }
         }
 
