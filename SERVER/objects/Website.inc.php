@@ -186,7 +186,7 @@ class Website
             {
                 $permsResponse = [];
                 foreach($perms as $perm)
-                    $permsResponse[$perm] = true;
+                    $permsResponse[$perm] = 1;
                 $resp = ["suc" => 1, "perms" => $permsResponse];
             }
             else
