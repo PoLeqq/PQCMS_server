@@ -177,7 +177,7 @@ class Website
                            LIMIT 1");
 //        raczej się nie wydarzy, ale na wszelki wypadek
         if($query->num_rows === 0)
-            $resp = ["suc" => 0, "desc" => "Nie odnaleziono użytkownika powiązanego z tym \"auth_key\"!"];
+            $resp = ["suc" => 0, "desc" => "Nie odnaleziono użytkownika powiązanego z podanym \"auth_key\"!"];
         else
         {
             $row = $query->fetch_row();
