@@ -81,34 +81,6 @@ class WebsiteUser
         if(sizeof($insecureCharsResponse) !== 0)
             return $insecureCharsResponse;
 
-        //        todo foreach isProperPermission (validator {string}.{string}.* {string}.{int}.* itp
-        function iterateArray($array): bool
-        {
-            foreach ($array as $key => $value)
-            {
-                if (is_array($value))
-                    // Jeśli wartość jest arrayem, wywołaj funkcję rekurencyjnie
-                    return iterateArray($value);
-                else
-                {
-                    // W przeciwnym razie, $key zawiera string, a $value true/false
-//                    return
-                    $insecureCharsResponse = SQLSecurity::generateResponseForAPI(SQLSecurity::doesStringContains($perm),"perms");
-                    if(sizeof($insecureCharsResponse) !== 0)
-                        return $insecureCharsResponse;
-                }
-            }
-        }
-
-        iterateArray($perms);
-
-
-
-        foreach($perms as $perm)
-        {
-
-        }
-
         $conn = Connection::getConnection();
 
         $query = $conn->query("SELECT username FROM websites_admins WHERE website_id = $websiteId");
