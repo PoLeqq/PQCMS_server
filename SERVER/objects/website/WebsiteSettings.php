@@ -19,11 +19,6 @@ class WebsiteSettings
         $this->unsafe_setField("login_attempts",$loginAttempts);
     }
 
-    public function resetLoginAttempts(): void
-    {
-        $this->unsafe_setField("login_attempts",null);
-    }
-
     public function getTokenLifespan(): int 
     {
         return $this->unsafe_getField("token_lifespan");
@@ -34,11 +29,6 @@ class WebsiteSettings
         $this->unsafe_setField("token_lifespan",$lifespan);
     }
 
-    public function resetTokenLifespan(): void
-    {
-        $this->unsafe_setField("token_lifespan",null);
-    }
-
     public function getLoginSessionTime(): int
     {
         return $this->unsafe_getField("login_session_time");
@@ -47,11 +37,6 @@ class WebsiteSettings
     public function setLoginSessionTime(?int $loginSessionTime): void
     {
         $this->unsafe_setField("login_session_time",$loginSessionTime);
-    }
-
-    public function resetLoginSessionTime(): void
-    {
-        $this->unsafe_setField("login_session_time",null);
     }
 
     private function unsafe_setField(string $column, mixed $value): void
@@ -65,7 +50,7 @@ class WebsiteSettings
         $conn->close();
     }
 
-    private function unsafe_getField(string $column): mixed
+    public function unsafe_getField(string $column): mixed
     {
         $conn = Connection::getConnection();
         $query = $conn->query("SELECT $column FROM websites_settings WHERE website_id = $this->websiteId");
