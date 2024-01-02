@@ -68,6 +68,9 @@ class WebsiteUser
             return ["suc" => 0, "desc" => "Nazwa użytkownika musi mieć od 2 do 30 znaków!"];
         if(strlen($password) < 8 || strlen($password) > 50)
             return ["suc" => 0, "desc" => "Hasło musi mieć od 8 do 30 znaków!"];
+        require_once "WebsitePermissions.php";
+        if(!WebsitePermissions::isProperPermsArray($perms))
+            return ["suc" => 0, "desc" => "Podano niepoprawne permisje!"];
 
 //        Walidacja - anti SQL injection
         require_once(dirname(__DIR__,2)."/utils/SQLSecurity.php");
@@ -115,13 +118,15 @@ class WebsiteUser
             if($query->num_rows == 0)
             {
                 $disabled = (int) $disabled;
+                if(is_null($perms))
+                    $perms = [];
                 $perms = json_encode($perms);
 
                 $password = password_hash($password,PASSWORD_DEFAULT);
 
                 $conn->query("INSERT INTO websites_users VALUES (null,$websiteId,'$username','$nickname','$password','$perms',$disabled)");
                 if($conn->errno === 0) $resp = ["suc" => 1, "desc" => "Dodano użytkownika!"];
-                else $resp = ["suc" => 0, "desc" => "Błąd podczas dodawania użytkownika. Kod błędu: ".($conn->errno*2)."!"];
+                else $resp = ["suc" => 0, "desc" => "Błąd podczas dodawania użytkownika. Kod błędu: ".($conn->errno)."!"];
                 $conn->close();
             }
             else $resp = ["suc" => 0, "desc" => "Już istnieje użytkownik o takim loginie!"];
