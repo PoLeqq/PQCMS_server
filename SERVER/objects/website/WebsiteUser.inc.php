@@ -59,7 +59,7 @@ class WebsiteUser
         return $result;
     }
 
-    public static function addWebsiteUser(int $websiteId, string $username, string $nickname, string $password, ?array $perms, bool $disabled = false): array
+    public static function addUser(int $websiteId, string $username, string $nickname, string $password, array $perms = [], bool $disabled = false): array
     {
 //        Walidacja długości
         if(strlen($username) < 5 || strlen($username) > 30)
