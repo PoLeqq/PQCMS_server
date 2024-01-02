@@ -172,4 +172,43 @@ class WebsitePermissions
 
         return join(".",$parts);
     }
+
+    public static function isProperPermsArray(array $array): bool
+    {
+        if($array === [])
+            return true;
+        if(array_values($array) === $array)
+            return false;
+
+        foreach($array as $perm => $value)
+        {
+            if(!self::isProperPermission($perm))
+                return false;
+            if(!is_bool($value))
+                return false;
+        }
+        return true;
+    }
+
+    public static function parsePostPermsArray(array $array): ?array
+    {
+        if($array === [])
+            return [];
+        if(array_values($array) === $array)
+            return null;
+
+        $parsedArray = [];
+        foreach($array as $perm => $value)
+        {
+            if(!self::isProperPermission($perm))
+                return null;
+            if($value === "0")
+                $parsedArray[$perm] = false;
+            else if($value === "1")
+                $parsedArray[$perm] = true;
+            else
+                return null;
+        }
+        return $parsedArray;
+    }
 }
