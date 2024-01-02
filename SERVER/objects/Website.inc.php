@@ -106,10 +106,18 @@ class Website
 
     public function addUser(string $username, string $nickname, string $password, array $perms, bool $disabled): array
     {
-        if (sizeof($this->getUsersIds()) >= 20)
+        if(count($this->getUsersIds()) >= 20)
             return ["suc" => 0, "desc" => "Strona osiągnęła limit użytkowników (20)!"];
         require_once(dirname(__DIR__) . "/objects/website/WebsiteUser.inc.php");
-        return WebsiteUser::addWebsiteUser($this->id, $username, $nickname, $password, $perms, $disabled);
+        return WebsiteUser::addUser($this->id, $username, $nickname, $password, $perms, $disabled);
+    }
+
+    public function addRank(string $name, array $perms, int $priority, ?int $parentId): array
+    {
+        if(count($this->getRanksIds()) >= 10)
+            return ["suc" => 0, "desc" => "Strona osiągnęła limit rang (10)!"];
+        require_once(dirname(__DIR__) . "/objects/website/WebsiteRank.inc.php");
+        return WebsiteRank::addRank($this->id, $name, $perms, $priority, $parentId);
     }
 
     public function getUsersIds(): array
