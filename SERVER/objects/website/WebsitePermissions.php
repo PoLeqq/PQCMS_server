@@ -63,17 +63,84 @@ class WebsitePermissions
                     continue;
                 }
 
-            $originalPerm = $perm;
-            while(!array_key_exists($perm, $userPerms))
+                $originalPerm = $perm;
+                while(!array_key_exists($perm, $userPerms))
+                {
+                    $perm = self::getParentPermission($perm);
+                    if($perm === "")
+                        break;
+                }
+
+                $hasPermission = array_key_exists($perm,$userPerms) && $userPerms[$perm] == 1;
+                $permsResponse[$originalPerm] = (int) $hasPermission;
+            }
+        }
+        else
+        {
+            $ranks = [];
+            foreach($userPerms as $perm => $value)
             {
-                $perm = self::getParentPermission($perm);
-                if($perm === "")
-                    break;
+                echo $perm;
+                if(str_starts_with($perm,"pqcms.rank."))
+                {
+                    $rank = str_replace("pqcms.rank.","",$perm);
+                    $ranks[] = $rank;
+                }
             }
 
-            $hasPermission = array_key_exists($perm,$userPerms) && $userPerms[$perm] == 1;
-            $permsResponse[$originalPerm] = (int) $hasPermission;
+            $allPerms = [$userPerms];
+            require_once(dirname(__DIR__,2)."/database/Connection.inc.php");
+            $conn = Connection::getConnection();
+            foreach($ranks as $rank)
+            {
+//                tutaj miało być ale pqcms.rank.* , ale chyba zrezygnuję z posiadania wszystkich rang 1 permiją :p
+                $sql = "SELECT perms FROM websites_ranks WHERE name = '$rank' AND website_id = $websiteId";
+
+                $query = $conn->query($sql);
+                if($query->num_rows >= 1)
+                {
+                    $jsonPerms = json_decode($query->fetch_array()[0],true);
+                    if($jsonPerms !== false)
+                        $allPerms[] = $jsonPerms;
+                }
+
+                $query->close();
+                $conn->close();
+            }
+
+            $permsResponse = [];
+            foreach($checkPerms as $perm)
+            {
+                if(!self::isProperPermission($perm))
+                {
+                    $permsResponse[$perm] = -1;
+                    continue;
+                }
+
+                $originalPerm = $perm;
+                $contains = false;
+                $hasPermission = false;
+                while(!$contains)
+                {
+                    foreach($allPerms as $allPerm)
+                    {
+                        if(array_key_exists($perm, $allPerm))
+                        {
+                            $contains = true;
+                            $hasPermission = $allPerm[$perm] == 1;
+                            break 2;
+                        }
+                    }
+
+                    $perm = self::getParentPermission($perm);
+                    if($perm === "")
+                        break;
+                }
+
+                $permsResponse[$originalPerm] = (int) $hasPermission;
+            }
         }
+
 
         return $permsResponse;
     }
