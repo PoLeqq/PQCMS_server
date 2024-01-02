@@ -166,6 +166,20 @@ class Website
         return $result;
     }
 
+    public function getRanks(): array
+    {
+        $conn = Connection::getConnection();
+        $query = $conn->query("SELECT name, perms, priority, parent_id FROM websites_ranks WHERE website_id = $this->id");
+
+        $result = [];
+        while($row = $query->fetch_row())
+            $result[] = ["name" => $row[0], "perms" => json_decode($row[1]), "priority" => $row[2], "parent_id" => $row[3]];
+
+        $query->close();
+        $conn->close();
+        return $result;
+    }
+
     public function hasPermission(string $remoteAddr, string $authKey, string $perm): bool
     {
         $hasPermissions = $this->hasPermissions($remoteAddr,$authKey,[$perm]);
