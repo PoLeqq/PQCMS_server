@@ -134,6 +134,20 @@ class Website
         return $result;
     }
 
+    public function getRanksIds(): array
+    {
+        $conn = Connection::getConnection();
+        $query = $conn->query("SELECT id FROM websites_ranks WHERE website_id = $this->id");
+
+        $result = [];
+        foreach ($query->fetch_row() as $row)
+            $result[] = $row[0];
+
+        $query->close();
+        $conn->close();
+        return $result;
+    }
+
     public function getUsers(): array
     {
         $conn = Connection::getConnection();
