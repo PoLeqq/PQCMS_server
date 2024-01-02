@@ -32,16 +32,36 @@ class WebsitePermissions
         return true;
     }
 
-    public static function hasPermissions(array $userPerms, array $checkPerms): array
+    public static function hasPermissions(array $userPerms, array $checkPerms, ?int $websiteId = null): array
     {
-        $permsResponse = [];
-        foreach($checkPerms as $perm)
+        /*
+         * Permisje sprawdza w następujący sposób:
+         * Permisje użytkownika - if isset
+         * Pobranie rang
+         * Sortowanie rang wg priority (jeśli są takie same dla kilku rang to gratki)
+         * Permisje rang - if isset
+         * Permisje uż
+         *
+         *
+         * Priorytety:
+         * permisje usera
+         * permisje rang (sorted by priority, asc)
+         *
+         * Algorytm:
+         * Sprawdza permisje wg prio (if isset)
+         * Jeśli nie ma, getParent
+         */
+
+        if(is_null($websiteId))
         {
-            if(!self::isProperPermission($perm))
+            $permsResponse = [];
+            foreach($checkPerms as $perm)
             {
-                $permsResponse[$perm] = -1;
-                continue;
-            }
+                if(!self::isProperPermission($perm))
+                {
+                    $permsResponse[$perm] = -1;
+                    continue;
+                }
 
             $originalPerm = $perm;
             while(!array_key_exists($perm, $userPerms))
