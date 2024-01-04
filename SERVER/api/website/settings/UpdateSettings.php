@@ -50,7 +50,7 @@ $responseChanged = [];
         if($website->hasPermission($_SERVER["REMOTE_ADDR"], $_POST["auth_key"], "pqcms.settings.login_count.set"))
         {
             if(!empty($_POST["login_count_reset"]))
-                $settings->resetLoginAttempts();
+                $settings->setLoginAttempts(null);
             else
                 $settings->setLoginAttempts($_POST["login_count"]);
             $responseChanged["login_count"] = 1;
@@ -65,7 +65,7 @@ $responseChanged = [];
         if($website->hasPermission($_SERVER["REMOTE_ADDR"], $_POST["auth_key"], "pqcms.settings.login_session_time.set"))
         {
             if(!empty($_POST["login_session_time_reset"]))
-                $settings->resetLoginSessionTime();
+                $settings->setLoginSessionTime(null);
             else
                 $settings->setLoginSessionTime($_POST["login_session_time"]);
             $responseChanged["login_session_time"] = 1;
@@ -79,7 +79,7 @@ $responseChanged = [];
         if($website->hasPermission($_SERVER["REMOTE_ADDR"], $_POST["auth_key"], "pqcms.settings.token_lifespan.set"))
         {
             if(!empty($_POST["token_lifespan_reset"]))
-                $settings->resetTokenLifespan();
+                $settings->setTokenLifespan(null);
             else
                 $settings->setTokenLifespan($_POST["token_lifespan"]);
             $responseChanged["token_lifespan"] = 1;
