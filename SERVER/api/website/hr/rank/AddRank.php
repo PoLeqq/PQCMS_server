@@ -8,8 +8,13 @@ APIUtils::validatePostForAuthKey($_POST,basename(__FILE__));
 if(empty($_POST["name"]) || empty($_POST["display_name"]) || !isset($_POST["priority"]))
     die(json_encode(["suc" => 0, "desc" => "Uzupełnij wszystkie pola!"],JSON_UNESCAPED_UNICODE));
 
-if($_POST["priority"] > 65535)
-    die(json_encode(["suc" => 0, "desc" => "Priorytet rangi nie może być większy niż 65535!"],JSON_UNESCAPED_UNICODE));
+$apiFields = ["priority"];
+$validatorResponse = Validator::validate([$_POST["priority"]],["i(0-65535)"]);
+if($validatorResponse["suc"] == 0)
+//    die(json_encode(["suc" => 0, "desc" => "Walidacja nie powiodła się dla pola \"{$apiFields[$validatorResponse["element_index"]]}\"", "dev_msg" => $validatorResponse["desc"]],JSON_UNESCAPED_UNICODE));
+    die(json_encode(["suc" => 0, "desc" => "Walidacja nie powiodła się dla pola \"{$apiFields[$validatorResponse["element_index"]]}\""]));
+//if($_POST["priority"] > 65535)
+//    die(json_encode(["suc" => 0, "desc" => "Priorytet rangi nie może być większy niż 65535!"],JSON_UNESCAPED_UNICODE));
 
 if(empty($_POST["perms"]))
     $_POST["perms"] = [];
