@@ -59,11 +59,13 @@ class WebsiteRank
         return $result;
     }
 
-    public static function addRank(int $websiteId, string $name, array $perms, int $priority, ?int $parentId): array
+    public static function addRank(int $websiteId, string $name, string $displayName, array $perms, int $priority, ?int $parentId): array
     {
 //        Walidacja długości
         if(strlen($name) < 5 || strlen($name) > 30)
             return ["suc" => 0, "desc" => "Nazwa musi mieć od 5 do 30 znaków!"];
+        if(strlen($displayName) < 5 || strlen($displayName) > 30)
+            return ["suc" => 0, "desc" => "Wyświetlana nazwa musi mieć od 5 do 30 znaków!"];
         require_once "WebsitePermissions.php";
         $perms = WebsitePermissions::parsePostPermsArray($perms);
         if(is_null($perms))
@@ -86,7 +88,7 @@ class WebsiteRank
             if(is_null($parentId))
                 $parentId = "NULL";
 
-            $conn->query("INSERT INTO websites_ranks VALUES (null,$websiteId,'$name','$perms','$priority',$parentId)");
+            $conn->query("INSERT INTO websites_ranks VALUES (null,$websiteId,'$name','$displayName','$perms','$priority',$parentId)");
             if($conn->errno === 0) $resp = ["suc" => 1, "desc" => "Dodano rangę!"];
             else $resp = ["suc" => 0, "desc" => "Błąd podczas dodawania rangi. Kod błędu: ".($conn->errno)."!"];
             $conn->close();
