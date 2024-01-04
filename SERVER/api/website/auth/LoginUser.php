@@ -3,8 +3,7 @@
 header('Content-Type: application/json; charset=utf-8');
 require_once(dirname(__DIR__,2)."/utils/APIUtils.php");
 
-$response = APIUtils::validatePost($_POST,basename(__FILE__));
-if($response["suc"] == 0) die(json_encode($response,JSON_UNESCAPED_UNICODE));
+APIUtils::validatePost($_POST,basename(__FILE__));
 
 if(empty($_POST["username"]) || empty($_POST["password"]))
     die(json_encode(["suc" => 0, "desc" => "Uzupełnij wszystkie pola!"],JSON_UNESCAPED_UNICODE));

@@ -3,21 +3,15 @@
 header('Content-Type: application/json; charset=utf-8');
 require_once(dirname(__DIR__,2)."/utils/APIUtils.php");
 
-$response = APIUtils::validatePost($_POST,basename(__FILE__));
-if($response["suc"] == 0) die(json_encode($response,JSON_UNESCAPED_UNICODE));
+APIUtils::validatePostForAuthKey($_POST,basename(__FILE__));
 
 if((!isset($_POST["login_count"]) && empty($_POST["login_count_reset"])) ||
     (!isset($_POST["login_session_time"]) && empty($_POST["login_session_time_reset"])) ||
     (!isset($_POST["token_lifespan"]) && empty($_POST["token_lifespan_reset"])))
     die(json_encode(["suc" => 0, "desc" => "Uzupełnij wszystkie pola!"],JSON_UNESCAPED_UNICODE));
 
-$authKeyValidate = APIUtils::validatePostForAuthKey($_POST);
-if($authKeyValidate["suc"] === 0)
-    die(json_encode($authKeyValidate,JSON_UNESCAPED_UNICODE));
 require_once(dirname(__DIR__,3)."/objects/Website.inc.php");
 $website = APIUtils::getWebsite($_POST);
-
-// Mozolna weryfikacja, bo wszystko ręcznie... Ale czy da się to zrobić automatycznie?
 
 $apiFields = ["login_count","login_count_reset",
     "login_session_time","login_session_time_reset",
