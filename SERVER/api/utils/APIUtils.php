@@ -2,6 +2,7 @@
 
 require_once(dirname(__DIR__)."/utils/validators/Validator.inc.php");
 require_once(dirname(__DIR__,2)."/objects/Website.inc.php");
+require_once(dirname(__DIR__,2)."/objects/SafeWebsite.inc.php");
 require_once(dirname(__DIR__,2)."/utils/SQLSecurity.php");
 
 class APIUtils
@@ -12,70 +13,72 @@ class APIUtils
      * Jeżeli test przejdzie pomyślnie, klucz licencyjny zostaje unieważniony.
      * @param array $post tablica $_POST
      * @param string $apiName nazwa pliku API, na który weryfikuje dane (potrzebny do zużywania klucza licencyjnego, do opisu)
-     * @return array odpowiedź: "suc": (0/1), dla 0 również "desc": "string: opis błędu"
+     * DEPRECATED ~~return array odpowiedź: "suc": (0/1), dla 0 również "desc": "string: opis błędu"
      */
-    public static function validatePost(array $post, string $apiName): array
+    public static function validatePost(array $post, string $apiName): void
     {
         if(empty($post["domain"]) || empty($post["secure_key"]))
-            return ["suc" => 0, "desc" => "Sprawdź poprawność post'ów!"];
+            die(json_encode(["suc" => 0, "desc" => "Sprawdź poprawność post'ów!"],JSON_UNESCAPED_UNICODE));
 
         $fields = ["domain","secure_key"];
         $validatorResponse = Validator::validate([$post["domain"],$post["secure_key"]],["s","s(128)"]);
         if($validatorResponse["suc"] == 0)
-            return ["suc" => 0, "desc" => "Walidacja nie powiodła się dla pola \"{$fields[$validatorResponse["element_index"]]}\""];
+            die(json_encode( ["suc" => 0, "desc" => "Walidacja nie powiodła się dla pola \"{$fields[$validatorResponse["element_index"]]}\""],JSON_UNESCAPED_UNICODE));
 
 //        Różne "sprawdzacze"
         $website = APIUtils::getWebsite($post);
         if(is_null($website) || !$website->doesExists())
-            return ["suc" => 0, "desc" => "Nie znaleziono strony o podanej domenie!"];
+            die(json_encode(["suc" => 0, "desc" => "Nie znaleziono strony o podanej domenie!"],JSON_UNESCAPED_UNICODE));
 
 //        Sprawdzenie, czy klucz ma wartości tylko 0-9,a-f
-        $insecureCharsResponse = SQLSecurity::generateResponseForAPI(SQLSecurity::doesStringContains($post["secure_key"],SQLSecurity::getKeyCharacters(),true),"secure_key");
-        if(sizeof($insecureCharsResponse) !== 0)
-            return $insecureCharsResponse;
+//        require_once(dirname(__DIR__,2)."/objects/website/SecureKey.inc.php");
+//        if(!SecureKey::isValidSecureKey($post["secure_key"]))
+//            die(json_encode(["suc" => 0, "desc" => "Podano niepoprawny \"auth_key\"!"],JSON_UNESCAPED_UNICODE));
+//        $insecureCharsResponse = SQLSecurity::generateResponseForAPI(SQLSecurity::doesStringContains(,SQLSecurity::getKeyCharacters(),true),"secure_key");
+//        if(sizeof($insecureCharsResponse) !== 0)
+//            die(json_encode($insecureCharsResponse,JSON_UNESCAPED_UNICODE));
 
         if(!$website->isProperSecureKey($post["secure_key"]))
-            return ["suc" => 0, "desc" => "Niepoprawny klucz zabezpieczenia!"];
+            die(json_encode(["suc" => 0, "desc" => "Niepoprawny klucz zabezpieczenia!"],JSON_UNESCAPED_UNICODE));
+
 //        Unieważnienie klucza
         $website->invalidateSecureKey($post["secure_key"],$apiName);
-        
-        return ["suc" => 1];
     }
 
     /**
-     * Funkcja podobna do APIUtils::validatePost, jednak posiada również sprawdzenie poprawności auth_key
+     * Funkcja WYWOŁUJE APIUtils::validatePost, jednak posiada również sprawdzenie poprawności auth_key
      * Funkcja sprawdza, czy podana tablica posiada klucze: domain, secure_key (podstawowe dane API).
      * Jeżeli test przejdzie pomyślnie, klucz licencyjny zostaje unieważniony.
      * @param array $post tablica $_POST
-     * @return array odpowiedź: "suc": (0/1), dla 0 również "desc": "string: opis błędu"
+     * DEPRECATED~~return array odpowiedź: "suc": (0/1), dla 0 również "desc": "string: opis błędu"
      */
-    public static function validatePostForAuthKey(array $post): array
+    public static function validatePostForAuthKey(array $post, string $apiName): void
     {
+//        Wywołaj "domyślną" funkcję, jeśli jest error to zakończ już tutaj
+        self::validatePost($post,$apiName);
+
 //        Jeżeli nie ma auth_key to GG
         if(empty($post["auth_key"]))
-            return ["suc" => 0, "desc" => "Akcja niemożliwa. Nie podano \"auth_key\"!"];
+            die(json_encode(["suc" => 0, "desc" => "Akcja niemożliwa. Nie podano \"auth_key\"!"],JSON_UNESCAPED_UNICODE));
 
 //        Sprawdzenie, czy auth_key to string(128)
         $fields = ["auth_key"];
         $validatorResponse = Validator::validate([$post["auth_key"]],["s(128)"]);
         if($validatorResponse["suc"] == 0)
-            return ["suc" => 0, "desc" => "Walidacja nie powiodła się dla pola \"{$fields[$validatorResponse["element_index"]]}\""];
+            die(json_encode(["suc" => 0, "desc" => "Walidacja nie powiodła się dla pola \"{$fields[$validatorResponse["element_index"]]}\""],JSON_UNESCAPED_UNICODE));
 //            return ["suc" => 0, "desc" => "Walidacja nie powiodła się dla pola \"{$fields[$validatorResponse["element_index"]]}\" (podano: ${post["auth_key"]}"];
 
 //        Sprawdzenie, czy klucz ma wartości tylko 0-9,a-f
         $insecureCharsResponse = SQLSecurity::generateResponseForAPI(SQLSecurity::doesStringContains($post["auth_key"],SQLSecurity::getKeyCharacters(),true),"auth_key");
         if(sizeof($insecureCharsResponse) !== 0)
-            return $insecureCharsResponse;
+            die(json_encode($insecureCharsResponse,JSON_UNESCAPED_UNICODE));
 
 //        Sprawdzenie, czy sesja jest dalej aktywna na serwerach PQCMS
         $website = self::getWebsite($post);
 
         require_once(dirname(__DIR__,2)."/objects/website/AuthKey.inc.php");
         if(!AuthKey::isValidAuthKeyForIp($website->getId(),$_SERVER["REMOTE_ADDR"],$post["auth_key"])["valid"])
-            return ["suc" => 0, "desc" => "Sesja konta jest nieaktywna!"];
-
-//        Jest wszystko super :)
-        return ["suc" => 1];
+            die(json_encode(["suc" => 0, "desc" => "Sesja konta jest nieaktywna!"],JSON_UNESCAPED_UNICODE));
     }
 
     /**
@@ -97,5 +100,22 @@ class APIUtils
         $website = new Website($id);
         if(!$website->doesExists()) return null;
         return $website;
+    }
+
+    public static function getSafeWebsite($post): ?SafeWebsite
+    {
+        if(empty($post["auth_key"]))
+            return null;
+
+        if($post["domain"] === "localhost")
+            $domain = "localhost.localhost";
+        else
+            $domain = $post["domain"];
+
+        $id = Website::getWebsiteIDByMatching("domain",$domain);
+        if(is_null($id))
+            return null;
+
+        return new SafeWebsite($id,$_SERVER["REMOTE_ADDR"],$post["auth_key"]);
     }
 }
