@@ -1,18 +1,25 @@
 <?php
-// todo cały apik do zrobienia
+
 header('Content-Type: application/json; charset=utf-8');
 
 require_once(dirname(__DIR__, 3) . "/utils/APIUtils.php");
 APIUtils::validatePostForAuthKey($_POST,basename(__FILE__));
 
-if(empty($_POST["name"]) || !isset($_POST["perms"]) || empty($_POST["priority"]))
+if(empty($_POST["name"]) || empty($_POST["display_name"]) || !isset($_POST["priority"]))
     die(json_encode(["suc" => 0, "desc" => "Uzupełnij wszystkie pola!"],JSON_UNESCAPED_UNICODE));
 
 if($_POST["priority"] > 65535)
     die(json_encode(["suc" => 0, "desc" => "Priorytet rangi nie może być większy niż 65535!"],JSON_UNESCAPED_UNICODE));
 
+if(empty($_POST["perms"]))
+    $_POST["perms"] = [];
 if(!is_array($_POST["perms"]))
-    die(json_encode(["suc" => 0, "desc" => "Niepoprawny format permisji!"],JSON_UNESCAPED_UNICODE));
+    die(json_encode(["suc" => 0, "desc" => "Podane permisje nie są poprawne!"],JSON_UNESCAPED_UNICODE));
+
+require_once(dirname(__DIR__,4)."/objects/website/WebsitePermissions.php");
+$parsedPerms = WebsitePermissions::parsePostPermsArray($_POST["perms"]);
+if(is_null($parsedPerms))
+    die(json_encode(["suc" => 0, "desc" => "Podane permisje nie są poprawne!"]));
 
 $website = APIUtils::getWebsite($_POST);
 // TODO sprawdzenie maxa użytkowników przypisane do strony
