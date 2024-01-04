@@ -26,7 +26,11 @@ $parsedPerms = WebsitePermissions::parsePostPermsArray($_POST["perms"]);
 if(is_null($parsedPerms))
     die(json_encode(["suc" => 0, "desc" => "Podane permisje nie są poprawne!"]));
 
-$website = APIUtils::getWebsite($_POST);
-// TODO sprawdzenie maxa użytkowników przypisane do strony
-$errno = $website->addUser($_POST["username"], $_POST["nickname"], $_POST["password"], [], $_POST["disabled"]);
-echo json_encode(["suc" => 1, "resp" => $errno == 0, "desc" => $errno],JSON_UNESCAPED_UNICODE);
+$safeWebsite = APIUtils::getSafeWebsite($_POST);
+$website = $safeWebsite->getWebsite();
+foreach($_POST["perms"] as $perm)
+    if(!$website->hasPermission($_SERVER["REMOTE_ADDR"],$_POST["auth_key"],$perm))
+        unset($_POST["perms"][$perm]);
+
+$parentId = (empty($_POST["parent_id"])) ? null : $_POST["parent_id"];
+echo json_encode($safeWebsite->addRank($_POST["name"], $_POST["display_name"], $_POST["perms"], $_POST["priority"], $parentId),JSON_UNESCAPED_UNICODE);
