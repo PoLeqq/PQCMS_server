@@ -22,5 +22,9 @@ if(is_null($parsedPerms))
     die(json_encode(["suc" => 0, "desc" => "Podane permisje nie są poprawne!"]));
 
 $website = APIUtils::getWebsite($_POST);
-//if($website->hasPermission($_SERVER["REMOTE_ADDR"],))
-echo json_encode($website->addUser($_POST["username"], $_POST["nickname"], $_POST["password"], [], $_POST["disabled"]),JSON_UNESCAPED_UNICODE);
+foreach($_POST["perms"] as $perm)
+    if(!$website->hasPermission($_SERVER["REMOTE_ADDR"],$_POST["auth_key"],$perm))
+        unset($_POST["perms"][$perm]);
+
+$website = APIUtils::getSafeWebsite($_POST);
+echo json_encode($website->addUser($_POST["username"], $_POST["nickname"], $_POST["password"], $parsedPerms, $_POST["disabled"]),JSON_UNESCAPED_UNICODE);
