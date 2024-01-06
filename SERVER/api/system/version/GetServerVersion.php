@@ -21,9 +21,7 @@ header('Content-Type: application/json; charset=utf-8');
 // "dev-1.0.0"
 
 require_once(dirname(__DIR__, 2) . "/utils/APIUtils.php");
-$response = APIUtils::validatePost($_POST,basename(__FILE__));
-if($response["suc"] == 0)
-    die(json_encode($response,JSON_UNESCAPED_UNICODE));
+APIUtils::validatePostForAuthKey($_POST,basename(__FILE__));
 
 require_once("Version.inc.php");
 $response["version"] = Version::getVersion("server",!empty($_POST["complex"]));
