@@ -112,6 +112,12 @@ class Website
         return WebsiteUser::addUser($this->id, $username, $nickname, $password, $perms, $disabled);
     }
 
+    public function editUser(string $username, ?string $nickname, ?string $password, array $perms, ?bool $disabled): array
+    {
+        require_once(dirname(__DIR__) . "/objects/website/WebsiteUser.inc.php");
+        return WebsiteUser::editUser($this->id, $username, $nickname, $password, $perms, $disabled);
+    }
+
     public function addRank(string $name, string $displayName, array $perms, int $priority, ?int $parentId): array
     {
         if(count($this->getRanksIds()) >= 10)
