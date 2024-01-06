@@ -85,19 +85,12 @@ class AuthKey
 
     public static function isProperAuthKey(string $authKey): bool
     {
-        if(strlen($authKey) != 128)
-            return false;
-        $properChars = ['0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f'];
-        foreach(str_split($authKey) as $char)
-        {
-            if(!in_array($char,$properChars))
-                return false;
-        }
-        return true;
+        return (bool) preg_match('/^[0-9a-f]{128}$/', $authKey);
     }
 
     public static function isValidAuthKeyForIp(int $websiteId, string $ip, string $authKey): array
     {
+//        Sprawdzenie, czy klucz ma wartości tylko 0-9,a-f
         if(!self::isProperAuthKey($authKey))
             return["valid" => 0, "outdated" => 0, "invalidated" => 0, "not_secure" => 1];
         $conn = Connection::getConnection();
