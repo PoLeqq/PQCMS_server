@@ -68,14 +68,8 @@ class APIUtils
             die(json_encode(["suc" => 0, "desc" => "Walidacja nie powiodła się dla pola \"{$fields[$validatorResponse["element_index"]]}\""],JSON_UNESCAPED_UNICODE));
 //            return ["suc" => 0, "desc" => "Walidacja nie powiodła się dla pola \"{$fields[$validatorResponse["element_index"]]}\" (podano: ${post["auth_key"]}"];
 
-//        Sprawdzenie, czy klucz ma wartości tylko 0-9,a-f
-        $insecureCharsResponse = SQLSecurity::generateResponseForAPI(SQLSecurity::doesStringContains($post["auth_key"],SQLSecurity::getKeyCharacters(),true),"auth_key");
-        if(sizeof($insecureCharsResponse) !== 0)
-            die(json_encode($insecureCharsResponse,JSON_UNESCAPED_UNICODE));
-
 //        Sprawdzenie, czy sesja jest dalej aktywna na serwerach PQCMS
         $website = self::getWebsite($post);
-
         require_once(dirname(__DIR__,2)."/objects/website/AuthKey.inc.php");
         if(!AuthKey::isValidAuthKeyForIp($website->getId(),$_SERVER["REMOTE_ADDR"],$post["auth_key"])["valid"])
             die(json_encode(["suc" => 0, "desc" => "Sesja konta jest nieaktywna!"],JSON_UNESCAPED_UNICODE));
