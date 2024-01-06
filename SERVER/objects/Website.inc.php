@@ -175,11 +175,11 @@ class Website
     public function getRanks(): array
     {
         $conn = Connection::getConnection();
-        $query = $conn->query("SELECT name, perms, priority, parent_id FROM websites_ranks WHERE website_id = $this->id");
+        $query = $conn->query("SELECT name, display_name, perms, priority, parent_id FROM websites_ranks WHERE website_id = $this->id");
 
         $result = [];
         while($row = $query->fetch_row())
-            $result[] = ["name" => $row[0], "perms" => json_decode($row[1]), "priority" => $row[2], "parent_id" => $row[3]];
+            $result[] = ["name" => $row[0], "display_name" => $row[1], "perms" => json_decode($row[2]), "priority" => $row[3], "parent_id" => $row[4]];
 
         $query->close();
         $conn->close();
