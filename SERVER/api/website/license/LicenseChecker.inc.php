@@ -67,9 +67,6 @@ function checkLicense($remoteAddr, $httpReferer, $domain, $login, $license_key):
             return ["suc" => 0, "desc" => "Nieprawidłowa nazwa hosta."];
         }
 
-//        TODO do wywalenia
-//    $clientServerIps[] = "::1";
-
         if(!in_array($remoteAddr, $clientServerIps))
         {
 //        do logów sk..syna XD
@@ -108,6 +105,5 @@ function checkLicense($remoteAddr, $httpReferer, $domain, $login, $license_key):
     }
 
     addCheckLicenseHistory($remoteAddr, $requestDomain, $domain, $login, $license_key, true, "");
-//    todo do wywalenia? żeby np taki pracownik nie miał dostępu do expiry_date
-    return ["suc" => 1, "desc" => "Autoryzacja powiodła się!", "expiry_date" => $website->getLicenseExpiration()];
+    return ["suc" => 1, "desc" => "Autoryzacja powiodła się!"];
 }
