@@ -17,9 +17,9 @@ class SecureKey
         return $secureKey;
     }
 
-    public static function isValidSecureKey(string $secureKey): bool|int
+    public static function isValidSecureKey(string $secureKey): bool
     {
-        return preg_match('/^[0-9a-f]{128}$/', $secureKey);
+        return (bool)preg_match('/^[0-9a-f]{128}$/', $secureKey);
     }
 
     public static function invalidateSecureKey(int $website_id, string $secureKey, string $apiName): void
