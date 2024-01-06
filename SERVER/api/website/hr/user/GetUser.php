@@ -5,12 +5,11 @@ header('Content-Type: application/json; charset=utf-8');
 require_once(dirname(__DIR__, 3) . "/utils/APIUtils.php");
 APIUtils::validatePostForAuthKey($_POST,basename(__FILE__));
 
-$website = APIUtils::getWebsite($_POST);
-$users = $website->getUsers();
+$safeWebsite = APIUtils::getSafeWebsite($_POST);
+$users = $safeWebsite->getUsers();
 
 $responseUsers = [];
-
-if(isset($_POST["admin"]) && $_POST["admin"] === 1)
+if(isset($_POST["admin"]) && $_POST["admin"] === "1")
 {
     $admin = null;
     foreach($users as $user)
@@ -27,7 +26,7 @@ else
 {
     foreach($users as $user)
     {
-        if(isset($_POST["admin"]) && $_POST["admin"] == 0 && !isset($user["disabled"]))
+        if(isset($_POST["admin"]) && $_POST["admin"] === "0" && !isset($user["disabled"]))
             continue;
         if(isset($_POST["username"]) && $_POST["username"] !== $user["username"])
             continue;
