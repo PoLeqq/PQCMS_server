@@ -486,8 +486,8 @@ class Website
 
     public function isProperSecureKey(string $secureKey): bool
     {
-        $insecureCharsResponse = SQLSecurity::generateResponseForAPI(SQLSecurity::doesStringContains($secureKey,SQLSecurity::getKeyCharacters(),true),"secure_key");
-        if(sizeof($insecureCharsResponse) !== 0)
+        require_once("website/SecureKey.inc.php");
+        if(!SecureKey::isValidSecureKey($secureKey))
             return false;
         $conn = Connection::getConnection();
         $result = $conn->query("SELECT generated_time FROM websites_secure_keys 
