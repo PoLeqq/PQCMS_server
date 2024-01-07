@@ -7,8 +7,10 @@ class Connection
     static private string $database_password = "";
     static private string $database_name = "pqcms_server";
 
-    public static function getConnection(): bool|mysqli
+    public static function getConnection(): mysqli
     {
-        return new mysqli(Connection::$database_host,Connection::$database_username,Connection::$database_password,Connection::$database_name);
+        $conn = new mysqli(Connection::$database_host,Connection::$database_username,Connection::$database_password,Connection::$database_name);
+        $conn->set_charset("utf8mb4");
+        return $conn;
     }
 }
