@@ -211,4 +211,25 @@ class WebsitePermissions
         }
         return $parsedArray;
     }
+
+    /**
+     * Zwraca opis wszystkich permisji
+     * @return array tablica asocjacyjna: ["permisja" => "opis"]
+     */
+    public static function getPermissionsDescriptions(): array
+    {
+        require_once(dirname(__DIR__,2)."/database/Connection.inc.php");
+        $conn = Connection::getConnection();
+
+        $query = $conn->query("SELECT * FROM perms_descriptions");
+        $perms = [];
+        while($row = $query->fetch_assoc())
+            $perms[] = $row;
+
+        $query->close();
+        $conn->close();
+
+        return $perms;
+    }
+
 }
