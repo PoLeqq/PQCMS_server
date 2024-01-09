@@ -242,7 +242,6 @@ class Website
         else
         {
             $row = $query->fetch_row();
-//            jakieś sprawdzenie fajne permisji, na razie user nie ma do niczego dostępu, admin ma do wszystkiego
             if(!is_null($row[0]))
             {
                 $permsResponse = [];
