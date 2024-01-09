@@ -271,6 +271,73 @@ class Website
     }
 
     /**
+     * Funkcja sprawdzająca, czy użytkownik posiada podane permisje (o podanym username, więc jest przeznaczona np. do
+     * pokazywania danych (nie należy na nich polegać jak na zwykłych permisjach, szczególnie w API))
+     * "suc" w returnie oznacza, czy nie ma żadnych błędów (0 - błąd; nie, czy user ma permisje!)
+     * @param string $username
+     * @param array $perms
+     * @return array|int[]
+     */
+    public function hasPermissionsByUsername(string $username, array $perms): array
+    {
+//        powalone zapytanie, trzeba sprawdzić jego poprawnośc (jednak tu useless, choć może przydać się w hasPermissions,
+//        aby zwiększyć wydajność kodu
+//        $query = $conn->query("SELECT u.perms FROM websites_auth_keys k
+//            LEFT JOIN websites_users u ON k.user_id = u.id
+//            LEFT JOIN websites_admins a ON k.admin_id = a.id
+//               WHERE (admin_id IS NOT NULL OR user_id IS NOT NULL)
+//                 AND invalid = 0
+//                 AND logout = 0
+//            ORDER BY k.id
+//            DESC LIMIT 1;");
+
+        $conn = Connection::getConnection();
+        $adminStmt = $conn->prepare("SELECT id FROM websites_admins 
+          WHERE website_id = ? 
+            AND BINARY username = ?");
+        $adminStmt->bind_param("is", $this->id,$username);
+        $adminStmt->execute();
+        $adminResult = $adminStmt->get_result();
+//        while ($row = $result->fetch_assoc()) {
+//            var_dump($row);
+//        }
+        if($adminResult->num_rows === 1)
+        {
+            $permsResponse = [];
+            foreach($perms as $perm)
+                $permsResponse[$perm] = 1;
+            $resp = ["suc" => 1, "username" => $username, "perms" => $permsResponse];
+        }
+        else
+        {
+            $userStmt = $conn->prepare("SELECT perms FROM websites_users 
+                                        WHERE website_id = $this->id 
+                                          AND BINARY username = ?");
+
+            $userStmt->bind_param("s",$username);
+            $userStmt->execute();
+
+            $userResult = $userStmt->get_result();
+            if($userResult->num_rows === 0)
+                return ["suc" => 0, "username" => $username, "desc" => "Nie odnaleziono użytkownika o podanym loginie! Czy został on usunięty?"];
+
+//            $userPerms = json_decode($getUserPermsQuery->fetch_row()[0],true);
+            $userPerms = json_decode($userResult->fetch_row()[0],true);
+
+            require_once("website/WebsitePermissions.php");
+            $permsResponse = WebsitePermissions::hasPermissions($userPerms,$perms);
+
+            $resp = ["suc" => 1, "username" => $username, "perms" => $permsResponse];
+        }
+
+//        $adminResult->close();
+//        $userStmt->close();
+        $conn->close();
+
+        return $resp;
+    }
+
+    /**
      * Funkcja sprawdzająca, czy użytkownik posiada ustawione podane permisje.
      * Ustawione oznacza, że liczy się KONKRETNA wartość. Rodzice permisji NIE SĄ brane pod uwagę.
      * UWAGA! Administrator ma zawsze ustawione wszystkie permisje (nawet, gdy nie ma :p).
