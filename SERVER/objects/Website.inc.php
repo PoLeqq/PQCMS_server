@@ -254,6 +254,8 @@ class Website
                 $getUserPermsQuery = $conn->query("SELECT perms FROM websites_users 
                                             WHERE website_id = $this->id 
                                               AND id = ${row[1]}");
+                if($getUserPermsQuery->num_rows === 0)
+                    return ["suc" => 0, "desc" => "Nie odnaleziono użytkownika! Czy został on usunięty?"];
 
                 $userPerms = json_decode($getUserPermsQuery->fetch_row()[0],true);
 
