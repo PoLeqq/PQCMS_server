@@ -157,11 +157,30 @@ class Website
     public function getUsers(): array
     {
         $conn = Connection::getConnection();
-        $query = $conn->query("SELECT username, nickname, perms, disabled FROM websites_users WHERE website_id = $this->id");
+        $query = $conn->query("SELECT id, username, nickname, perms, disabled FROM websites_users WHERE website_id = $this->id");
+
+        date_default_timezone_set("Europe/Warsaw");
+        $date = date("Y-m-d H:i:s");
+        $querySessions = $conn->query("SELECT user_id, expired_time FROM websites_auth_keys 
+                    WHERE website_id = 1
+                      AND logout = 0 
+                      AND invalid = 0
+                      AND admin_id IS NULL
+                      AND expired_time >  '$date'
+                      ORDER BY id DESC;");
+        $usersSessions = [];
+        while($row = $querySessions->fetch_row())
+            $usersSessions[$row[0]] = $row[1];
 
         $result = [];
-        while ($row = $query->fetch_row())
-            $result[] = ["username" => $row[0], "nickname" => $row[1], "perms" => json_decode($row[2]), "disabled" => $row[3]];
+        while ($row = $query->fetch_row()) {
+            $userRow = ["username" => $row[1], "nickname" => $row[2], "perms" => json_decode($row[3]), "disabled" => $row[4]];
+            if(array_key_exists($row[0],$usersSessions))
+                $userRow["active_session"] = $usersSessions[$row[0]];
+
+            $result[] = $userRow;
+        }
+
 
         $query = $conn->query("SELECT username, nickname FROM websites_admins WHERE website_id = $this->id");
         if ($row = $query->fetch_row())
