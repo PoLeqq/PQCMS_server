@@ -21,7 +21,7 @@ class APIUtils
             die(json_encode(["suc" => 0, "desc" => "Sprawdź poprawność post'ów!"],JSON_UNESCAPED_UNICODE));
 
         $fields = ["domain","secure_key"];
-        $validatorResponse = Validator::validate([$post["domain"],$post["secure_key"]],["s","s(128)"]);
+        $validatorResponse = Validator::validate([$post["domain"],$post["secure_key"]],["s(2-253)","s(128)"]);
         if($validatorResponse["suc"] == 0)
             die(json_encode( ["suc" => 0, "desc" => "Walidacja nie powiodła się dla pola \"{$fields[$validatorResponse["element_index"]]}\""],JSON_UNESCAPED_UNICODE));
 
@@ -30,19 +30,8 @@ class APIUtils
         if(is_null($website) || !$website->doesExists())
             die(json_encode(["suc" => 0, "desc" => "Nie znaleziono strony o podanej domenie!"],JSON_UNESCAPED_UNICODE));
 
-//        Sprawdzenie, czy klucz ma wartości tylko 0-9,a-f
-//        require_once(dirname(__DIR__,2)."/objects/website/SecureKey.inc.php");
-//        if(!SecureKey::isValidSecureKey($post["secure_key"]))
-//            die(json_encode(["suc" => 0, "desc" => "Podano niepoprawny \"auth_key\"!"],JSON_UNESCAPED_UNICODE));
-//        $insecureCharsResponse = SQLSecurity::generateResponseForAPI(SQLSecurity::doesStringContains(,SQLSecurity::getKeyCharacters(),true),"secure_key");
-//        if(sizeof($insecureCharsResponse) !== 0)
-//            die(json_encode($insecureCharsResponse,JSON_UNESCAPED_UNICODE));
-
-        if(!$website->isProperSecureKey($post["secure_key"]))
+        if(!$website->isProperSecureKey($_SERVER["REMOTE_ADDR"], $post["secure_key"]))
             die(json_encode(["suc" => 0, "desc" => "Niepoprawny klucz zabezpieczenia!"],JSON_UNESCAPED_UNICODE));
-
-//        Unieważnienie klucza
-        $website->invalidateSecureKey($post["secure_key"],$apiName);
     }
 
     /**
