@@ -12,8 +12,6 @@ class APIUtils
      * Funkcja sprawdza, czy podana tablica posiada klucze: domain, secure_key (podstawowe dane API).
      * Jeżeli test przejdzie pomyślnie, klucz licencyjny zostaje unieważniony.
      * @param array $post tablica $_POST
-     * @param string $apiName nazwa pliku API, na który weryfikuje dane (potrzebny do zużywania klucza licencyjnego, do opisu)
-     * DEPRECATED ~~return array odpowiedź: "suc": (0/1), dla 0 również "desc": "string: opis błędu"
      */
     public static function validatePost(array $post): void
     {
