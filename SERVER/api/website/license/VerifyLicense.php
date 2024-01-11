@@ -16,11 +16,17 @@ if($validatorResponse["suc"] == 0)
     die(json_encode($validatorResponse));
 
 $response = checkLicense($_SERVER["REMOTE_ADDR"], $httpReferer, $_POST["domain"], $_POST["login"], $_POST["license_key"]);
-if($response["suc"] == 1 && !empty($_POST["generate_secure_key"]))
+if($response["suc"] === 1)
 {
     require_once(dirname(__DIR__,3)."/objects/Website.inc.php");
+    require_once(dirname(__DIR__,3)."/objects/website/SecureKey.inc.php");
     $website = new Website(Website::getWebsiteIDByMatching("domain",$_POST["domain"]));
-    $response["secure_key"] = $website->generateSecureKey();
+
+//    to uniemożliwia zalogowanie się z kilku użytkowników na 1 ip, bo w loginie wywala "błąd API",
+//    który nie jest dosłownie błędem (tylko nie ma sesji na kliencie z secure_key w momencie
+//    logowania przez incognito bądź inną przeglądarkę)
+//    if(!SecureKey::hasValidSecureKey($website->getId(),$_SERVER["REMOTE_ADDR"]))
+        $response["secure_key"] = $website->generateSecureKey($_SERVER["REMOTE_ADDR"]);
 }
 
 die(json_encode($response,JSON_UNESCAPED_UNICODE));
