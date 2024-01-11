@@ -64,10 +64,10 @@ class Website
         return !is_null($this->getField("id"));
     }
 
-    public function generateSecureKey(): string
+    public function generateSecureKey(string $remoteAddr): string
     {
         require_once("website/SecureKey.inc.php");
-        return SecureKey::generateSecureKey($this->id);
+        return SecureKey::generateSecureKey($this->id, $remoteAddr);
     }
 
     /**
