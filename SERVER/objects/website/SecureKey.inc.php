@@ -19,7 +19,42 @@ class SecureKey
         return $secureKey;
     }
 
-    public static function isValidSecureKey(string $secureKey): bool
+    public static function isValidSecureKey(int $websiteId, string $remoteAddr, string $secureKey): bool
+    {
+        if(!self::isProperSecureKey($secureKey))
+            return false;
+        $conn = Connection::getConnection();
+
+        date_default_timezone_set('Europe/Warsaw');
+        $date = date("Y-m-d H:i:s");
+
+        $stmt = $conn->prepare("SELECT id FROM websites_secure_keys 
+          WHERE website_id = ? 
+            AND expired_time >= ?
+            AND ip = ?
+            AND invalid = 0
+            AND BINARY secure_key = ?");
+        $stmt->bind_param("isss",$websiteId,$date,$remoteAddr,$secureKey);
+        $stmt->execute();
+
+        return $stmt->get_result()->num_rows >= 1;
+    }
+
+    public static function hasValidSecureKey(int $websiteId, string $remoteAddr): bool
+    {
+        $conn = Connection::getConnection();
+
+        date_default_timezone_set('Europe/Warsaw');
+        $date = date("Y-m-d H:i:s");
+
+        return $conn->query("SELECT id FROM websites_secure_keys 
+          WHERE website_id = $websiteId 
+            AND expired_time >= '$date'
+            AND ip = '$remoteAddr'
+            AND invalid = 0")->num_rows > 0;
+    }
+
+    public static function isProperSecureKey(string $secureKey): bool
     {
         return (bool)preg_match('/^[0-9a-f]{128}$/', $secureKey);
     }
