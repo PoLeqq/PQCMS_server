@@ -34,7 +34,7 @@ class SafeWebsite
             if($this->website->hasPermission($this->remoteAddr,$this->authKey,"pqcms.hr.user.get.".$user["username"]))
                 $users[] = $user;
         }
-        return ["suc" => 1, "resp" => $users];
+        return $users;
     }
 
     public function getRanks(): array
