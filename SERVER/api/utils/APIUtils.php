@@ -15,7 +15,7 @@ class APIUtils
      * @param string $apiName nazwa pliku API, na który weryfikuje dane (potrzebny do zużywania klucza licencyjnego, do opisu)
      * DEPRECATED ~~return array odpowiedź: "suc": (0/1), dla 0 również "desc": "string: opis błędu"
      */
-    public static function validatePost(array $post, string $apiName): void
+    public static function validatePost(array $post): void
     {
         if(empty($post["domain"]) || empty($post["secure_key"]))
             die(json_encode(["suc" => 0, "desc" => "Sprawdź poprawność post'ów!"],JSON_UNESCAPED_UNICODE));
