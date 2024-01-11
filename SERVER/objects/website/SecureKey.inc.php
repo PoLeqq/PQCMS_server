@@ -66,7 +66,7 @@ class SecureKey
 //        TODO ??? dołożyć do tego jeszcze kolumnę `data` - gdy zostanie dodana do DB (o ile zostanie dodana)
         date_default_timezone_set('Europe/Warsaw');
         $now = date("Y-m-d H:i:s");
-        $conn->query("UPDATE websites_secure_keys SET used_time = '$now', api_name = '$apiName' WHERE website_id = $website_id AND secure_key = '$secureKey'");
+        $conn->query("UPDATE websites_secure_keys SET expired_time = '$now' WHERE website_id = $website_id AND secure_key = '$secureKey'");
         $conn->close();
     }
 }
