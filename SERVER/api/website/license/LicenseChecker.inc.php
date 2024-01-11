@@ -9,7 +9,8 @@ function getTries($ip): int
     $date = date("Y-m-d");
 
     $result = $conn->query("SELECT date FROM check_license_history WHERE ip='$ip' AND date LIKE '$date%' AND successful=0 AND description != 'To IP jest zablokowane!'");
-    $res = 5 - $result->num_rows;
+//    ilość dozwolonych prób do weryfikacji licensji na dzień (aktualnie 10)
+    $res = 10 - $result->num_rows;
     $conn->close();
     return $res;
 }
