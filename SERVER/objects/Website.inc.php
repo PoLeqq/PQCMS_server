@@ -571,28 +571,10 @@ class Website
         return $resp;
     }
 
-    public function isProperSecureKey(string $secureKey): bool
+    public function isProperSecureKey(string $remoteAddr, string $secureKey): bool
     {
         require_once("website/SecureKey.inc.php");
-        if(!SecureKey::isValidSecureKey($secureKey))
-            return false;
-        $conn = Connection::getConnection();
-        $result = $conn->query("SELECT generated_time FROM websites_secure_keys 
-                  WHERE website_id = $this->id 
-                    AND used_time IS NULL
-                    AND secure_key = '$secureKey'");
-
-        $isProper = false;
-        if($result->num_rows !== 0)
-        {
-            $row = mysqli_fetch_row($result);
-
-            if(strtotime($row[0]) + 30 > time())
-                $isProper = true;
-        }
-
-        $conn->close();
-        return $isProper;
+        return SecureKey::isValidSecureKey($this->id, $remoteAddr, $secureKey);
     }
 
     public function getSettings(): WebsiteSettings
