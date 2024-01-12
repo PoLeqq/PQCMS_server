@@ -37,12 +37,11 @@ class APIUtils
      * Funkcja sprawdza, czy podana tablica posiada klucze: domain, secure_key (podstawowe dane API).
      * Jeżeli test przejdzie pomyślnie, klucz licencyjny zostaje unieważniony.
      * @param array $post tablica $_POST
-     * DEPRECATED~~return array odpowiedź: "suc": (0/1), dla 0 również "desc": "string: opis błędu"
      */
-    public static function validatePostForAuthKey(array $post, string $apiName): void
+    public static function validatePostForAuthKey(array $post): void
     {
 //        Wywołaj "domyślną" funkcję, jeśli jest error to zakończ już tutaj
-        self::validatePost($post,$apiName);
+        self::validatePost($post);
 
 //        Jeżeli nie ma auth_key to GG
         if(empty($post["auth_key"]))

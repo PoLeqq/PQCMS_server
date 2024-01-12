@@ -3,7 +3,7 @@
 header('Content-Type: application/json; charset=utf-8');
 
 require_once(dirname(__DIR__, 3) . "/utils/APIUtils.php");
-APIUtils::validatePostForAuthKey($_POST,basename(__FILE__));
+APIUtils::validatePostForAuthKey($_POST);
 
 $safeWebsite = APIUtils::getSafeWebsite($_POST);
 $users = $safeWebsite->getUsers();

@@ -3,7 +3,7 @@
 header('Content-Type: application/json; charset=utf-8');
 
 require_once(dirname(__DIR__, 3) . "/utils/APIUtils.php");
-APIUtils::validatePostForAuthKey($_POST,basename(__FILE__));
+APIUtils::validatePostForAuthKey($_POST);
 
 if(empty($_POST["username"]) || empty($_POST["nickname"]) || empty($_POST["password"]) || !isset($_POST["disabled"]))
     die(json_encode(["suc" => 0, "desc" => "Uzupełnij wszystkie pola!"],JSON_UNESCAPED_UNICODE));

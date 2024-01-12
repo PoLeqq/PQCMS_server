@@ -3,7 +3,7 @@
 header('Content-Type: application/json; charset=utf-8');
 require_once(dirname(__DIR__,2)."/utils/APIUtils.php");
 
-APIUtils::validatePostForAuthKey($_POST,basename(__FILE__));
+APIUtils::validatePostForAuthKey($_POST);
 
 if((!isset($_POST["login_count"]) && empty($_POST["login_count_reset"])) ||
     (!isset($_POST["login_session_time"]) && empty($_POST["login_session_time_reset"])) ||

@@ -3,7 +3,7 @@
 header('Content-Type: application/json; charset=utf-8');
 
 require_once(dirname(__DIR__, 2) . "/utils/APIUtils.php");
-APIUtils::validatePostForAuthKey($_POST,basename(__FILE__));
+APIUtils::validatePostForAuthKey($_POST);
 
 if(empty($_POST["auth_key"]))
     die(json_encode(["suc" => 1, "resp" => 0, "desc" => "Nie przesłano klucza uwierzytelniającego!"], JSON_UNESCAPED_UNICODE));
