@@ -59,7 +59,32 @@ class WebsiteUser
         return $result;
     }
 
-    private static function validateParamsForUser(string $username, string $nickname, string $password, array $perms): array
+    public static function validateUsername($username): array
+    {
+        require_once(dirname(__DIR__,2)."/api/utils/validators/Validator.inc.php");
+        if(Validator::validate($username,["s(5-30)"])["suc"] === 0)
+            return ["suc" => 0, "desc" => "Login musi być napisem o długości 5-30 znaków!"];
+
+        $betterUsername = preg_replace('/\s+/', '', $username);
+        return ($betterUsername === $username) ? ["suc" => 1] : ["suc" => 0, "Login nie może posiadać białych znaków (np. spacji)!"];
+    }
+
+    public static function validateNickname($nickname): array
+    {
+        require_once(dirname(__DIR__,2)."/api/utils/validators/Validator.inc.php");
+        return Validator::validate($nickname,["s(2-30)"])["suc"] ? ["suc" => 1] : ["suc" => 0, "desc" => "Nazwa użytkownika musi być napisem o długości 2-30 znaków!"];
+    }
+
+    public static function validatePassword($password): array
+    {
+        require_once(dirname(__DIR__,2)."/api/utils/validators/Validator.inc.php");
+        $betterPassword = preg_replace('/\s+/', '', $password);
+        if($betterPassword !== $password)
+            return ["suc" => 0, "desc" => "Hasło nie może posiadać białych znaków (np. spacji)!"];
+        return Validator::validate($password,["s(8-50)"])["suc"] ? ["suc" => 1] : ["suc" => 0, "desc" => "Hasło musi być napisem o długości 8-50 znaków!"];
+    }
+
+    public static function validateParamsForUser(string $username, string $nickname, string $password, array $perms): array
     {
         $betterUsername = preg_replace('/\s+/', '', $username);
         if($betterUsername !== $username)
@@ -67,9 +92,6 @@ class WebsiteUser
 
         $betterNickname = trim($nickname);
 
-        $betterPassword = preg_replace('/\s+/', '', $password);
-        if($betterPassword !== $password)
-            return ["suc" => 0, "desc" => "Hasło nie może posiadać białych znaków (np. spacji)!"];
 
         if(strlen($betterUsername) < 5 || strlen($betterUsername) > 30)
             return ["suc" => 0, "desc" => "Login musi mieć od 5 do 30 znaków!"];
