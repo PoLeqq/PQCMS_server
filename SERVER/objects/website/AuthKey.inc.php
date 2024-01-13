@@ -13,12 +13,14 @@ class AuthKey
      * @param int $website_id id strony
      * @param int $userId id użytkownika (lub administratora)
      * @param bool $admin czy jest administratorem
-     * @return string auth_key (pusty w przypadku, gdy to konto posiada już aktywną sesję (auth_key))
+     * @return ?array auth_key (null w przypadku, gdy to konto posiada już aktywną sesję (auth_key))
+     * pusty array, gdy wystąpił błąd podczas pobierania ustawienia login_session_time
      * @throws Exception raczej nigdy lol
      */
-    public static function generateAuthKey(int $website_id, string $ip, int $userId, bool $admin): string
+    public static function generateAuthKey(int $website_id, string $ip, int $userId, bool $admin): ?array
     {
-        if(AuthKey::isAnyAuthKey($website_id,$userId,$admin)) return "";
+        if(AuthKey::isAnyAuthKey($website_id,$userId,$admin))
+            return [];
 
         $conn = Connection::getConnection();
 
@@ -32,9 +34,12 @@ class AuthKey
         if($admin) $column = "admin_id";
         else $column = "user_id";
 
+        $loginSessionTimeResult = $conn->query("SELECT login_session_time FROM websites_settings WHERE website_id = $website_id");
+        if($row = $loginSessionTimeResult->fetch_row())
+            $sessionTime = $row[0];
+        else
+            return null;
 
-//        todo dodać w ustawieniach czas sesji
-        $sessionTime = 3600;
         $currentDate = date("Y-m-d H:i:s", time()+$sessionTime);
         $conn->query("INSERT INTO websites_auth_keys 
                     (website_id, $column, ip, auth_key, expired_time) 
@@ -42,7 +47,7 @@ class AuthKey
                     ($website_id, $userId, '$ip', '$authKey', '$currentDate')");
         $conn->close();
 
-        return $authKey;
+        return ["value" => $authKey, "expiry_date" => $currentDate];
     }
 
 //    TODO
