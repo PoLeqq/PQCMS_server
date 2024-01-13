@@ -3,12 +3,13 @@
 require_once(dirname(__DIR__,2)."/database/Connection.inc.php");
 class SecureKey
 {
-    public static function generateSecureKey(int $website_id, string $remoteAddr): string
+    public static function generateSecureKey(int $website_id, string $remoteAddr): array
     {
         $conn = Connection::getConnection();
 
         date_default_timezone_set('Europe/Warsaw');
-        $date = date("Y-m-d H:i:s", time() + 3600);
+//        czas życia secure_key - 5min
+        $date = date("Y-m-d H:i:s", time() + 300);
         do {
             $secureKey = bin2hex(random_bytes(64));
         } while($conn->query("SELECT id FROM websites_secure_keys WHERE website_id = $website_id AND secure_key = '$secureKey' AND expired_time >= '$date'")->num_rows > 0);
@@ -16,7 +17,7 @@ class SecureKey
         $conn->query("INSERT INTO websites_secure_keys (website_id, secure_key, ip, expired_time) VALUES ($website_id, '$secureKey', '$remoteAddr', '$date')");
         $conn->close();
 
-        return $secureKey;
+        return ["value" => $secureKey, "expire_time" => time() + 300];
     }
 
     public static function isValidSecureKey(int $websiteId, string $remoteAddr, string $secureKey): bool
