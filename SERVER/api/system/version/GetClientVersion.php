@@ -3,7 +3,7 @@
 header('Content-Type: application/json; charset=utf-8');
 
 require_once(dirname(__DIR__, 2) . "/utils/APIUtils.php");
-APIUtils::validatePostForAuthKey($_POST,basename(__FILE__));
+APIUtils::validatePostForAuthKey($_POST);
 
 require_once("Version.inc.php");
 $response["version"] = Version::getVersion("client",!empty($_POST["complex"]));
