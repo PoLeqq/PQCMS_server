@@ -16,6 +16,8 @@ $response["suc"] = $loginUser["suc"];
 $response["desc"] = $loginUser["desc"];
 if(isset($loginUser["auth_key"]))
     $response["auth_key"] = $loginUser["auth_key"];
+if(isset($loginUser["nickname"]))
+    $response["nickname"] = $loginUser["nickname"];
 if(isset($loginUser["auth_key"])) $response["auth_key"] = $loginUser["auth_key"];
 
 die(json_encode($response,JSON_UNESCAPED_UNICODE));
