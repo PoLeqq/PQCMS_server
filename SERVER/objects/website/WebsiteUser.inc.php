@@ -136,7 +136,7 @@ class WebsiteUser
 
                 $password = password_hash($password,PASSWORD_DEFAULT);
 
-                $conn->query("INSERT INTO websites_users VALUES (null,$websiteId,'$username','$nickname','$password','$perms',$disabled)");
+                $conn->query("INSERT INTO websites_users VALUES (null,$websiteId,'$username','$nickname','$password','$perms',$disabled,false)");
                 if($conn->errno === 0) $resp = ["suc" => 1, "desc" => "Dodano użytkownika!"];
                 else $resp = ["suc" => 0, "desc" => "Błąd podczas dodawania użytkownika. Kod błędu: ".($conn->errno)."!"];
                 $conn->close();
