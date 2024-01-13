@@ -473,13 +473,13 @@ class Website
             return $insecureCharsResponse;
 
         $conn = Connection::getConnection();
-        $query = $conn->query("SELECT id, password FROM websites_admins 
+        $query = $conn->query("SELECT id, nickname, password FROM websites_admins 
                     WHERE website_id = $this->id 
                       AND BINARY username = '$username'");
 
         if($query->num_rows == 0)
         {
-            $query = $conn->query("SELECT id, password FROM websites_users 
+            $query = $conn->query("SELECT id, nickname, password FROM websites_users 
                     WHERE website_id = $this->id 
                       AND BINARY username = '$username' 
                       AND disabled = 0");
