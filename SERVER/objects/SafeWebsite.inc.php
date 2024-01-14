@@ -74,6 +74,16 @@ class SafeWebsite
         return $this->getUnpermittedArray();
     }
 
+    public function deleteUser(string $username): array
+    {
+        if($this->website->hasPermission($this->remoteAddr,$this->authKey,"pqcms.hr.user.delete.$username"))
+        {
+            $this->website->deleteUser($username);
+            return ["suc" => 1, "desc" => "Usunięto użytkownika!"];
+        }
+        return $this->getUnpermittedArray();
+    }
+
     public function editUser(string $username, ?string $nickname, ?string $password, ?array $perms, ?int $disabled): array
     {
         if(!$this->website->hasPermission($this->remoteAddr,$this->authKey,"pqcms.hr.user.edit.nickname.".$username))
