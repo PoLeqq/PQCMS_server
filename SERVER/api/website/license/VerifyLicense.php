@@ -25,8 +25,14 @@ if($response["suc"] === 1)
 //    to uniemożliwia zalogowanie się z kilku użytkowników na 1 ip, bo w loginie wywala "błąd API",
 //    który nie jest dosłownie błędem (tylko nie ma sesji na kliencie z secure_key w momencie
 //    logowania przez incognito bądź inną przeglądarkę)
-//    if(!SecureKey::hasValidSecureKey($website->getId(),$_SERVER["REMOTE_ADDR"]))
+//    if(SecureKey::hasValidSecureKey($website->getId(),$_SERVER["REMOTE_ADDR"]))
+//        $response["secure_key"] = $website->generateSecureKey($_SERVER["REMOTE_ADDR"]);
+//
+    $secureKey = SecureKey::getSecureKeyByIP($website->getId(),$_SERVER["REMOTE_ADDR"]);
+    if(is_null($secureKey))
         $response["secure_key"] = $website->generateSecureKey($_SERVER["REMOTE_ADDR"]);
+    else
+        $response["secure_key"] = $secureKey;
 }
 
 die(json_encode($response,JSON_UNESCAPED_UNICODE));
