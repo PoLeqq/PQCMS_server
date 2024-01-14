@@ -192,7 +192,21 @@ class WebsiteUser
         return $resp;
     }
 
-    public static function unsafe_getWebsiteUserBy(string $col, mixed $value, int $websiteId = null): ?array
+    public static function deleteUser(int $websiteId, string $username): void
+    {
+        $conn = Connection::getConnection();
+        $stmt = $conn->prepare("UPDATE websites_users 
+            SET deleted = 1 
+            WHERE website_id = ? 
+              AND username = ?");
+        $stmt->bind_param("is",$websiteId,$username);
+        $stmt->execute();
+
+        $stmt->close();
+        $conn->close();
+    }
+
+    public static function getWebsiteUserByUsername(string $username, int $websiteId): ?array
     {
         $conn = Connection::getConnection();
 

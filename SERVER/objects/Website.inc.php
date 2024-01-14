@@ -118,6 +118,12 @@ class Website
         return WebsiteUser::editUser($this->id, $username, $nickname, $password, $perms, $disabled);
     }
 
+    public function deleteUser(string $username): void
+    {
+        require_once(dirname(__DIR__) . "/objects/website/WebsiteUser.inc.php");
+        WebsiteUser::deleteUser($this->id, $username);
+    }
+
     public function addRank(string $name, string $displayName, array $perms, int $priority, ?int $parentId): array
     {
         if(count($this->getRanksIds()) >= 10)
