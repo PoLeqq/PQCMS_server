@@ -108,4 +108,19 @@ class SafeWebsite
     {
         return ["suc" => 0, "desc" => "Nie masz uprawnień!"];
     }
+
+    public function invalidateSession(string $username): array
+    {
+        if(!$this->website->hasPermission($this->remoteAddr,$this->authKey,"pqcms.hr.user.invalidatesession"))
+            return ["suc" => 0, "desc" => "Nie posiadasz uprawnień!"];
+
+        require_once(__DIR__."/website/AuthKey.inc.php");
+        require_once(__DIR__."/website/WebsiteUser.inc.php");
+
+        $websiteUser = WebsiteUser::getWebsiteUserByUsername($username,$this->id);
+        if(is_null($websiteUser))
+            return ["suc" => 0, "desc" => "Nie znaleziono użytkownika o podanym loginie!"];
+
+        return AuthKey::invalidateAuthKeyByUsername($this->id,$websiteUser[0],false,true);
+    }
 }
