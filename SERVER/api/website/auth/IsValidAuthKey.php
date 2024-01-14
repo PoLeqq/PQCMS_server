@@ -14,6 +14,10 @@ APIUtils::validatePost($_POST);
 if(empty($_POST["auth_key"]))
     die(json_encode(["suc" => 0, "desc" => "Uzupełnij wszystkie pola!"], JSON_UNESCAPED_UNICODE));
 
+$validator = Validator::validateAssoc(["auth_key" => $_POST["auth_key"]],["s(128)"]);
+if($validator["suc"] === 0)
+    die(json_encode($validator, JSON_UNESCAPED_UNICODE));
+
 require_once(dirname(__DIR__, 3) . "/objects/website/AuthKey.inc.php");
 $website = APIUtils::getWebsite($_POST);
 
