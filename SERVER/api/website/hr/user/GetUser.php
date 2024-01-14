@@ -8,19 +8,18 @@ APIUtils::validatePostForAuthKey($_POST);
 $safeWebsite = APIUtils::getSafeWebsite($_POST);
 $users = $safeWebsite->getUsers();
 
+
 $responseUsers = [];
 if(isset($_POST["admin"]) && $_POST["admin"] === "1")
 {
-    $admin = null;
     foreach($users as $user)
     {
         if(!isset($user["disabled"]))
         {
-            $admin = $user;
+            $responseUsers[] = $user;
             break;
         }
     }
-    $responseUsers[] = $admin;
 }
 else
 {
@@ -37,7 +36,5 @@ else
         $responseUsers[] = $user;
     }
 }
-
-//if(isset($_POST["admin"]) && $_POST["admin"] === 0)
 
 echo json_encode(["suc" => 1, "resp" => $responseUsers],JSON_UNESCAPED_UNICODE);
