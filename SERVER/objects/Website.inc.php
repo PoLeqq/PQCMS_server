@@ -135,7 +135,7 @@ class Website
     public function getUsersIds(): array
     {
         $conn = Connection::getConnection();
-        $query = $conn->query("SELECT id FROM websites_users WHERE website_id = $this->id");
+        $query = $conn->query("SELECT id FROM websites_users WHERE website_id = $this->id AND deleted = 0");
 
         $result = [];
         foreach ($query->fetch_row() as $row)
