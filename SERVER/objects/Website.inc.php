@@ -519,6 +519,10 @@ class Website
         if(sizeof($insecureCharsResponse) !== 0)
             return $insecureCharsResponse;
 
+        $loginTries = $this->getLoginTries($ip);
+        if($loginTries <= 0)
+            return ["suc" => 0, "desc" => "To IP zostało zablokowane!", "tries_left" => 0];
+
         $conn = Connection::getConnection();
         $query = $conn->query("SELECT id, nickname, password FROM websites_admins 
                     WHERE website_id = $this->id 
