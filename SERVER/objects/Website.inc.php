@@ -333,7 +333,7 @@ class Website
             $userPerms = json_decode($userResult->fetch_row()[0],true);
 
             require_once("website/WebsitePermissions.php");
-            $permsResponse = WebsitePermissions::hasPermissions($userPerms,$perms);
+            $permsResponse = WebsitePermissions::hasPermissions($userPerms,$perms,$this->id);
 
             $resp = ["suc" => 1, "username" => $username, "perms" => $permsResponse];
         }
