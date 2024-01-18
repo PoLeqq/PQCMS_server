@@ -587,15 +587,15 @@ class Website
             try {
                 $authKey = AuthKey::generateAuthKey($this->id, $ip, $row["id"], $adminAccount);
             } catch (Exception) {
-                return ["suc" => 0, "proper_data" => null, "desc" => "Blok zwrócił błąd! Skontaktuj się z administratorem PQCMS! (Website.inc.php: ".__LINE__.")"];
+                return ["suc" => 0, "proper_data" => null, "desc" => "Blok zwrócił błąd! Skontaktuj się z administratorem PQCMS! (Website.inc.php: ".__LINE__.")", "tries_left" => $triesLeft];
             }
             if(is_null($authKey))
-                return ["suc" => 0, "proper_data" => 1, "desc" => "Nie można odczytać pola \"login_session_time\"! Skontaktuj się z administratorem PQCMS!"];
+                return ["suc" => 0, "proper_data" => 1, "desc" => "Nie można odczytać pola \"login_session_time\"! Skontaktuj się z administratorem PQCMS!", "tries_left" => $triesLeft];
             else if(empty($authKey))
-                return ["suc" => 0, "proper_data" => 1, "desc" => "Sesja tego konta jest już aktywna! (jeżeli uważasz, że to błąd, jak najszybciej skontaktuj się z administratorem!)"];
+                return ["suc" => 0, "proper_data" => 1, "desc" => "Sesja tego konta jest już aktywna! (jeżeli uważasz, że to błąd, jak najszybciej skontaktuj się z administratorem!)", "tries_left" => $triesLeft];
             return ["suc" => 1, "proper_data" => 1, "desc" => "Pomyślnie zalogowano!", "auth_key" => $authKey, "nickname" => $row["nickname"]];
         }
-        else return ["suc" => 0, "proper_data" => 0, "desc" => "Niepoprawne dane logowania."];
+        else return ["suc" => 0, "proper_data" => 0, "desc" => "Niepoprawne dane logowania!", "tries_left" => $triesLeft];
     }
 
     private function logUserLogin(string $ip, string $username, string $password, bool $properData, bool $logged): void
