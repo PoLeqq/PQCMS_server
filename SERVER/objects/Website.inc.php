@@ -462,7 +462,7 @@ class Website
                 $result["admin"] = 1;
                 $result["id"] = (int) $row["id"];
             }
-            $this->logUserLogin($ip, $username, $password, $result["proper_data"], $result["suc"]);
+            $this->logUserLogin($ip, $username, $password, $result["proper_data"], $result["suc"],$result["desc"]);
         }
 
         $query->close();
@@ -492,19 +492,19 @@ class Website
 
             if($query->num_rows != 0)
             {
-                $result = $this->loginUserGetResponse($query->fetch_assoc(),$ip,$password,false);
-                $this->logUserLogin($ip,$username,$password,$result["proper_data"],$result["suc"]);
+                $result = $this->loginUserGetResponse($query->fetch_assoc(),$ip,$password,false,$loginTries);
+                $this->logUserLogin($ip,$username,$password,$result["proper_data"],$result["suc"],$result["desc"]);
             }
             else
             {
-                $result = ["suc" => 0, "desc" => "Niepoprawne dane logowania."];
-                $this->logUserLogin($ip,$username,$password,false,false);
+                $result = ["suc" => 0, "desc" => "Niepoprawne dane logowania!.", "tries_left" => $loginTries];
+                $this->logUserLogin($ip,$username,$password,false,false,$result["desc"]);
             }
         }
         else
         {
-            $result = $this->loginUserGetResponse($query->fetch_assoc(), $ip, $password, true);
-            $this->logUserLogin($ip, $username, $password, $result["proper_data"], $result["suc"]);
+            $result = $this->loginUserGetResponse($query->fetch_assoc(), $ip, $password, true,$loginTries);
+            $this->logUserLogin($ip, $username, $password, $result["proper_data"], $result["suc"],$result["desc"]);
         }
 
         $query->close();
