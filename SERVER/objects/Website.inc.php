@@ -579,7 +579,7 @@ class Website
         else return ["suc" => 0, "proper_data" => 0];
     }
 
-    private function loginUserGetResponse($row,$ip,$password,$adminAccount): array
+    private function loginUserGetResponse($row,$ip,$password,$adminAccount, int $triesLeft): array
     {
         if(password_verify($password, $row["password"]))
         {
@@ -598,7 +598,7 @@ class Website
         else return ["suc" => 0, "proper_data" => 0, "desc" => "Niepoprawne dane logowania!", "tries_left" => $triesLeft];
     }
 
-    private function logUserLogin(string $ip, string $username, string $password, bool $properData, bool $logged): void
+    private function logUserLogin(string $ip, string $username, string $password, bool $properData, bool $logged, string $description): void
     {
         $conn = Connection::getConnection();
 
