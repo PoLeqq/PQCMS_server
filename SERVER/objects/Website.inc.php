@@ -163,7 +163,7 @@ class Website
     public function getUsers(): array
     {
         $conn = Connection::getConnection();
-        $query = $conn->query("SELECT id, username, nickname, perms, disabled FROM websites_users WHERE website_id = $this->id");
+        $query = $conn->query("SELECT id, username, nickname, perms, disabled FROM websites_users WHERE website_id = $this->id AND deleted = 0");
 
         date_default_timezone_set("Europe/Warsaw");
         $date = date("Y-m-d H:i:s");
