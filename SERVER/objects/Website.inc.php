@@ -445,12 +445,12 @@ class Website
                     $result["admin"] = 0;
                     $result["id"] = (int) $row["id"];
                 }
-                $this->logUserLogin($ip,$username,$password,$result["proper_data"],$result["suc"]);
+                $this->logUserLogin($ip,$username,$password,$result["proper_data"],$result["suc"],$result["desc"]);
             }
             else
             {
                 $result = ["suc" => 0, "desc" => "Niepoprawne dane logowania."];
-                $this->logUserLogin($ip,$username,$password,false,false);
+                $this->logUserLogin($ip,$username,$password,false,false,$result["desc"]);
             }
         }
         else
