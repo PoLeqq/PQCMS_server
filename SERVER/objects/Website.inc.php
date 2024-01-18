@@ -471,6 +471,47 @@ class Website
         return $result;
     }
 
+
+    function getLoginTries(string $ip): int
+    {
+        $conn = Connection::getConnection();
+
+        date_default_timezone_set("Europe/Warsaw");
+        $date = date("Y-m-d")."%";
+
+
+        $stmt = $conn->prepare("SELECT date FROM websites_login_history 
+            WHERE ip= ? 
+              AND date LIKE ? 
+              AND proper_data = 0
+              AND website_id = ?");
+        $stmt->bind_param("ssi",$ip, $date,$this->id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        require_once("website/WebsiteSettings.php");
+        $settings = new WebsiteSettings($this->id);
+
+//    ilość dozwolonych prób do weryfikacji licensji na dzień (aktualnie 10)
+        $res = $settings->getLoginAttempts() - $result->num_rows;
+        $conn->close();
+        return $res;
+    }
+
+//    function isBanned(string $ip): bool
+//    {
+//        if($this->getLoginTries($ip) <= 0) return true;
+//
+//        $conn = Connection::getConnection();
+//        $result = $conn->query("SELECT * FROM check_license_banned_ips WHERE ip='$ip'");
+//        $banned = $result->num_rows >= 1;
+//
+//        $conn->close();
+//
+//        if(!$banned) $banned = getTries($ip) <= 0;
+//        return $banned;
+//    }
+
     public function loginUser(string $ip, string $username, string $password): array
     {
         require_once(dirname(__DIR__)."/utils/SQLSecurity.php");
