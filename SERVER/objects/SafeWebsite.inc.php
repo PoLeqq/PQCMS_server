@@ -67,10 +67,19 @@ class SafeWebsite
         return $this->getUnpermittedArray();
     }
 
-    public function addUser(string $username, string $nickname, string $password, array $perms, int $disabled): array
+    public function addUser(string $username, string $nickname, ?string $email, string $password, array $perms, int $disabled): array
     {
+        foreach($perms as $perm => $value)
+            if(!$this->website->hasPermission($_SERVER["REMOTE_ADDR"],$_POST["auth_key"],$perm))
+                unset($perms[$perm]);
+
         if($this->website->hasPermission($this->remoteAddr,$this->authKey,"pqcms.hr.user.add"))
-            return $this->website->addUser($username, $nickname, $password, $perms, $disabled);
+        {
+            $addUser = $this->website->addUser($username, $nickname, $email, $password, $perms, $disabled);
+            if($addUser["suc"] === 1)
+                $addUser["perms"] = $perms;
+            return $addUser;
+        }
         return $this->getUnpermittedArray();
     }
 
