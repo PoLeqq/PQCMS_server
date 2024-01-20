@@ -166,6 +166,43 @@ class AuthKey
     }
 
     /**
+     * Funkcja sprawdza, czy jest jakikolwiek ważny auth key (w sumie to powinien być tylko 1, czyli czy sesja konta
+     * jest ważna)
+     * @param int $websiteId id strony
+     * @param int $userId id usera (lub admina)
+     * @param bool $admin czy admin
+     * @return bool czy sesja konta jest ważna
+     */
+    public static function getLastAuthKeyID(int $websiteId, int $userId, bool $admin): ?int
+    {
+        $conn = Connection::getConnection();
+        if($admin) $column = "admin_id";
+        else $column = "user_id";
+        $query = $conn->query("SELECT id, expired_time FROM websites_auth_keys 
+                    WHERE website_id = $websiteId 
+                    AND $column = $userId
+                    AND logout = 0 
+                    AND invalid = 0
+                    ORDER BY expired_time DESC 
+                    LIMIT 1");
+
+        if($query->num_rows == 0)
+            $result = null;
+        else
+        {
+            $row = $query->fetch_row();
+            $expiredTime = $row[1];
+            $expiredDate = strtotime($expiredTime);
+            if($expiredDate < time()) $result = null;
+            else $result = $row[0];
+        }
+
+        $query->close();
+        $conn->close();
+        return $result;
+    }
+
+    /**
      * @param int $website_id id strony
      * @param string $authKey auth_key
      * @param bool $logout czy wylogowanie "dobrowolne" (1 - wylogowanie, 0 - działanie admina)
