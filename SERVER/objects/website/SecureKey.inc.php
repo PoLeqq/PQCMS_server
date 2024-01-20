@@ -55,6 +55,26 @@ class SecureKey
             AND invalid = 0")->num_rows > 0;
     }
 
+    public static function getSecureKeyByIP(int $websiteId, string $remoteAddr): ?array
+    {
+        $conn = Connection::getConnection();
+
+        date_default_timezone_set('Europe/Warsaw');
+        $date = date("Y-m-d H:i:s");
+
+        $query = $conn->query("SELECT secure_key, expired_time FROM websites_secure_keys 
+          WHERE website_id = $websiteId 
+            AND expired_time >= '$date'
+            AND ip = '$remoteAddr'
+            AND invalid = 0");
+
+        if($query->num_rows === 0)
+            return null;
+
+        $row = $query->fetch_row();
+        return ["value" => $row[0], "expire_time" => strtotime($row[1])];
+    }
+
     public static function isProperSecureKey(string $secureKey): bool
     {
         return (bool)preg_match('/^[0-9a-f]{128}$/', $secureKey);
