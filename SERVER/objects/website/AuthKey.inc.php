@@ -152,8 +152,6 @@ class AuthKey
             $result = false;
         else
         {
-//            $expiredTime = $query->fetch_row()[0];
-//            $expiredDate = date("Y-m-d H:i:s", $expiredTime);
             $expiredTime = $query->fetch_row()[0];
             $expiredDate = strtotime($expiredTime);
             if($expiredDate < time()) $result = false;
