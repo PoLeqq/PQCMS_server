@@ -47,7 +47,7 @@ class AuthKey
                     ($website_id, $userId, '$ip', '$authKey', '$currentDate')");
         $conn->close();
 
-        return ["value" => $authKey, "expiry_date" => $currentDate];
+        return ["value" => $authKey, "expiry_time" => time()+$sessionTime];
     }
 
 //    TODO
