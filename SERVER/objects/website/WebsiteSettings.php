@@ -19,16 +19,6 @@ class WebsiteSettings
         $this->unsafe_setField("login_attempts",$loginAttempts);
     }
 
-    public function getTokenLifespan(): int 
-    {
-        return $this->unsafe_getField("token_lifespan");
-    }
-
-    public function setTokenLifespan(?int $lifespan): void
-    {
-        $this->unsafe_setField("token_lifespan",$lifespan);
-    }
-
     public function getLoginSessionTime(): int
     {
         return $this->unsafe_getField("login_session_time");
