@@ -104,12 +104,12 @@ class Website
         return WebsiteAdmin::addWebsiteAdmin($this->id, $username, $nickname, $password);
     }
 
-    public function addUser(string $username, string $nickname, string $password, array $perms, bool $disabled): array
+    public function addUser(string $username, string $nickname, ?string $email, string $password, array $perms, bool $disabled): array
     {
         if(count($this->getUsersIds()) >= 20)
             return ["suc" => 0, "desc" => "Strona osiągnęła limit użytkowników (20)!"];
         require_once(dirname(__DIR__) . "/objects/website/WebsiteUser.inc.php");
-        return WebsiteUser::addUser($this->id, $username, $nickname, $password, $perms, $disabled);
+        return WebsiteUser::addUser($this->id, $username, $nickname, $email, $password, $perms, $disabled);
     }
 
     public function editUser(string $username, ?string $nickname, ?string $password, array $perms, ?bool $disabled): array
