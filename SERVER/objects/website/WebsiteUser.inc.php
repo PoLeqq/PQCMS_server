@@ -105,7 +105,7 @@ class WebsiteUser
         return ["suc" => 1];
     }
 
-    public static function addUser(int $websiteId, string $username, string $nickname, string $password, array $perms = [], bool $disabled = false): array
+    public static function addUser(int $websiteId, string $username, string $nickname, ?string $email, string $password, array $perms = [], bool $disabled = false): array
     {
 //        Walidacja długości
         $paramsValidator = self::validateParamsForUser($username, $nickname, $password, $perms);
@@ -126,7 +126,7 @@ class WebsiteUser
         $query = $conn->query("SELECT username FROM websites_admins WHERE website_id = $websiteId");
         if($query->fetch_row()[0] !== $username)
         {
-            $query = $conn->query("SELECT id FROM websites_users WHERE website_id = $websiteId AND username = '$username'");
+            $query = $conn->query("SELECT id FROM websites_users WHERE website_id = $websiteId AND username = '$username' AND deleted = 0");
             if($query->num_rows == 0)
             {
                 $disabled = (int) $disabled;
@@ -136,7 +136,27 @@ class WebsiteUser
 
                 $password = password_hash($password,PASSWORD_DEFAULT);
 
-                $conn->query("INSERT INTO websites_users VALUES (null,$websiteId,'$username','$nickname','$password','$perms',$disabled,false)");
+                if(!empty($email))
+                {
+                    $valuesSQL1 = "(website_id, username, nickname, email, password, perms, disabled, deleted)";
+                    $valuesSQL2 = "(?,?,?,?,?,?,?,false)";
+                    $prepareBindsTypes = "isssssi";
+                    $prepareBinds = [$websiteId, $username, $nickname, $email, $password, $perms, $disabled];
+//                    $valuesSQL2 = "(?,'?','?','?','?','?',?,false)";
+//                    $valuesSQL2 = "(null,$websiteId,'$username','$nickname','$email','$password','$perms',$disabled,false)";
+                }
+                else
+                {
+                    $valuesSQL1 = "(website_id, username, nickname, password, perms, disabled, deleted)";
+                    $valuesSQL2 = "(?,?,?,?,?,?,false)";
+                    $prepareBindsTypes = "issssi";
+                    $prepareBinds = [$websiteId, $username, $nickname, $password, $perms, $disabled];
+                }
+
+                $insertStmt = $conn->prepare("INSERT INTO websites_users $valuesSQL1 VALUES $valuesSQL2");
+                $insertStmt->bind_param($prepareBindsTypes,...$prepareBinds);
+                $insertStmt->execute();
+
                 if($conn->errno === 0) $resp = ["suc" => 1, "desc" => "Dodano użytkownika!"];
                 else $resp = ["suc" => 0, "desc" => "Błąd podczas dodawania użytkownika. Kod błędu: ".($conn->errno)."!"];
                 $conn->close();
