@@ -59,29 +59,29 @@ class WebsiteUser
         return $result;
     }
 
-    public static function validateUsername($username): array
+    public static function validateUsername(/*string*/$username): array
     {
         require_once(dirname(__DIR__,2)."/api/utils/validators/Validator.inc.php");
-        if(Validator::validate($username,["s(5-30)"])["suc"] === 0)
+        if(Validator::validate([$username],["s(5-30)"])["suc"] === 0)
             return ["suc" => 0, "desc" => "Login musi być napisem o długości 5-30 znaków!"];
 
         $betterUsername = preg_replace('/\s+/', '', $username);
         return ($betterUsername === $username) ? ["suc" => 1] : ["suc" => 0, "Login nie może posiadać białych znaków (np. spacji)!"];
     }
 
-    public static function validateNickname($nickname): array
+    public static function validateNickname(/*string*/$nickname): array
     {
         require_once(dirname(__DIR__,2)."/api/utils/validators/Validator.inc.php");
-        return Validator::validate($nickname,["s(2-30)"])["suc"] ? ["suc" => 1] : ["suc" => 0, "desc" => "Nazwa użytkownika musi być napisem o długości 2-30 znaków!"];
+        return Validator::validate([$nickname],["s(2-30)"])["suc"] ? ["suc" => 1] : ["suc" => 0, "desc" => "Nazwa użytkownika musi być napisem o długości 2-30 znaków!"];
     }
 
-    public static function validatePassword($password): array
+    public static function validatePassword(/*string*/$password): array
     {
         require_once(dirname(__DIR__,2)."/api/utils/validators/Validator.inc.php");
         $betterPassword = preg_replace('/\s+/', '', $password);
         if($betterPassword !== $password)
             return ["suc" => 0, "desc" => "Hasło nie może posiadać białych znaków (np. spacji)!"];
-        return Validator::validate($password,["s(8-50)"])["suc"] ? ["suc" => 1] : ["suc" => 0, "desc" => "Hasło musi być napisem o długości 8-50 znaków!"];
+        return Validator::validate([$password],["s(8-50)"])["suc"] ? ["suc" => 1] : ["suc" => 0, "desc" => "Hasło musi być napisem o długości 8-50 znaków!"];
     }
 
     public static function validateParamsForUser(string $username, string $nickname, string $password, array $perms): array
@@ -93,12 +93,6 @@ class WebsiteUser
         $betterNickname = trim($nickname);
 
 
-        if(strlen($betterUsername) < 5 || strlen($betterUsername) > 30)
-            return ["suc" => 0, "desc" => "Login musi mieć od 5 do 30 znaków!"];
-        if(strlen($betterNickname) < 2 || strlen($betterNickname) > 30)
-            return ["suc" => 0, "desc" => "Nazwa użytkownika musi mieć od 2 do 30 znaków!"];
-        if(strlen($betterPassword) < 8 || strlen($betterPassword) > 50)
-            return ["suc" => 0, "desc" => "Hasło musi mieć od 8 do 30 znaków!"];
         require_once "WebsitePermissions.php";
         if(!WebsitePermissions::isProperPermsArray($perms))
             return ["suc" => 0, "desc" => "Podano niepoprawne permisje!"];
