@@ -224,6 +224,39 @@ class AuthKey
     }
 
     /**
+     * @param int $website_id id strony
+     * @param string $authKey auth_key
+     * @param bool $logout czy wylogowanie "dobrowolne" (1 - wylogowanie, 0 - działanie admina)
+     * @return void
+     */
+    public static function invalidateAuthKeyByUsername(int $website_id, int $userId, bool $logout, bool $invalid): array
+    {
+        date_default_timezone_set('Europe/Warsaw');
+        $conn = Connection::getConnection();
+        $now = date("Y-m-d H:i:s");
+
+        $authKeyID = self::getLastAuthKeyID($website_id,$userId,false);
+        if(is_null($authKeyID))
+            return ["suc" => 0, "desc" => "Użytkownik nie posiada aktywnej sesji!"];
+
+        if($logout) $logout = 1;
+        else $logout = 0;
+
+        if($invalid) $invalid = 1;
+        else $invalid = 0;
+
+        $stmt = $conn->prepare("UPDATE websites_auth_keys
+                    SET expired_time = ?, 
+                    logout = ?,
+                    invalid = ?
+                    WHERE id = ?");
+        $stmt->bind_param("siii",$now,$logout,$invalid,$authKeyID);
+        $stmt->execute();
+        $conn->close();
+        return ["suc" => 1, "desc" => "Sesja użytkownika została unieważniona!"];
+    }
+
+    /**
      * Zwraca aktywny auth_key dla podanego IP oraz zwraca jego wartość. Jeśli nie znajdzie, funckcja zwraca pusty łańcuch
      * @param int $websiteId
      * @param string $ip
