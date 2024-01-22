@@ -95,11 +95,37 @@ class SafeWebsite
 
     public function editUser(string $username, ?string $nickname, ?string $password, ?array $perms, ?int $disabled): array
     {
-        if(!$this->website->hasPermission($this->remoteAddr,$this->authKey,"pqcms.hr.user.edit.nickname.".$username))
+//        *pqcms.hr.user.edit.nickname.<nickname>
+        if(!is_null($nickname) && !$this->website->hasPermission($this->remoteAddr,$this->authKey,"pqcms.hr.user.edit.nickname.".$username))
             $nickname = null;
-        if(!$this->website->hasPermission($this->remoteAddr,$this->authKey,"pqcms.hr.user.edit.perms.".$username))
+        if(!is_null($password) && !$this->website->hasPermission($this->remoteAddr,$this->authKey,"pqcms.hr.user.edit.password.set.".$username))
+            $password = null;
+        if(!is_null($disabled) && !$this->website->hasPermission($this->remoteAddr,$this->authKey,"pqcms.hr.user.edit.disable.".$username))
+            $disabled = null;
+        if(!is_null($perms) && !$this->website->hasPermission($this->remoteAddr,$this->authKey,"pqcms.hr.user.edit.perms.".$username))
             $perms = null;
 
+        foreach($perms as $perm)
+            if(!$this->website->hasPermission($_SERVER["REMOTE_ADDR"],$this->authKey,$perm))
+                unset($perms[$perm]);
+
+        if(is_null($nickname) && is_null($password) && empty($perms) && is_null($disabled))
+            return ["suc" => 0, "desc" => "Nic nie zmieniono, ponieważ nie masz odpowiednich uprawnień!"];
+
+        $resp = $this->website->editUser($username, $nickname, $password, $perms, $disabled);
+        if($resp["suc"] === 1)
+            $resp["perms"] = $perms;
+
+        return $resp;
+    }
+
+    /**
+     * @param string $username
+     * @param string|null $password
+     * @return array
+     */
+    public function setUserPassword(string $username, ?string $password): array
+    {
 //        *pqcms.hr.user.edit.nickname.<nickname>
         if($this->website->hasPermission($this->remoteAddr,$this->authKey,"pqcms.hr.user.add"))
             return $this->website->editUser($username, $nickname, $password, $perms, $disabled);
