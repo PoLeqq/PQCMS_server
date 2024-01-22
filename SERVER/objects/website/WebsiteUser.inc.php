@@ -250,41 +250,95 @@ HTML,
     public static function editUser(int $websiteId, string $username = null, string $nickname = null, ?string $password = null, ?array $perms = [], ?bool $disabled = false): array
     {
 //        Walidacja pól
-        $paramsValidator = self::validateParamsForUser($username, $nickname, $password, $perms);
-        if($paramsValidator["suc"] == 0)
-            return $paramsValidator;
-
-
-//        Walidacja - anti SQL injection
-        require_once(dirname(__DIR__,2)."/utils/SQLSecurity.php");
-        $insecureCharsResponse = SQLSecurity::generateResponseForAPI(SQLSecurity::doesStringContains($username),"username");
-        if(sizeof($insecureCharsResponse) !== 0)
-            return $insecureCharsResponse;
-        $insecureCharsResponse = SQLSecurity::generateResponseForAPI(SQLSecurity::doesStringContains($nickname),"nickname");
-        if(sizeof($insecureCharsResponse) !== 0)
-            return $insecureCharsResponse;
+        if(!is_null($username))
+        {
+            $validator = self::validateUsername($username);
+            if($validator["suc"] === 0)
+                return $validator;
+        }
+        if(!is_null($nickname))
+        {
+            $validator = self::validateNickname($nickname);
+            if($validator["suc"] === 0)
+                return $validator;
+        }
+        if(!is_null($password))
+        {
+            $validator = self::validatePassword($password);
+            if($validator["suc"] === 0)
+                return $validator;
+        }
+        if(!is_null($perms))
+        {
+            require_once "WebsitePermissions.php";
+            if(!WebsitePermissions::isProperPermsArray($perms))
+                return ["suc" => 0, "desc" => "Podano niepoprawne permisje!"];
+        }
 
         $conn = Connection::getConnection();
-
         $query = $conn->query("SELECT username FROM websites_admins WHERE website_id = $websiteId");
         if($query->fetch_row()[0] !== $username)
         {
-            $query = $conn->query("SELECT id FROM websites_users WHERE website_id = $websiteId AND username = '$username'");
-            if($query->num_rows == 0)
+            $stmtUsers = $conn->prepare("SELECT id FROM websites_users WHERE website_id = $websiteId AND username = ?");
+            $stmtUsers->bind_param("s",$username);
+            $stmtUsers->execute();
+
+            $stmtUsersResult = $stmtUsers->get_result();
+
+            if($stmtUsersResult->num_rows == 0)
+                $resp = ["suc" => 0, "desc" => "Już istnieje użytkownik o takim loginie!"];
+            else
             {
-                $disabled = (int) $disabled;
-                if(is_null($perms))
-                    $perms = [];
-                $perms = json_encode($perms);
+                $userId = $stmtUsersResult->fetch_row()[0];
 
-                $password = password_hash($password,PASSWORD_DEFAULT);
+                if(!is_null($perms))
+                    $perms = json_encode($perms);
 
-                $conn->query("INSERT INTO websites_users VALUES (null,$websiteId,'$username','$nickname','$password','$perms',$disabled)");
-                if($conn->errno === 0) $resp = ["suc" => 1, "desc" => "Dodano użytkownika!"];
-                else $resp = ["suc" => 0, "desc" => "Błąd podczas dodawania użytkownika. Kod błędu: ".($conn->errno)."!"];
+
+                $sql = [];
+                $params = [];
+                $paramsTypes = "";
+
+                if(!is_null($nickname))
+                {
+                    $sql[] = " nickname = ?";
+                    $params[] = $nickname;
+                    $paramsTypes .= "s";
+                }
+                if(!is_null($password))
+                {
+                    $sql[] = " password = ?";
+                    $params[] = password_hash($password,PASSWORD_DEFAULT);
+                    $paramsTypes .= "s";
+                }
+                if(!is_null($perms))
+                {
+                    $sql[] = " perms = ?";
+                    $params[] = $perms;
+                    $paramsTypes .= "s";
+                }
+                if(!is_null($disabled))
+                {
+                    $sql[] = " disabled = ?";
+                    $params[] = (int) $disabled;
+                    $paramsTypes .= "i";
+//                    $params[] = (int) $disabled;
+                }
+
+                $updateSQLQuery = "UPDATE websites_users SET ".implode(',',$sql)." WHERE id = $userId";
+
+//                var_dump($updateSQLQuery);
+//                var_dump($params);
+
+                $updateStmt = $conn->prepare($updateSQLQuery);
+//                "issssi",$websiteId,$username,$nickname,$passwordm,$perms,$disabled
+                $updateStmt->bind_param($paramsTypes,...$params);
+                $updateStmt->execute();
+
+                if($conn->errno === 0) $resp = ["suc" => 1, "desc" => "Edycja użytkownika powiodła się!"];
+                else $resp = ["suc" => 0, "desc" => "Błąd podczas edytowania użytkownika. Kod błędu: ".($conn->errno)."!"];
                 $conn->close();
             }
-            else $resp = ["suc" => 0, "desc" => "Już istnieje użytkownik o takim loginie!"];
         }
         else $resp = ["suc" => 0, "desc" => "Już istnieje użytkownik o takim loginie (administrator)!"];
 
