@@ -1,0 +1,16 @@
+{
+  "name": "vendor_name/server",
+  "description": "description",
+  "minimum-stability": "stable",
+  "license": "proprietary",
+  "authors": [
+    {
+      "name": "Wiktor",
+      "email": "wiktorsolinski123@gmail.com"
+    }
+  ],
+  "require": {
+    "phpmailer/phpmailer": "^6.9.1",
+    "ext-mysqli": "*"
+  }
+}
