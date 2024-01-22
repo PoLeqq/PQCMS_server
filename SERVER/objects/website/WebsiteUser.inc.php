@@ -181,7 +181,73 @@ class WebsiteUser
         return $resp;
     }
 
-    public static function editUser(int $websiteId, string $username, string $nickname, string $password, array $perms = [], bool $disabled = false): array
+    public static function resetPassword(int $websiteId, string $username): array
+    {
+        $conn = Connection::getConnection();
+
+        $selectStmt = $conn->prepare("SELECT id, nickname, email from websites_users WHERE website_id = ? AND username = ?");
+        $selectStmt->bind_param("is",$websiteId,$username);
+        $selectStmt->execute();
+        $resultSelect = $selectStmt->get_result();
+        if($resultSelect->num_rows === 0)
+            return ["suc" => 0, "desc" => "Nie znaleziono użytkownika o podanym loginie!"];
+
+        $user = $resultSelect->fetch_assoc();
+        $resultSelect->close();
+
+        if(empty($user["email"]))
+            return ["suc" => 0, "desc" => "Nie można zresetować hasła, ponieważ użytkownik nie ma przypisanego adresu e-mail!"];
+
+        $stmt = $conn->prepare("UPDATE websites_users SET password = NULL WHERE id = ?");
+        $stmt->bind_param("s",$user["id"]);
+        $stmt->execute();
+
+        require_once "ResetPasswordToken.php";
+        $token = ResetPasswordToken::generateToken($user["id"]);
+
+        $link = "http://localhost/pqcms/server/client/account/ResetPassword.php?token=$token";
+
+        require_once(dirname(__DIR__)."/Mailer.php");
+        Mailer::sendMail($user["email"],'PQCMS - Twoje hasło zostało zresetowane!',
+<<<HTML
+<!DOCTYPE html>
+<html lang="pl">
+    <head>
+        <style>
+            .body {
+                background: linear-gradient(135deg, #8a2be2, #793ee6 60%, #00bfff 120%);
+                background-size: 400% 400%;
+                color: white;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="body">
+            <p>
+                Administrator zresetował Twoje hasło. Kliknij na link, aby utworzyć nowe:
+            </p>
+            <a href="${link}">${link}</a>
+            <p style="font-weight: bold">   
+                Link straci ważność za 30 minut
+            </p>
+            <p>
+                Wyświetlana nazwa konta: ${user["nickname"]} (ze względów bezpieczeństwa nie jest pokazywany login)
+            </p>
+            <p style="font-weight: bold; font-size: 25px;">
+                WAŻNA INFORMACJA! Po kliknięciu na link upewnij się, że jesteś na oficjalnej stronie PQCMS!
+            </p>
+        </div>
+    </body>
+</html>
+HTML,
+            "Administrator zresetował Twoje hasło. Otwórz link, aby ustawić nowe: $link");
+
+        return ["suc" => 1, "desc" => "Zresetowano hasło użytkownikowi!"];
+    }
+
+
+
+    public static function editUser(int $websiteId, string $username = null, string $nickname = null, ?string $password = null, ?array $perms = [], ?bool $disabled = false): array
     {
 //        Walidacja pól
         $paramsValidator = self::validateParamsForUser($username, $nickname, $password, $perms);
