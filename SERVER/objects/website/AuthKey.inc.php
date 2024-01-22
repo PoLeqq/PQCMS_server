@@ -40,14 +40,16 @@ class AuthKey
         else
             return null;
 
+        date_default_timezone_set('Europe/Warsaw');
         $currentDate = date("Y-m-d H:i:s", time()+$sessionTime);
         $conn->query("INSERT INTO websites_auth_keys 
                     (website_id, $column, ip, auth_key, expired_time) 
                     VALUES 
                     ($website_id, $userId, '$ip', '$authKey', '$currentDate')");
+        $insertId = $conn->insert_id;
         $conn->close();
 
-        return ["value" => $authKey, "expiry_time" => time()+$sessionTime];
+        return ["value" => $authKey, "expiry_time" => time()+$sessionTime, "id" => $insertId];
     }
 
 //    TODO
