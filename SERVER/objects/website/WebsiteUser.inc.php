@@ -50,6 +50,20 @@ class WebsiteUser
         return password_verify($password,$this->unsafe_getField("password"));
     }
 
+    public function setPassword(string $password): bool
+    {
+        if(strlen($password) < 8 || strlen($password) > 40)
+            return false;
+
+        $conn = Connection::getConnection();
+
+        $password = password_hash($password,PASSWORD_DEFAULT);
+        $stmt = $conn->prepare("UPDATE websites_users SET password = ? WHERE id = ?");
+        $stmt->bind_param("si", $password,$this->id);
+        $stmt->execute();
+        return $stmt->errno === 0;
+    }
+
     private function unsafe_getField($column): mixed
     {
         $conn = Connection::getConnection();
