@@ -60,7 +60,7 @@ class WebsiteAdmin
 
         $conn = Connection::getConnection();
         $password = password_hash($password,PASSWORD_DEFAULT);
-        $conn->query("INSERT INTO websites_admins VALUES (null,$websiteId,'$username','$nickname','$password')");
+        $conn->query("INSERT INTO websites_admins VALUES (null,$websiteId,'$username','$nickname','$password',0)");
 
         $errno = $conn->errno;
         $conn->close();
