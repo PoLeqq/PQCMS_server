@@ -69,7 +69,7 @@ class WebsiteUser
         $conn = Connection::getConnection();
         $query = $conn->query("SELECT $column FROM websites_users WHERE id = $this->id");
 
-        $fetchArray = mysqli_fetch_array($query);
+        $fetchArray = $query->fetch_row();
         if($fetchArray == null || count($fetchArray) == 0) return null;
         $result = $fetchArray[0];
 
