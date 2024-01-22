@@ -363,21 +363,28 @@ HTML,
     {
         $conn = Connection::getConnection();
 
-        if(is_string($value)) $value = "'".$value."'";
-        $sql = "SELECT id FROM websites_users WHERE $col = $value";
-        if($websiteId != null) $sql .= " AND website_id = $websiteId";
+        $stmt = $conn->prepare("SELECT id FROM websites_users 
+          WHERE BINARY username = ? 
+            AND website_id = ? 
+            AND deleted = 0");
+        $stmt->bind_param("si",$username,$websiteId);
+        $stmt->execute();
 
-        $query = $conn->query($sql);
-        if($query->num_rows >= 1)
+
+        if($stmt->errno !== 0)
+            return null;
+
+        $result = $stmt->get_result();
+        if($result->num_rows >= 1)
         {
-            $result = [];
-            foreach($query->fetch_row() as $row)
-                $result[] = $row[0];
+            $response = [];
+            while($row = $result->fetch_row())
+                $response[] = $row[0];
         }
-        else $result = null;
+        else $response = null;
 
-        $query->close();
+        $stmt->close();
         $conn->close();
-        return $result;
+        return $response;
     }
 }
