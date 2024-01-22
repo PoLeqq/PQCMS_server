@@ -40,6 +40,11 @@ class WebsiteUser
         return $this->unsafe_getField("disabled");
     }
 
+    public function isDeleted(): bool
+    {
+        return $this->unsafe_getField("deleted");
+    }
+
     public function doesPasswordMatch($password): bool
     {
         return password_verify($password,$this->unsafe_getField("password"));
