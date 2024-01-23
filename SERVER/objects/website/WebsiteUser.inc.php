@@ -270,6 +270,12 @@ HTML,
             if($validator["suc"] === 0)
                 return $validator;
         }
+        if(!is_null($email))
+        {
+            $validator = self::validateEmail($email);
+            if($validator["suc"] === 0)
+                return $validator;
+        }
         if(!is_null($password))
         {
             $validator = self::validatePassword($password);
@@ -311,6 +317,12 @@ HTML,
                 {
                     $sql[] = " nickname = ?";
                     $params[] = $nickname;
+                    $paramsTypes .= "s";
+                }
+                if(!is_null($email))
+                {
+                    $sql[] = " email = ?";
+                    $params[] = $email;
                     $paramsTypes .= "s";
                 }
                 if(!is_null($password))
