@@ -93,11 +93,23 @@ class SafeWebsite
         return $this->getUnpermittedArray();
     }
 
-    public function editUser(string $username, ?string $nickname, ?string $password, ?array $perms, ?int $disabled): array
+    public function deleteRank(string $name): array
+    {
+        if($this->website->hasPermission($this->remoteAddr,$this->authKey,"pqcms.hr.rank.delete.$name"))
+        {
+            $this->website->deleteRank($name);
+            return ["suc" => 1, "desc" => "Usunięto rangę!"];
+        }
+        return $this->getUnpermittedArray();
+    }
+
+    public function editUser(string $username, ?string $nickname, ?string $email, ?string $password, ?array $perms, ?int $disabled): array
     {
 //        *pqcms.hr.user.edit.nickname.<nickname>
         if(!is_null($nickname) && !$this->website->hasPermission($this->remoteAddr,$this->authKey,"pqcms.hr.user.edit.nickname.".$username))
             $nickname = null;
+        if(!is_null($email) && !$this->website->hasPermission($this->remoteAddr,$this->authKey,"pqcms.hr.user.edit.email.".$username))
+            $email = null;
         if(!is_null($password) && !$this->website->hasPermission($this->remoteAddr,$this->authKey,"pqcms.hr.user.edit.password.set.".$username))
             $password = null;
         if(!is_null($disabled) && !$this->website->hasPermission($this->remoteAddr,$this->authKey,"pqcms.hr.user.edit.disable.".$username))
@@ -105,15 +117,41 @@ class SafeWebsite
         if(!is_null($perms) && !$this->website->hasPermission($this->remoteAddr,$this->authKey,"pqcms.hr.user.edit.perms.".$username))
             $perms = null;
 
-        foreach($perms as $perm)
-            if(!$this->website->hasPermission($_SERVER["REMOTE_ADDR"],$this->authKey,$perm))
-                unset($perms[$perm]);
+        if(!empty($perms))
+            foreach($perms as $perm)
+                if(!$this->website->hasPermission($_SERVER["REMOTE_ADDR"],$this->authKey,$perm))
+                    unset($perms[$perm]);
 
-        if(is_null($nickname) && is_null($password) && empty($perms) && is_null($disabled))
-            return ["suc" => 0, "desc" => "Nic nie zmieniono, ponieważ nie masz odpowiednich uprawnień!"];
+//        Nie może być, ponieważ gdy są puste permisje to się wyświetla - mimo, że user mógłBY zostać zmieniony
+//        if(is_null($nickname) && is_null($email) && is_null($password) && empty($perms) && is_null($disabled))
+//            return ["suc" => 0, "desc" => "Nic nie zmieniono, ponieważ nie masz odpowiednich uprawnień!"];
 
-        $resp = $this->website->editUser($username, $nickname, $password, $perms, $disabled);
-        if($resp["suc"] === 1)
+        $resp = $this->website->editUser($username, $nickname, $email, $password, $perms, $disabled);
+        if($resp["suc"] === 1 && !is_null($perms))
+            $resp["perms"] = $perms;
+
+        return $resp;
+    }
+
+    public function editRank(string $name, ?string $displayName, ?int $priority, ?int $parentId, ?array $perms): array
+    {
+        //        *pqcms.hr.rank.edit.nickname.<nickname>
+        if(!is_null($displayName) && !$this->website->hasPermission($this->remoteAddr,$this->authKey,"pqcms.hr.rank.edit.display_name.".$name))
+            $displayName = null;
+        if(!is_null($priority) && !$this->website->hasPermission($this->remoteAddr,$this->authKey,"pqcms.hr.rank.edit.priority.".$name))
+            $email = null;
+        if(!is_null($parentId) && !$this->website->hasPermission($this->remoteAddr,$this->authKey,"pqcms.hr.rank.edit.parentid.".$name))
+            $parentId = null;
+        if(!is_null($perms) && !$this->website->hasPermission($this->remoteAddr,$this->authKey,"pqcms.hr.rank.edit.perms.".$name))
+            $perms = null;
+
+        if(!empty($perms))
+            foreach($perms as $perm)
+                if(!$this->website->hasPermission($_SERVER["REMOTE_ADDR"],$this->authKey,$perm))
+                    unset($perms[$perm]);
+
+        $resp = $this->website->editRank($name, $displayName, $priority, $parentId, $perms);
+        if($resp["suc"] === 1 && !is_null($perms))
             $resp["perms"] = $perms;
 
         return $resp;
