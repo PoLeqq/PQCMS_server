@@ -113,7 +113,7 @@ class WebsiteRank
             if(is_null($parentId))
                 $parentId = "NULL";
 
-            $conn->query("INSERT INTO websites_ranks VALUES (null,$websiteId,'$name','$displayName','$perms','$priority',$parentId)");
+            $conn->query("INSERT INTO websites_ranks VALUES (null,$websiteId,'$name','$displayName','$perms','$priority',$parentId,0)");
             if($conn->errno === 0) $resp = ["suc" => 1, "desc" => "Dodano rangę!"];
             else $resp = ["suc" => 0, "desc" => "Błąd podczas dodawania rangi. Kod błędu: ".($conn->errno)."!"];
             $conn->close();
@@ -128,7 +128,7 @@ class WebsiteRank
         $conn = Connection::getConnection();
 
         if(is_string($value)) $value = "'".$value."'";
-        $sql = "SELECT * FROM websites_ranks WHERE $col = $value";
+        $sql = "SELECT * FROM websites_ranks WHERE $col = $value AND deleted = 0";
         if($websiteId != null) $sql .= " AND website_id = $websiteId";
 
         $query = $conn->query($sql);
