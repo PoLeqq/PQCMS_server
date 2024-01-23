@@ -15,6 +15,25 @@ class WebsiteRank
         return $this->id;
     }
 
+    public static function validateDisplayName(/*string*/$displayName): array
+    {
+        require_once(dirname(__DIR__,2)."/api/utils/validators/Validator.inc.php");
+        return Validator::validate([$displayName],["s(2-30)"])["suc"] ? ["suc" => 1] : ["suc" => 0, "desc" => "Login musi być napisem o długości 2-30 znaków!"];
+    }
+
+    public static function validatePriority(/*int*/$priority): array
+    {
+        require_once(dirname(__DIR__,2)."/api/utils/validators/Validator.inc.php");
+        return Validator::validate([$priority],["i(0-65535)"])["suc"] ? ["suc" => 1] : ["suc" => 0, "desc" => "Priorytet musi być liczbą w zakresie 0-65535!"];
+    }
+
+    public static function validateParentId(/*int*/$parentId): array
+    {
+//        todo kiedyś może czy wgl ranga istnieje?
+        require_once(dirname(__DIR__,2)."/api/utils/validators/Validator.inc.php");
+        return Validator::validate([$parentId],["i"])["suc"] ? ["suc" => 1] : ["suc" => 0, "desc" => "Priorytet musi być liczbą!"];
+    }
+
     public function getWebsiteId(): int
     {
         return $this->unsafe_getField("website_id");
