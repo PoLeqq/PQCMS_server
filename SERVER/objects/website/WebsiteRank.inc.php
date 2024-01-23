@@ -36,41 +36,47 @@ class WebsiteRank
 
     public function getWebsiteId(): int
     {
-        return $this->unsafe_getField("website_id");
+        return $this->getField("website_id");
     }
 
     public function getName(): string
     {
-        return $this->unsafe_getField("name");
+        return $this->getField("name");
     }
 
     public function getDisplayName(): string
     {
-        return $this->unsafe_getField("display_name");
+        return $this->getField("display_name");
     }
 
     public function getPerms(): array
     {
-        return $this->unsafe_getField("perms");
+        return $this->getField("perms");
     }
 
     public function getPriority(): int
     {
-        return $this->unsafe_getField("priority");
+        return $this->getField("priority");
     }
 
     public function getParentId(): ?int
     {
-        return $this->unsafe_getField("parent_id");
+        return $this->getField("parent_id");
     }
 
-    private function unsafe_getField($column): mixed
+    public function isDisabled(): ?bool
+    {
+        return $this->getField("deleted");
+    }
+
+    private function getField($column): mixed
     {
         $conn = Connection::getConnection();
-        $query = $conn->query("SELECT $column FROM websites_ranks WHERE id = $this->id");
+        $query = $conn->query("SELECT * FROM websites_ranks WHERE id = $this->id");
 
-        $fetchArray = mysqli_fetch_array($query);
-        if($fetchArray == null || count($fetchArray) == 0) return null;
+        $fetchArray = $query->fetch_assoc();
+        if($fetchArray == null || count($fetchArray) == 0 || !isset($fetchArray[$column]))
+            return null;
         $result = $fetchArray[0];
 
         $query->close();
