@@ -255,7 +255,7 @@ HTML,
 
 
 
-    public static function editUser(int $websiteId, string $username = null, string $nickname = null, ?string $password = null, ?array $perms = [], ?bool $disabled = false): array
+    public static function editUser(int $websiteId, string $username = null, ?string $nickname = null, ?string $email = null, ?string $password = null, ?array $perms = null, ?bool $disabled = false): array
     {
 //        Walidacja pól
         if(!is_null($username))
