@@ -144,4 +144,169 @@ class WebsiteRank
         $conn->close();
         return $result;
     }
+
+    public static function getWebsiteRankByName(string $name, int $websiteId): ?array
+    {
+        $conn = Connection::getConnection();
+
+        $stmt = $conn->prepare("SELECT id FROM websites_ranks 
+          WHERE BINARY name = ? 
+            AND website_id = ? 
+            AND deleted = 0");
+        $stmt->bind_param("si",$name,$websiteId);
+        $stmt->execute();
+
+        if($stmt->errno !== 0)
+            return null;
+
+        $result = $stmt->get_result();
+        if($result->num_rows >= 1)
+            $response = $result->fetch_assoc();
+        else $response = null;
+
+        $result->close();
+        $stmt->close();
+        $conn->close();
+        return $response;
+    }
+
+    public static function deleteRank(Website $website, string $name): void
+    {
+        $conn = Connection::getConnection();
+        $stmt = $conn->prepare("UPDATE websites_ranks 
+            SET deleted = 1 
+            WHERE website_id = ? 
+              AND name = ?");
+        $websiteId = $website->getId();
+        $stmt->bind_param("is", $websiteId,$name);
+        $stmt->execute();
+        $stmt->close();
+
+//        $stmt = $conn->prepare('UPDATE websites_users SET perms = REPLACE(REPLACE(perms, '"pqcms.*":true', ""),'"pqcms.*":false',"");');
+
+//        Pobranie użytkowników strony
+        $query = $conn->query("SELECT id, perms FROM websites_users WHERE website_id = $websiteId");
+        $userPerms = [];
+
+//        dodanie do array nowych permisji (usunięcie permisji do usuniętej rangi) tylko wtedy, gdy user tę rangę posiada
+        $rankPerm = "pqcms.rank.$name";
+        while($row = $query->fetch_assoc())
+        {
+            $newPerms = json_decode($row["perms"],true);
+
+            if(array_key_exists($rankPerm, $newPerms))
+            {
+                unset($newPerms[$rankPerm]);
+                $userPerms[$row["id"]] = $newPerms;
+            }
+        }
+
+//        zamiana permisji w DB
+        foreach($userPerms as $id => $perms)
+        {
+            $stmt = $conn->prepare("UPDATE websites_users SET perms = ? WHERE id = ?");
+            $perms = json_encode($perms);
+            $stmt->bind_param("si",$perms,$id);
+            $stmt->execute();
+            $stmt->close();
+        }
+
+//        Również nullowanie, gdy ranga była dzieckiem
+//        pobieranie id rangi:
+        $stmt = $conn->prepare("SELECT id FROM websites_ranks WHERE website_id = ? AND name = ?");
+        $stmt->bind_param("is",$websiteId,$name);
+        $stmt->execute();
+        $rankID = $stmt->get_result()->fetch_row()[0];
+
+        $conn->query("UPDATE websites_ranks SET parent_id = NULL 
+                      WHERE parent_id = $rankID");
+
+        $conn->close();
+    }
+
+    public static function editRank(int $websiteId, string $name, ?string $displayName, ?int $priority, ?int $parentId, ?array $perms): array
+    {
+//        Walidacja pól
+        if(!is_null($displayName))
+        {
+            $validator = self::validateDisplayName($displayName);
+            if($validator["suc"] === 0)
+                return $validator;
+        }
+        if(!is_null($priority))
+        {
+            $validator = self::validatePriority($priority);
+            if($validator["suc"] === 0)
+                return $validator;
+        }
+        if(!is_null($parentId))
+        {
+            $validator = self::validateParentId($parentId);
+            if($validator["suc"] === 0)
+                return $validator;
+        }
+        if(!is_null($perms))
+        {
+            require_once "WebsitePermissions.php";
+            if(!WebsitePermissions::isProperPermsArray($perms))
+                return ["suc" => 0, "desc" => "Podano niepoprawne permisje!"];
+        }
+
+        $conn = Connection::getConnection();
+        $stmt = $conn->prepare("SELECT id FROM websites_ranks WHERE website_id = $websiteId AND name = ?");
+        $stmt->bind_param("s",$name);
+        $stmt->execute();
+
+        $stmtResult = $stmt->get_result();
+
+        if($stmtResult->num_rows == 0)
+            $resp = ["suc" => 0, "desc" => "Ranga o podanej nazwie nie istnieje!"];
+        else
+        {
+            $rankId = $stmtResult->fetch_row()[0];
+
+            $sql = [];
+            $params = [];
+            $paramsTypes = "";
+
+            if(!is_null($displayName))
+            {
+                $sql[] = " display_name = ?";
+                $params[] = $displayName;
+                $paramsTypes .= "s";
+            }
+            if(!is_null($priority))
+            {
+                $sql[] = " priority = ?";
+                $params[] = $priority;
+                $paramsTypes .= "i";
+            }
+            if(!is_null($parentId))
+            {
+                $sql[] = " parent_id = ?";
+                $params[] = $parentId;
+                $paramsTypes .= "i";
+            }
+            if(!is_null($perms))
+            {
+                $sql[] = " perms = ?";
+                $params[] = json_encode($perms);
+                $paramsTypes .= "s";
+            }
+
+            $updateSQLQuery = "UPDATE websites_ranks SET ".implode(',',$sql)." WHERE id = $rankId";
+
+            $updateStmt = $conn->prepare($updateSQLQuery);
+            $updateStmt->bind_param($paramsTypes,...$params);
+            $updateStmt->execute();
+
+            if($conn->errno === 0)
+                $resp = ["suc" => 1, "desc" => "Edycja rangi powiodła się!"];
+            else
+                $resp = ["suc" => 0, "desc" => "Błąd podczas edytowania rangi. Kod błędu: ".($conn->errno)."!"];
+        }
+
+        $conn->close();
+        return $resp;
+    }
 }
