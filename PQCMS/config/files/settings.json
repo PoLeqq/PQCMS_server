@@ -1,7 +1,0 @@
-{
-    "login":
-    {
-        "attempts": 5,
-        "session_time": 600
-    }
-}
