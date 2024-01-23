@@ -94,6 +94,14 @@ class WebsiteUser
         return Validator::validate([$nickname],["s(2-30)"])["suc"] ? ["suc" => 1] : ["suc" => 0, "desc" => "Nazwa użytkownika musi być napisem o długości 2-30 znaków!"];
     }
 
+    public static function validateEmail(/*string*/$email): array
+    {
+        require_once(dirname(__DIR__,2)."/api/utils/validators/Validator.inc.php");
+        if(Validator::validate([$email],["s(5-255)"])["suc"] === 0)
+            return ["suc" => 0, "desc" => "Email musi być napisem o długości 5-255 znaków!"];
+        return filter_var($email,FILTER_VALIDATE_EMAIL) ? ["suc" => 1] : ["suc" => 0, "desc" => "Podany e-mail jest niepoprawny!"];
+    }
+
     public static function validatePassword(/*string*/$password): array
     {
         require_once(dirname(__DIR__,2)."/api/utils/validators/Validator.inc.php");
