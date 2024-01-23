@@ -129,6 +129,32 @@ class AuthKey
         return $result;
     }
 
+    public static function isValidAuthKeyByID(int $id): array
+    {
+        $conn = Connection::getConnection();
+        $query = $conn->query("SELECT expired_time, invalid, logout FROM websites_auth_keys WHERE id = $id");
+
+        if($query->num_rows === 0)
+            $result = ["valid" => 0, "outdated" => 0, "invalidated" => 0];
+        else
+        {
+            $row = $query->fetch_row();
+
+            $expiredTime = $row[0];
+            $expiredDate = strtotime($expiredTime);
+
+            date_default_timezone_set('Europe/Warsaw');
+            $outdated = $expiredDate < time();
+            $invalidated = $row[1] || $row[2];
+
+            $result = ["valid" => (int) (!($outdated || $invalidated)), "outdated" => (int) $outdated, "invalidated" => (int) $invalidated];
+        }
+
+        $query->close();
+        $conn->close();
+        return $result;
+    }
+
     /**
      * Funkcja sprawdza, czy jest jakikolwiek ważny auth key (w sumie to powinien być tylko 1, czyli czy sesja konta
      * jest ważna)
