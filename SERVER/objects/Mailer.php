@@ -9,7 +9,8 @@ class Mailer
 
 
     public static function sendMail(string $mailTo, string $subject, string $body, string $altBody,
-                                   string $host = "eagle.addhost.pl", string $username = 'pqcms-noreply@poleq.pl', string $password = '9Uqxh69c', int $port = 465): array
+                                   string $host = "eagle.addhost.pl", string $username = 'pqcms-noreply@poleq.pl', string $password = '9Uqxh69c', int $port = 465,
+                                    array $files = []): array
     {
 //Load Composer's autoloader
         require(dirname(__DIR__)."/vendor/autoload.php");
@@ -31,6 +32,8 @@ class Mailer
             $mail->Encoding = PHPMailer::ENCODING_BASE64;  //this code very important
             $mail->SMTPDebug = false;
             $mail->addCustomHeader('Content-Language: pl-PL');
+            $mail->SetLanguage("pl", dirname(__DIR__)."/vendor/phpmailer/phpmailer/language/");
+
 
 
             //Recipients
@@ -43,7 +46,8 @@ class Mailer
 //    $mail->addBCC('poleq@poleq.pl');
 
             //Attachments
-//    $mail->addAttachment('/var/tmp/file.tar.gz');         //Add attachments
+            foreach($files as $file)
+                $mail->addAttachment($file);         //Add attachments
 //    $mail->addAttachment('/tmp/image.jpg', 'new.jpg');    //Optional name
 
             //Content
