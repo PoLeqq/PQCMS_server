@@ -29,7 +29,7 @@ if(is_null($parsedPerms))
 $safeWebsite = APIUtils::getSafeWebsite($_POST);
 $website = $safeWebsite->getWebsite();
 foreach($_POST["perms"] as $perm)
-    if(!$website->hasPermission($_SERVER["REMOTE_ADDR"],$_POST["auth_key"],$perm))
+    if(!$website->hasPermission($_POST["client_ip"],$_POST["auth_key"],$perm))
         unset($_POST["perms"][$perm]);
 
 $parentId = (empty($_POST["parent_id"])) ? null : $_POST["parent_id"];

@@ -11,7 +11,7 @@ if(empty($_POST["username"]) || empty($_POST["password"]))
 require_once(dirname(__DIR__,3)."/objects/Website.inc.php");
 $website = APIUtils::getWebsite($_POST);
 
-$loginUser = $website->loginUser($_SERVER["REMOTE_ADDR"],$_POST["username"], $_POST["password"]);
+$loginUser = $website->loginUser($_POST["client_ip"],$_POST["username"], $_POST["password"]);
 unset($loginUser["proper_data"]);
 
 APIUtils::logAPI($_POST,$loginUser);

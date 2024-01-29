@@ -47,7 +47,7 @@ $responseChanged = [];
 {
     if(!empty($_POST["login_count"]) || !empty($_POST["login_count_reset"]))
     {
-        if($website->hasPermission($_SERVER["REMOTE_ADDR"], $_POST["auth_key"], "pqcms.settings.login_count.set"))
+        if($website->hasPermission($_POST["client_ip"], $_POST["auth_key"], "pqcms.settings.login_count.set"))
         {
             if(!empty($_POST["login_count_reset"]))
                 $settings->setLoginAttempts(null);
@@ -62,7 +62,7 @@ $responseChanged = [];
 
     if(!empty($_POST["login_count"]) || !empty($_POST["login_count_reset"]))
     {
-        if($website->hasPermission($_SERVER["REMOTE_ADDR"], $_POST["auth_key"], "pqcms.settings.login_session_time.set"))
+        if($website->hasPermission($_POST["client_ip"], $_POST["auth_key"], "pqcms.settings.login_session_time.set"))
         {
             if(!empty($_POST["login_session_time_reset"]))
                 $settings->setLoginSessionTime(null);

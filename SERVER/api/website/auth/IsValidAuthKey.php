@@ -21,7 +21,7 @@ if($validator["suc"] === 0)
 require_once(dirname(__DIR__, 3) . "/objects/website/AuthKey.inc.php");
 $website = APIUtils::getWebsite($_POST);
 
-$isValidAuthKeyForIP = AuthKey::isValidAuthKeyForIp($website->getId(),$_SERVER["REMOTE_ADDR"],$_POST["auth_key"]);
+$isValidAuthKeyForIP = AuthKey::isValidAuthKeyForIp($website->getId(),$_POST["client_ip"],$_POST["auth_key"]);
 //if(isset($isValidAuthKeyForIP["not_secure"]) && $isValidAuthKeyForIP["not_secure"] === 1)
 $response["resp"] = $isValidAuthKeyForIP;
 

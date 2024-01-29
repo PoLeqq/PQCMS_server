@@ -17,7 +17,7 @@ $permsValues = [
 $response["suc"] = 1;
 foreach($permsValues as $perm => $value)
 {
-    if($website->hasPermission($_SERVER["REMOTE_ADDR"],$_POST["auth_key"],"pqcms.settings.system.$perm"))
+    if($website->hasPermission($_POST["client_ip"],$_POST["auth_key"],"pqcms.settings.system.$perm"))
         $response["resp"][$value] = $settings->unsafe_getField($value);
 }
 
