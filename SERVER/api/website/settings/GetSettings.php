@@ -10,8 +10,7 @@ $settings = $website->getSettings();
 
 $permsValues = [
     "logincount" => "login_attempts",
-    "loginsessiontime" => "login_session_time",
-    "tokenlifespan" => "token_lifespan",
+    "loginsessiontime" => "login_session_time"
 ];
 
 $response["suc"] = 1;
