@@ -35,7 +35,11 @@ function addCheckLicenseHistory($ip, $requestDomain, $domain, $login, $licenseKe
     if(!$successful) $successful = "0";
     date_default_timezone_set('Europe/Warsaw');
     $now = date("Y-m-d H:i:s");
-    $conn->query("INSERT INTO check_license_history (ip,request_domain,domain,login,license_key,date,successful,description) VALUES ('$ip','$requestDomain','$domain','$login','$licenseKey','$now',$successful,'$description')");
+    $stmt = $conn->prepare("INSERT INTO check_license_history 
+        (ip,request_domain,domain,login,license_key,date,successful,description) VALUES (?,?,?,?,?,?,?,?)");
+    $stmt->bind_param("ssssssss",$ip,$requestDomain,$domain,$login,$licenseKey,$now,$successful,$description);
+    $stmt->execute();
+    $stmt->close();
     $conn->close();
 }
 
