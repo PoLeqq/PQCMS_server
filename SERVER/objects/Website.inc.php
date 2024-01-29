@@ -98,10 +98,10 @@ class Website
         return $result;
     }
 
-    public function addAdmin(string $username, string $nickname, string $password): array
+    public function addAdmin(string $username, string $nickname, string $email, string $password): array
     {
         require_once(dirname(__DIR__) . "/objects/website/WebsiteAdmin.inc.php");
-        return WebsiteAdmin::addWebsiteAdmin($this->id, $username, $nickname, $password);
+        return WebsiteAdmin::addWebsiteAdmin($this->id, $username, $nickname, $email, $password);
     }
 
     public function addUser(string $username, string $nickname, ?string $email, string $password, array $perms, bool $disabled): array
