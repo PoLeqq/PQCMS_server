@@ -59,22 +59,41 @@ function checkLicense($remoteAddr, $httpReferer, $domain, $login, $license_key):
 
     if($domain !== "localhost.localhost")
     {
-        $clientServerIps = gethostbynamel($domain);
+//        $clientServerIps = gethostbynamel($domain);
+        $clientServerIps = dns_get_record($domain, DNS_AAAA) + dns_get_record($domain, DNS_A);
     //        Tutaj jest jak podana domena (przez klienta i u nas) nie istnieje 😲 Jak to możliwe? Może się nigdy nie zdarzy :p
 
-        if($clientServerIps === false)
+//        if($clientServerIps === false)
+//        {
+//            addCheckLicenseHistory($remoteAddr, $requestDomain, $domain, $login, $license_key, false, "Nieprawidłowa nazwa hosta.");
+//            return ["suc" => 0, "desc" => "Nieprawidłowa nazwa hosta."];
+//        }
+
+        if(empty($clientServerIps))
         {
             addCheckLicenseHistory($remoteAddr, $requestDomain, $domain, $login, $license_key, false, "Nieprawidłowa nazwa hosta.");
             return ["suc" => 0, "desc" => "Nieprawidłowa nazwa hosta."];
         }
 
-        if(!in_array($remoteAddr, $clientServerIps))
+        $goodIP = false;
+        foreach($clientServerIps as $record)
+        {
+            if((!empty($record["ipv6"]) && $record["ipv6"] === $remoteAddr) || (!empty($record["ipv4"]) && $record["ipv4"] === $remoteAddr))
+            {
+                $goodIP = true;
+                break;
+            }
+        }
+
+        if(!$goodIP)
         {
 //        do logów sk..syna XD
 //        nie ma nic za darmo, niech płaci
             addCheckLicenseHistory($remoteAddr, $requestDomain, $domain, $login, $license_key, false, "SCAM? Nieprawidłowa nazwa hosta. Czy na pewno masz pliki na odpowiednim serwerze?");
-            return ["suc" => 0, "desc" => "Nieprawidłowa nazwa hosta. Czy na pewno masz pliki na odpowiednim serwerze?"];
-//        return["suc" => 0, "desc" => "Nieprawidłowa nazwa hosta. Czy na pewno masz pliki na odpowiednim serwerze? DEBUG: TwojeIP:".$remoteAddr.";ZnalezioneIP:".join(",",$clientServerIps)];
+//            return ["suc" => 0, "desc" => "Nieprawidłowa nazwa hosta. Czy na pewno masz pliki na odpowiednim serwerze?"];
+        return["suc" => 0, "desc" => "Nieprawidłowa nazwa hosta. Czy na pewno masz pliki na odpowiednim serwerze?",
+            "yip" => $remoteAddr,
+            "sip" => $clientServerIps];
         }
     }
 
