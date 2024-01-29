@@ -11,5 +11,6 @@ if(empty($_POST["auth_key"]))
 require_once(dirname(__DIR__, 3) . "/objects/Website.inc.php");
 $website = APIUtils::getWebsite($_POST);
 
-$response["resp"] = $website->logoutUser($_SERVER["REMOTE_ADDR"], $_POST["auth_key"]);
+$response["resp"] = $website->logoutUser($_POST["client_ip"], $_POST["auth_key"]);
+APIUtils::logAPI($_POST,$response);
 die(json_encode($response, JSON_UNESCAPED_UNICODE));

@@ -27,4 +27,5 @@ foreach($permsValues as $perm => $value)
 //    "token_lifespan" => $settings->getTokenLifespan()
 //];
 
+APIUtils::logAPI($_POST,$response);
 die(json_encode($response,JSON_UNESCAPED_UNICODE));

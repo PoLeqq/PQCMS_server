@@ -96,4 +96,6 @@ $responseChanged = [];
 //            $settings->setTokenLifespan($_POST["token_lifespan"]);
 }
 
-die(json_encode(["suc" => 1, "desc" => "Zmieniono ustawienia strony!", "changed" => $responseChanged],JSON_UNESCAPED_UNICODE));
+$response = ["suc" => 1, "desc" => "Zmieniono ustawienia strony!", "changed" => $responseChanged];
+APIUtils::logAPI($_POST,$response);
+die(json_encode($response,JSON_UNESCAPED_UNICODE));

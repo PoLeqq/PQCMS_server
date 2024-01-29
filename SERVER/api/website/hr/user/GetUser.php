@@ -37,4 +37,7 @@ else
     }
 }
 
-echo json_encode(["suc" => 1, "resp" => $responseUsers],JSON_UNESCAPED_UNICODE);
+$response = ["suc" => 1, "resp" => $responseUsers];
+
+APIUtils::logAPI($_POST,$response);
+echo json_encode($response,JSON_UNESCAPED_UNICODE);

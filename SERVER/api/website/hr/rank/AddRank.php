@@ -33,4 +33,7 @@ foreach($_POST["perms"] as $perm)
         unset($_POST["perms"][$perm]);
 
 $parentId = (empty($_POST["parent_id"])) ? null : $_POST["parent_id"];
-echo json_encode($safeWebsite->addRank($_POST["name"], $_POST["display_name"], $_POST["perms"], $_POST["priority"], $parentId),JSON_UNESCAPED_UNICODE);
+
+$response = $safeWebsite->addRank($_POST["name"], $_POST["display_name"], $_POST["perms"], $_POST["priority"], $parentId);
+APIUtils::logAPI($_POST,$response);
+echo json_encode($response,JSON_UNESCAPED_UNICODE);

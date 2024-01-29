@@ -7,4 +7,6 @@ APIUtils::validatePostForAuthKey($_POST);
 
 require_once("Version.inc.php");
 $response["version"] = Version::getVersion("client",!empty($_POST["complex"]));
+
+APIUtils::logAPI($_POST,$response);
 echo json_encode($response,JSON_UNESCAPED_UNICODE);

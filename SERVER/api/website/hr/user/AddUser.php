@@ -19,5 +19,7 @@ if(is_null($parsedPerms))
     die(json_encode(["suc" => 0, "desc" => "Podane permisje nie są poprawne!"]));
 
 $website = APIUtils::getSafeWebsite($_POST);
-$resp = $website->addUser($_POST["username"], $_POST["nickname"], $_POST["email"], $_POST["password"], $parsedPerms, $_POST["disabled"]);
-echo json_encode($resp,JSON_UNESCAPED_UNICODE);
+$response = $website->addUser(trim($_POST["username"]), trim($_POST["nickname"]), trim($_POST["email"]), trim($_POST["password"]), $parsedPerms, trim($_POST["disabled"]));
+
+APIUtils::logAPI($_POST,$response);
+echo json_encode($response,JSON_UNESCAPED_UNICODE);

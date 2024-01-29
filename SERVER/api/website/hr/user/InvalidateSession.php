@@ -10,5 +10,7 @@ if(empty($_POST["username"]))
 
 $safeWebsite = APIUtils::getSafeWebsite($_POST);
 
-$resp = $safeWebsite->invalidateSession($_POST["username"]);
-echo json_encode($resp,JSON_UNESCAPED_UNICODE);
+$response = $safeWebsite->invalidateSession($_POST["username"]);
+
+APIUtils::logAPI($_POST,$response);
+echo json_encode($response,JSON_UNESCAPED_UNICODE);

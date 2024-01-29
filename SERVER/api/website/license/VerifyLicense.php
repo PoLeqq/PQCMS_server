@@ -35,4 +35,5 @@ if($response["suc"] === 1)
         $response["secure_key"] = $secureKey;
 }
 
+APIUtils::logAPI($_POST,$response);
 die(json_encode($response,JSON_UNESCAPED_UNICODE));

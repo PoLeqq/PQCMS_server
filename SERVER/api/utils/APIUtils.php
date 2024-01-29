@@ -96,6 +96,22 @@ class APIUtils
         if(is_null($id))
             return null;
 
-        return new SafeWebsite($id,$_SERVER["REMOTE_ADDR"],$post["auth_key"]);
+        return new SafeWebsite($id,$_POST["client_ip"],$post["auth_key"]);
+    }
+
+    public static function logAPI(array $post, array $response): void
+    {
+        date_default_timezone_set('Europe/Warsaw');
+        $date = date("Y-m-d H:i:s.u", time());
+        $jsonPost = json_encode($post,JSON_UNESCAPED_UNICODE);
+        $jsonResponse = json_encode($response,JSON_UNESCAPED_UNICODE);
+
+        require_once(dirname(__DIR__,2)."/database/Connection.inc.php");
+        $conn = Connection::getConnection();
+        $stmt = $conn->prepare("INSERT INTO websites_api_logs VALUES (null,?,?,?)");
+        $stmt->bind_param("sss",$date, $jsonPost, $jsonResponse);
+        $stmt->execute();
+        $stmt->close();
+        $conn->close();
     }
 }

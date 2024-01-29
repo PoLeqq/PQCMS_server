@@ -24,4 +24,6 @@ $website = APIUtils::getWebsite($_POST);
 $isValidAuthKeyForIP = AuthKey::isValidAuthKeyForIp($website->getId(),$_SERVER["REMOTE_ADDR"],$_POST["auth_key"]);
 //if(isset($isValidAuthKeyForIP["not_secure"]) && $isValidAuthKeyForIP["not_secure"] === 1)
 $response["resp"] = $isValidAuthKeyForIP;
+
+APIUtils::logAPI($_POST,$response);
 die(json_encode($response, JSON_UNESCAPED_UNICODE));

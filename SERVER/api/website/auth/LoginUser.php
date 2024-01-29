@@ -14,4 +14,5 @@ $website = APIUtils::getWebsite($_POST);
 $loginUser = $website->loginUser($_SERVER["REMOTE_ADDR"],$_POST["username"], $_POST["password"]);
 unset($loginUser["proper_data"]);
 
+APIUtils::logAPI($_POST,$loginUser);
 die(json_encode($loginUser,JSON_UNESCAPED_UNICODE));

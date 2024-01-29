@@ -6,4 +6,7 @@ require_once(dirname(__DIR__, 2) . "/utils/APIUtils.php");
 APIUtils::validatePost($_POST);
 
 require_once(dirname(__DIR__,3)."/objects/website/WebsitePermissions.php");
-echo json_encode(["suc" => 1, "resp" => WebsitePermissions::getPermissionsDescriptions()],JSON_UNESCAPED_UNICODE);
+
+$response = ["suc" => 1, "resp" => WebsitePermissions::getPermissionsDescriptions(APIUtils::getWebsite($_POST)->getId())];
+APIUtils::logAPI($_POST,$response);
+echo json_encode($response,JSON_UNESCAPED_UNICODE);
