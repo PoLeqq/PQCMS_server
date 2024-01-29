@@ -48,7 +48,7 @@ class WebsiteAdmin
         return $result;
     }
 
-    public static function addWebsiteAdmin(int $websiteId, string $username, string $nickname, string $password): array
+    public static function addWebsiteAdmin(int $websiteId, string $username, string $nickname, string $email, string $password): array
     {
         require_once(dirname(__DIR__,2)."/utils/SQLSecurity.php");
         $insecureCharsResponse = SQLSecurity::generateResponseForAPI(SQLSecurity::doesStringContains($username),"username");
@@ -60,10 +60,12 @@ class WebsiteAdmin
 
         $conn = Connection::getConnection();
         $password = password_hash($password,PASSWORD_DEFAULT);
-        $conn->query("INSERT INTO websites_admins VALUES (null,$websiteId,'$username','$nickname','$password',0)");
+        $stmt = $conn->prepare("INSERT INTO websites_admins VALUES (null,?,?,?,?,?,0)");
+        $stmt->bind_param("issss",$websiteId,$username,$nickname,$email,$password);
+        $stmt->execute();
 
-        $errno = $conn->errno;
+        $errno = $stmt->errno;
         $conn->close();
-        return ["suc" => $errno == 1, "desc" => $errno];
+        return ["suc" => $errno === 0, "desc" => $errno];
     }
 }
