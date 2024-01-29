@@ -5,9 +5,33 @@ header('Content-Type: application/json; charset=utf-8');
 require_once(dirname(__DIR__, 3) . "/utils/APIUtils.php");
 APIUtils::validatePostForAuthKey($_POST);
 
+if(!empty($_POST["admin"]))
+{
+    $validator = Validator::validate([$_POST["admin"]],["s(0-1)"]);
+    if($validator["suc"] == 0)
+        die(json_encode($validator,JSON_UNESCAPED_UNICODE));
+}
+if(!empty($_POST["username"]))
+{
+    $validator = Validator::validate([$_POST["username"]],["s(5-30)"]);
+    if($validator["suc"] == 0)
+        die(json_encode($validator,JSON_UNESCAPED_UNICODE));
+}
+if(!empty($_POST["nickname"]))
+{
+    $validator = Validator::validate([$_POST["nickname"]],["s(2-30)"]);
+    if($validator["suc"] == 0)
+        die(json_encode($validator,JSON_UNESCAPED_UNICODE));
+}
+if(!empty($_POST["disabled"]))
+{
+    $validator = Validator::validate([$_POST["disabled"]],["s(0-1)"]);
+    if($validator["suc"] == 0)
+        die(json_encode($validator,JSON_UNESCAPED_UNICODE));
+}
+
 $safeWebsite = APIUtils::getSafeWebsite($_POST);
 $users = $safeWebsite->getUsers();
-
 
 $responseUsers = [];
 if(isset($_POST["admin"]) && $_POST["admin"] === "1")
@@ -25,7 +49,7 @@ else
 {
     foreach($users as $user)
     {
-        if(isset($_POST["admin"]) && $_POST["admin"] === "0" && !isset($user["disabled"]))
+        if((isset($_POST["admin"]) && $_POST["admin"] === "0") && !isset($user["disabled"]))
             continue;
         if(isset($_POST["username"]) && $_POST["username"] !== $user["username"])
             continue;
