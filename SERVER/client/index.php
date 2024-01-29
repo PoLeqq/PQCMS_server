@@ -84,8 +84,9 @@ unset($_SESSION["pqcms-client-announce-panel"]);
         <input type="hidden" name="token" value="{$_SESSION["pqcms-client-token-first-account"]}">
 
         Login: <input type="text" name="username" required>
-        Nazwa użytkownika: <input type="text" name="nickname" required>
+        Nazwa użytkownika (wyświetlana): <input type="text" name="nickname" required>
         Hasło (w polu poniżej będzie ono widoczne!): <input type="text" name="password" required>
+        E-mail: <input type="email" name="email" required>
 
         <input type="submit" value="Dodaj konto administratora">
     </form>
