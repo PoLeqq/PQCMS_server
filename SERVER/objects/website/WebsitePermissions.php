@@ -32,6 +32,14 @@ class WebsitePermissions
         return true;
     }
 
+    /**
+     * Funkcja rekurencyjna. Zwraca listę permisji, które posiadają rangi (wraz z wszystkimi rodzicami)
+     * @return void
+     */
+    private static function getParentsPermissions(mysqli $conn, $rankPerms) {
+//todo
+    }
+
     public static function hasPermissions(array $userPerms, array $checkPerms, ?int $websiteId = null): array
     {
         /*
@@ -77,36 +85,53 @@ class WebsitePermissions
         }
         else
         {
-            $ranks = [];
-            foreach($userPerms as $perm => $value)
-            {
-                echo $perm;
-                if(str_starts_with($perm,"pqcms.rank."))
-                {
-                    $rank = str_replace("pqcms.rank.","",$perm);
-                    $ranks[] = $rank;
-                }
-            }
+//            $ranks = [];
+//            foreach($userPerms as $perm => $value)
+//            {
+//                echo $perm;
+//                if(str_starts_with($perm,"pqcms.rank."))
+//                {
+//                    $rank = str_replace("pqcms.rank.","",$perm);
+//                    $ranks[] = $rank;
+//                }
+//            }
+
+//            $allPerms = [$userPerms];
+//            require_once(dirname(__DIR__,2)."/database/Connection.inc.php");
+//            $conn = Connection::getConnection();
+//            foreach($ranks as $rank)
+//            {
+////                tutaj miało być ale pqcms.rank.* , ale chyba zrezygnuję z posiadania wszystkich rang 1 permisją :p
+//                $sql = "SELECT perms FROM websites_ranks WHERE name = '$rank' AND website_id = $websiteId";
+//
+//                $query = $conn->query($sql);
+//                if($query->num_rows >= 1)
+//                {
+//                    $jsonPerms = json_decode($query->fetch_array()[0],true);
+//                    if($jsonPerms !== false)
+//                        $allPerms[] = $jsonPerms;
+//                }
+//
+//                $query->close();
+//                $conn->close();
+//            }
 
             $allPerms = [$userPerms];
             require_once(dirname(__DIR__,2)."/database/Connection.inc.php");
             $conn = Connection::getConnection();
-            foreach($ranks as $rank)
+            $query = $conn->query("SELECT name, perms FROM websites_ranks WHERE website_id = $websiteId ORDER BY priority DESC");
+            while($row = $query->fetch_row())
             {
-//                tutaj miało być ale pqcms.rank.* , ale chyba zrezygnuję z posiadania wszystkich rang 1 permiją :p
-                $sql = "SELECT perms FROM websites_ranks WHERE name = '$rank' AND website_id = $websiteId";
-
-                $query = $conn->query($sql);
-                if($query->num_rows >= 1)
+//                tutaj miało być ale pqcms.rank.* , ale chyba zrezygnuję z posiadania wszystkich rang 1 permisją :p
+                if(isset($userPerms["pqcms.rank.${row[0]}"]) && $userPerms["pqcms.rank.${row[0]}"])
                 {
-                    $jsonPerms = json_decode($query->fetch_array()[0],true);
+                    $jsonPerms = json_decode($row[1],true);
                     if($jsonPerms !== false)
                         $allPerms[] = $jsonPerms;
                 }
-
-                $query->close();
-                $conn->close();
             }
+            $query->close();
+            $conn->close();
 
             $permsResponse = [];
             foreach($checkPerms as $perm)
@@ -216,7 +241,7 @@ class WebsitePermissions
      * Zwraca opis wszystkich permisji
      * @return array tablica asocjacyjna: ["permisja" => "opis"]
      */
-    public static function getPermissionsDescriptions(): array
+    public static function getPermissionsDescriptions(?int $websiteId): array
     {
         require_once(dirname(__DIR__,2)."/database/Connection.inc.php");
         $conn = Connection::getConnection();
@@ -229,6 +254,28 @@ class WebsitePermissions
         $query->close();
         $conn->close();
 
+//        todo w przyszłości podzielenie tego na perimsje per user (np: (...).<username>, (...).<rankname>
+        if(!is_null($websiteId))
+        {
+            require_once(dirname(__DIR__)."/Website.inc.php");
+            $website = new Website($websiteId);
+
+            foreach($website->getRanks() as $rank)
+                $perms[] = [
+                    "perm" => "pqcms.rank.".$rank["name"],
+                    "description" => "Ranga: ${rank["display_name"]} (${rank["name"]})"
+                ];
+//            $userPerms = [
+//                "pqcms.hr"
+//            ];
+//            foreach($website->getUsers() as $user)
+//            {
+//                $perms[] = [
+//                    "perm" => "pqcms.site.group.set",
+//                    "desc" =>
+//                ];
+//            }
+        }
         return $perms;
     }
 
