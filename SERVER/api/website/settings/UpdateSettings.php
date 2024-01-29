@@ -6,20 +6,21 @@ require_once(dirname(__DIR__,2)."/utils/APIUtils.php");
 APIUtils::validatePostForAuthKey($_POST);
 
 if((!isset($_POST["login_count"]) && empty($_POST["login_count_reset"])) ||
-    (!isset($_POST["login_session_time"]) && empty($_POST["login_session_time_reset"])) ||
-    (!isset($_POST["token_lifespan"]) && empty($_POST["token_lifespan_reset"])))
+    (!isset($_POST["login_session_time"]) && empty($_POST["login_session_time_reset"])))
     die(json_encode(["suc" => 0, "desc" => "Uzupełnij wszystkie pola!"],JSON_UNESCAPED_UNICODE));
 
 require_once(dirname(__DIR__,3)."/objects/Website.inc.php");
 $website = APIUtils::getWebsite($_POST);
 
-$apiFields = ["login_count","login_count_reset",
-    "login_session_time","login_session_time_reset",
-    "token_lifespan","token_lifespan_reset"];
+$apiFields = [
+    "login_count","login_count_reset",
+    "login_session_time","login_session_time_reset"
+];
 $fields = [];
-$fieldValidators = ["i(0-100)","i(0-1)",
-    "i(0-3600)","i(0-1)",
-    "i(0-600)","i(0-1)"];
+$fieldValidators = [
+    "i(0-255)","i(0-1)",
+    "i(0-3600)","i(0-1)"
+];
 
 $sendingFieldValidators = [];
 $i = 0;
@@ -73,27 +74,6 @@ $responseChanged = [];
         else
             $responseChanged["login_session_time"] = 0;
     }
-
-    if(!empty($_POST["token_lifespan"]) || !empty($_POST["token_lifespan_reset"]))
-    {
-        if($website->hasPermission($_SERVER["REMOTE_ADDR"], $_POST["auth_key"], "pqcms.settings.token_lifespan.set"))
-        {
-            if(!empty($_POST["token_lifespan_reset"]))
-                $settings->setTokenLifespan(null);
-            else
-                $settings->setTokenLifespan($_POST["token_lifespan"]);
-            $responseChanged["token_lifespan"] = 1;
-        }
-        else
-            $responseChanged["token_lifespan"] = 0;
-    }
-
-
-//    if($website->hasPermission($_SERVER["REMOTE_ADDR"], $_POST["auth_key"], "pqcms.settings.token_lifespan.set"))
-//        if(!empty($_POST["token_lifespan_reset"]))
-//            $settings->resetTokenLifespan();
-//        else
-//            $settings->setTokenLifespan($_POST["token_lifespan"]);
 }
 
 $response = ["suc" => 1, "desc" => "Zmieniono ustawienia strony!", "changed" => $responseChanged];
