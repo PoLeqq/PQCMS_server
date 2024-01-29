@@ -11,16 +11,22 @@ if($_SESSION["pqcms-server-token-addwebsite"] != $_POST["token"])
     die("Incorrect token.");
 
 require_once(dirname(__DIR__, 2) . "/objects/Website.inc.php");
-if(Website::getWebsiteIDByMatching("domain",$_POST["domain"]) != null)
-    die("Website identified by domain \"{$_POST["domain"]}\" actually exists in database!");
-if(Website::getWebsiteIDByMatching("login",$_POST["login"]) != null)
-    die("Website identified by login \"{$_POST["login"]}\" actually exists in database!");
+// odpuszczanie poleq.pl - dla testów, więc mogą być różne licencje dla tej domeny
+if($_POST["domain"] !== "poleq.pl")
+    if(Website::getWebsiteIDByMatchingDomain("domain",$_POST["domain"]) != null)
+        die("Website identified by domain \"{$_POST["domain"]}\" actually exists in database!");
+//if(Website::getWebsiteIDByMatching("login",$_POST["login"]) != null)
+//    die("Website identified by login \"{$_POST["login"]}\" actually exists in database!");
 
 require_once(dirname(__DIR__, 2) . "/objects/website/LicenseKey.inc.php");
 if(isset($_POST["perm_license"])) $expDate = null;
 else if(isset($_POST["expiry_date"])) $expDate = $_POST["expiry_date"];
 else die("License needs to be permanent or expire.");
 
-Website::addWebsite($_POST["domain"],$_POST["login"],LicenseKey::getRandomLicenseKey(),$expDate,$_POST["blocked"]);
+$licenseKey = LicenseKey::getRandomLicenseKey();
+Website::addWebsite($_POST["domain"],$_POST["login"],$licenseKey,$expDate,$_POST["blocked"]);
+
 echo "Added to the database!\n";
+
+$_POST["license_key"] = $licenseKey;
 var_dump($_POST);
