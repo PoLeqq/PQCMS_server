@@ -19,7 +19,7 @@ $apiFields = [
 $fields = [];
 $fieldValidators = [
     "i(0-255)","i(0-1)",
-    "i(0-3600)","i(0-1)"
+    "i(60-3600)","i(0-1)"
 ];
 
 $sendingFieldValidators = [];
