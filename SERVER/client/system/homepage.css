@@ -24,3 +24,8 @@
     align-items: center;
     justify-content: center;
 }
+
+.pqcms-action-content,
+.advantage {
+    text-align: justify;
+}
