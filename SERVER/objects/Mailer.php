@@ -6,8 +6,6 @@ use PHPMailer\PHPMailer\Exception;
 
 class Mailer
 {
-
-
     public static function sendMail(string $mailTo, string $subject, string $body, string $altBody,
                                    string $host = "eagle.addhost.pl", string $username = 'pqcms-noreply@poleq.pl', string $password = '9Uqxh69c', int $port = 465,
                                     array $files = []): array
