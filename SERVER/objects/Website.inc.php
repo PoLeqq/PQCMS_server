@@ -220,7 +220,7 @@ class Website
     public function getRanks(): array
     {
         $conn = Connection::getConnection();
-        $query = $conn->query("SELECT name, display_name, perms, priority, parent_id FROM websites_ranks WHERE website_id = $this->id");
+        $query = $conn->query("SELECT name, display_name, perms, priority, parent_id FROM websites_ranks WHERE website_id = $this->id AND deleted = 0");
 
         $result = [];
         while($row = $query->fetch_row())
