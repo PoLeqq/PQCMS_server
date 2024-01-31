@@ -13,7 +13,7 @@ if($_SESSION["pqcms-server-token-addwebsite"] != $_POST["token"])
 require_once(dirname(__DIR__, 2) . "/objects/Website.inc.php");
 // odpuszczanie poleq.pl - dla testów, więc mogą być różne licencje dla tej domeny
 if($_POST["domain"] !== "poleq.pl")
-    if(Website::getWebsiteIDByMatchingDomain("domain",$_POST["domain"]) != null)
+    if(Website::getWebsiteIDByMatchingDomain($_POST["domain"]) != null)
         die("Website identified by domain \"{$_POST["domain"]}\" actually exists in database!");
 //if(Website::getWebsiteIDByMatching("login",$_POST["login"]) != null)
 //    die("Website identified by login \"{$_POST["login"]}\" actually exists in database!");
