@@ -172,7 +172,7 @@ class Website
         $query = $conn->query("SELECT id FROM websites_ranks WHERE website_id = $this->id");
 
         $result = [];
-        foreach ($query->fetch_row() as $row)
+        while($row = $query->fetch_row())
             $result[] = $row[0];
 
         $query->close();
