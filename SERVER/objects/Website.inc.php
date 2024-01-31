@@ -600,12 +600,14 @@ class Website
         return new WebsiteSettings($this->id);
     }
 
-    public static function getWebsiteIDByMatching($column,$value): ?int
+    public static function getWebsiteIDByMatchingDomain(string $value): ?int
     {
-//        TODO unsafe
         $conn = Connection::getConnection();
-        $result = $conn->query("SELECT id FROM websites WHERE $column = '$value'");
+        $stmt = $conn->prepare("SELECT id FROM websites WHERE domain = ?");
+        $stmt->bind_param("s",$value);
+        $stmt->execute();
 
+        $result = $stmt->get_result();
         $fetchArray = mysqli_fetch_array($result);
         if($fetchArray == null || count($fetchArray) == 0) return null;
         $resp = $fetchArray[0];
