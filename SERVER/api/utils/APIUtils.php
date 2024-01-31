@@ -1,5 +1,7 @@
 <?php
 
+use JetBrains\PhpStorm\NoReturn;
+
 require_once(dirname(__DIR__)."/utils/validators/Validator.inc.php");
 require_once(dirname(__DIR__,2)."/objects/Website.inc.php");
 require_once(dirname(__DIR__,2)."/objects/SafeWebsite.inc.php");
@@ -13,23 +15,33 @@ class APIUtils
      * Jeżeli test przejdzie pomyślnie, klucz licencyjny zostaje unieważniony.
      * @param array $post tablica $_POST
      */
-    public static function validatePost(array $post): void
+    public static function validatePost(string $remoteAddr, string $apiName, array $post): void
     {
-        if(empty($post["domain"]) || empty($post["secure_key"]))
-            die(json_encode(["suc" => 0, "desc" => "Sprawdź poprawność post'ów!"],JSON_UNESCAPED_UNICODE));
+        if(empty($post["domain"]) || empty($post["secure_key"]) || empty($post["client_ip"]))
+            APIUtils::endAPIscript($apiName, $_POST, ["suc" => 0, "desc" => "Sprawdź poprawność post'ów!"]);
 
         $fields = ["domain","secure_key"];
         $validatorResponse = Validator::validate([$post["domain"],$post["secure_key"]],["s(2-253)","s(128)"]);
         if($validatorResponse["suc"] == 0)
-            die(json_encode( ["suc" => 0, "desc" => "Walidacja nie powiodła się dla pola \"{$fields[$validatorResponse["element_index"]]}\""],JSON_UNESCAPED_UNICODE));
+        {
+            $response = ["suc" => 0, "desc" => "Walidacja nie powiodła się dla pola \"{$fields[$validatorResponse["element_index"]]}\""];
+            APIUtils::endAPIscript($apiName, $_POST, $response);
+        }
 
 //        Różne "sprawdzacze"
-        $website = APIUtils::getWebsite($post);
+        $website = self::getWebsite($remoteAddr,$post);
         if(is_null($website) || !$website->doesExists())
-            die(json_encode(["suc" => 0, "desc" => "Nie znaleziono strony o podanej domenie!"],JSON_UNESCAPED_UNICODE));
+        {
+            $response = ["suc" => 0, "desc" => "Nie znaleziono strony o podanej domenie!".var_export($post["domain"],true)];
+            APIUtils::endAPIscript($apiName, $_POST, $response);
+        }
 
+//        REMOTE_ADDR z powodu takiego, że secure_key generowany jest per server, nie per client
         if(!$website->isProperSecureKey($_SERVER["REMOTE_ADDR"], $post["secure_key"]))
-            die(json_encode(["suc" => 0, "desc" => "Niepoprawny klucz zabezpieczenia!"],JSON_UNESCAPED_UNICODE));
+        {
+            $response = ["suc" => 0, "desc" => "Niepoprawny klucz zabezpieczenia!","ip" => $_SERVER["REMOTE_ADDR"],"key"=>$post["secure_key"],"id" => $website->getId()];
+            APIUtils::endAPIscript($apiName, $_POST, $response);
+        }
     }
 
     /**
@@ -38,27 +50,36 @@ class APIUtils
      * Jeżeli test przejdzie pomyślnie, klucz licencyjny zostaje unieważniony.
      * @param array $post tablica $_POST
      */
-    public static function validatePostForAuthKey(array $post): void
+    public static function validatePostForAuthKey(string $remoteAddr, string $apiName, array $post): void
     {
 //        Wywołaj "domyślną" funkcję, jeśli jest error to zakończ już tutaj
-        self::validatePost($post);
+        APIUtils::validatePost($remoteAddr,$apiName,$post);
 
 //        Jeżeli nie ma auth_key to GG
         if(empty($post["auth_key"]))
-            die(json_encode(["suc" => 0, "desc" => "Akcja niemożliwa. Nie podano \"auth_key\"!"],JSON_UNESCAPED_UNICODE));
+        {
+            $response = ["suc" => 0, "desc" => "Akcja niemożliwa. Nie podano \"auth_key\"!"];
+            APIUtils::endAPIscript($apiName, $_POST, $response);
+        }
 
 //        Sprawdzenie, czy auth_key to string(128)
         $fields = ["auth_key"];
         $validatorResponse = Validator::validate([$post["auth_key"]],["s(128)"]);
         if($validatorResponse["suc"] == 0)
-            die(json_encode(["suc" => 0, "desc" => "Walidacja nie powiodła się dla pola \"{$fields[$validatorResponse["element_index"]]}\""],JSON_UNESCAPED_UNICODE));
+        {
+            $response = ["suc" => 0, "desc" => "Walidacja nie powiodła się dla pola \"{$fields[$validatorResponse["element_index"]]}\""];
+            APIUtils::endAPIscript($apiName, $_POST, $response);
+        }
 //            return ["suc" => 0, "desc" => "Walidacja nie powiodła się dla pola \"{$fields[$validatorResponse["element_index"]]}\" (podano: ${post["auth_key"]}"];
 
 //        Sprawdzenie, czy sesja jest dalej aktywna na serwerach PQCMS
-        $website = self::getWebsite($post);
+        $website = self::getSafeWebsite($remoteAddr,$post);
         require_once(dirname(__DIR__,2)."/objects/website/AuthKey.inc.php");
-        if(!AuthKey::isValidAuthKeyForIp($website->getId(),$_SERVER["REMOTE_ADDR"],$post["auth_key"])["valid"])
-            die(json_encode(["suc" => 0, "desc" => "Sesja konta jest nieaktywna!"],JSON_UNESCAPED_UNICODE));
+        if(!AuthKey::isValidAuthKeyForIp($website->getId(),$post["client_ip"],$post["auth_key"])["valid"])
+        {
+            $response = ["suc" => 0, "desc" => "Sesja konta jest nieaktywna!"];
+            APIUtils::endAPIscript($apiName, $_POST, $response);
+        }
     }
 
     /**
@@ -68,38 +89,66 @@ class APIUtils
      * @param $post $_POST
      * @return Website|null website
      */
-    public static function getWebsite($post): ?Website
+    public static function getWebsite(string $remoteAddr, array $post): ?Website
     {
         if($post["domain"] === "localhost")
             $domain = "localhost.localhost";
         else
             $domain = $post["domain"];
-        $id = Website::getWebsiteIDByMatching("domain",$domain);
-        if(is_null($id)) return null;
+        $idArray = Website::getWebsitesIDArrayByMatchingDomain($domain);
+        if(empty($idArray))
+            return null;
 
-        $website = new Website($id);
-        if(!$website->doesExists()) return null;
+        $website = null;
+        foreach($idArray as $id)
+        {
+            $web = new Website($id);
+            if($web->isProperSecureKey($remoteAddr, $post["secure_key"]))
+            {
+                $website = $web;
+                break;
+            }
+        }
+
         return $website;
     }
 
-    public static function getSafeWebsite($post): ?SafeWebsite
+    public static function getSafeWebsite(string $remoteAddr, array $post): ?SafeWebsite
     {
-        if(empty($post["auth_key"]))
-            return null;
-
         if($post["domain"] === "localhost")
             $domain = "localhost.localhost";
         else
             $domain = $post["domain"];
 
-        $id = Website::getWebsiteIDByMatching("domain",$domain);
-        if(is_null($id))
+        $idArray = Website::getWebsitesIDArrayByMatchingDomain($domain);
+        if(empty($idArray))
             return null;
 
-        return new SafeWebsite($id,$_POST["client_ip"],$post["auth_key"]);
+        $website = null;
+        foreach($idArray as $id)
+        {
+            $web = new Website($id);
+            if($web->isProperSecureKey($remoteAddr, $post["secure_key"]))
+            {
+                $website = $web;
+                break;
+            }
+        }
+
+        if(is_null($website))
+            return null;
+        return new SafeWebsite($website->getId(),$_POST["client_ip"],$post["auth_key"]);
     }
 
-    public static function logAPI(array $post, array $response): void
+    /**
+     * Funkcja kończący skrypt API
+     * Zapisuje efekt oraz zwraca response
+     * @param string $apiName
+     * @param array $post
+     * @param array $response
+     * @return void
+     */
+    #[NoReturn] public static function endAPIscript(string $apiName, array $post, array $response): void
     {
         date_default_timezone_set('Europe/Warsaw');
         $date = date("Y-m-d H:i:s.u", time());
@@ -108,10 +157,12 @@ class APIUtils
 
         require_once(dirname(__DIR__,2)."/database/Connection.inc.php");
         $conn = Connection::getConnection();
-        $stmt = $conn->prepare("INSERT INTO websites_api_logs VALUES (null,?,?,?)");
-        $stmt->bind_param("sss",$date, $jsonPost, $jsonResponse);
+        $stmt = $conn->prepare("INSERT INTO websites_api_logs VALUES (null,?,?,?,?)");
+        $stmt->bind_param("ssss",$apiName,$date, $jsonPost, $jsonResponse);
         $stmt->execute();
         $stmt->close();
         $conn->close();
+
+        die(json_encode($response,JSON_UNESCAPED_UNICODE));
     }
 }
