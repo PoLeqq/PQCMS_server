@@ -89,8 +89,10 @@ class WebsiteRank
 //        Walidacja długości
         if(strlen($name) < 5 || strlen($name) > 30)
             return ["suc" => 0, "desc" => "Nazwa musi mieć od 5 do 30 znaków!"];
-        if(strlen($displayName) < 5 || strlen($displayName) > 30)
-            return ["suc" => 0, "desc" => "Wyświetlana nazwa musi mieć od 5 do 30 znaków!"];
+        if(preg_match("/^[a-z]+$/", $name) != 1)
+            return ["suc" => 0, "desc" => "Nazwa może składać się tylko z małych liter!"];
+        if(strlen($displayName) < 2 || strlen($displayName) > 30)
+            return ["suc" => 0, "desc" => "Wyświetlana nazwa musi mieć od 2 do 30 znaków!"];
         require_once "WebsitePermissions.php";
         $perms = WebsitePermissions::parsePostPermsArray($perms);
         if(is_null($perms))
