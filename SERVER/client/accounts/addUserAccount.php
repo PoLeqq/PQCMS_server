@@ -61,13 +61,14 @@ $insecureCharsResponse = SQLSecurity::generateResponseForAPI(SQLSecurity::doesSt
 if(sizeof($insecureCharsResponse) !== 0)
     die(json_encode($insecureCharsResponse,JSON_UNESCAPED_UNICODE));
 
-if(WebsiteUser::unsafe_getWebsiteUserBy("username",$_POST["username"],$_SESSION["pqcms-client-website-id"]) != null)
+if(WebsiteUser::getWebsiteUserByUsername($_POST["username"],$_SESSION["pqcms-client-website-id"]) != null)
 {
     $_SESSION["pqcms-client-announce-panel"] = ["err" => "Ta domena posiada już konto o podanej nazwie użytkownika!"];
     header("location: ../");
     die("Nieprawidłowe przekierowanie. ".$_SESSION["pqcms-client-announce-panel"]["err"]);
 }
 
+// to chyba wywalić, bo i tak admin dodaje w panelu u siebie xD
 $website->addUser($_POST["username"],$_POST["nickname"],$_POST["password"],[],!isset($_POST["active"]));
 $_SESSION["pqcms-client-announce-panel"] = ["suc" => "Dodano konto użytkownika!"];
 header("location: ../");
