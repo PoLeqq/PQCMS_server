@@ -112,7 +112,27 @@ class Website
         return WebsiteUser::addUser($this->id, $username, $nickname, $email, $password, $perms, $disabled);
     }
 
-    public function editUser(string $username, ?string $nickname, ?string $password, array $perms, ?bool $disabled): array
+    public function editUser(string $username, ?string $nickname, ?string $email, ?string $password, ?array $perms, ?bool $disabled): array
+    {
+        require_once(dirname(__DIR__) . "/objects/website/WebsiteUser.inc.php");
+//        var_dump($email);
+        return WebsiteUser::editUser($this->id, $username, $nickname, $email, $password, $perms, $disabled);
+    }
+
+    public function editRank(string $name, ?string $displayName, ?int $priority, ?int $parentId, ?array $perms): array
+    {
+        require_once(dirname(__DIR__) . "/objects/website/WebsiteRank.inc.php");
+        return WebsiteRank::editRank($this->id, $name, $displayName, $priority, $parentId, $perms);
+    }
+
+
+    public function resetUserPassword(string $username): array
+    {
+        require_once(dirname(__DIR__) . "/objects/website/WebsiteUser.inc.php");
+        return WebsiteUser::resetPassword($this->id, $username);
+    }
+
+    public function deleteUser(string $name): void
     {
         require_once(dirname(__DIR__) . "/objects/website/WebsiteUser.inc.php");
         return WebsiteUser::editUser($this->id, $username, $nickname, $password, $perms, $disabled);
