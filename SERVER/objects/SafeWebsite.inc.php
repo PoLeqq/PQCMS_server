@@ -4,15 +4,15 @@ require_once "Website.inc.php";
 class SafeWebsite
 {
     protected int $id;
-    protected string $remoteAddr;
+    protected string $ip;
     protected string $authKey;
     protected Website $website;
 
-    public function __construct(int $id, string $remoteAddr, string $authKey)
+    public function __construct(int $id, string $ip, string $authKey)
     {
         $this->id = $id;
         $this->authKey = $authKey;
-        $this->remoteAddr = $remoteAddr;
+        $this->ip = $ip;
         $this->website = new Website($id);
     }
 
@@ -31,7 +31,7 @@ class SafeWebsite
         $users = [];
         foreach($this->website->getUsers() as $user)
         {
-            if($this->website->hasPermission($this->remoteAddr,$this->authKey,"pqcms.hr.user.get.".$user["username"]))
+            if($this->website->hasPermission($this->ip,$this->authKey,"pqcms.hr.user.get.".$user["username"]))
                 $users[] = $user;
         }
         return $users;
@@ -43,7 +43,7 @@ class SafeWebsite
         require_once("website/WebsiteRank.inc.php");
         foreach($this->website->getRanks() as $rank)
         {
-            if($this->website->hasPermission($this->remoteAddr,$this->authKey,"pqcms.hr.rank.get.".$rank["name"]))
+            if($this->website->hasPermission($this->ip,$this->authKey,"pqcms.hr.rank.get.".$rank["name"]))
             {
                 if(!is_null($rank["parent_id"]))
                 {
@@ -70,10 +70,10 @@ class SafeWebsite
     public function addUser(string $username, string $nickname, ?string $email, string $password, array $perms, int $disabled): array
     {
         foreach($perms as $perm => $value)
-            if(!$this->website->hasPermission($_SERVER["REMOTE_ADDR"],$_POST["auth_key"],$perm))
+            if(!$this->website->hasPermission($this->ip,$_POST["auth_key"],$perm))
                 unset($perms[$perm]);
 
-        if($this->website->hasPermission($this->remoteAddr,$this->authKey,"pqcms.hr.user.add"))
+        if($this->website->hasPermission($this->ip,$this->authKey,"pqcms.hr.user.add"))
         {
             $addUser = $this->website->addUser($username, $nickname, $email, $password, $perms, $disabled);
             if($addUser["suc"] === 1)
@@ -85,7 +85,7 @@ class SafeWebsite
 
     public function deleteUser(string $username): array
     {
-        if($this->website->hasPermission($this->remoteAddr,$this->authKey,"pqcms.hr.user.delete.$username"))
+        if($this->website->hasPermission($this->ip,$this->authKey,"pqcms.hr.user.delete.$username"))
         {
             $this->website->deleteUser($username);
             return ["suc" => 1, "desc" => "Usunięto użytkownika!"];
@@ -95,7 +95,7 @@ class SafeWebsite
 
     public function deleteRank(string $name): array
     {
-        if($this->website->hasPermission($this->remoteAddr,$this->authKey,"pqcms.hr.rank.delete.$name"))
+        if($this->website->hasPermission($this->ip,$this->authKey,"pqcms.hr.rank.delete.$name"))
         {
             $this->website->deleteRank($name);
             return ["suc" => 1, "desc" => "Usunięto rangę!"];
@@ -106,20 +106,20 @@ class SafeWebsite
     public function editUser(string $username, ?string $nickname, ?string $email, ?string $password, ?array $perms, ?int $disabled): array
     {
 //        *pqcms.hr.user.edit.nickname.<nickname>
-        if(!is_null($nickname) && !$this->website->hasPermission($this->remoteAddr,$this->authKey,"pqcms.hr.user.edit.nickname.".$username))
+        if(!is_null($nickname) && !$this->website->hasPermission($this->ip,$this->authKey,"pqcms.hr.user.edit.nickname.".$username))
             $nickname = null;
-        if(!is_null($email) && !$this->website->hasPermission($this->remoteAddr,$this->authKey,"pqcms.hr.user.edit.email.".$username))
+        if(!is_null($email) && !$this->website->hasPermission($this->ip,$this->authKey,"pqcms.hr.user.edit.email.".$username))
             $email = null;
-        if(!is_null($password) && !$this->website->hasPermission($this->remoteAddr,$this->authKey,"pqcms.hr.user.edit.password.set.".$username))
+        if(!is_null($password) && !$this->website->hasPermission($this->ip,$this->authKey,"pqcms.hr.user.edit.password.set.".$username))
             $password = null;
-        if(!is_null($disabled) && !$this->website->hasPermission($this->remoteAddr,$this->authKey,"pqcms.hr.user.edit.disable.".$username))
+        if(!is_null($disabled) && !$this->website->hasPermission($this->ip,$this->authKey,"pqcms.hr.user.edit.disable.".$username))
             $disabled = null;
-        if(!is_null($perms) && !$this->website->hasPermission($this->remoteAddr,$this->authKey,"pqcms.hr.user.edit.perms.".$username))
+        if(!is_null($perms) && !$this->website->hasPermission($this->ip,$this->authKey,"pqcms.hr.user.edit.perms.".$username))
             $perms = null;
 
         if(!empty($perms))
-            foreach($perms as $perm)
-                if(!$this->website->hasPermission($_SERVER["REMOTE_ADDR"],$this->authKey,$perm))
+            foreach($perms as $perm => $value)
+                if(!$this->website->hasPermission($this->ip,$this->authKey,$perm))
                     unset($perms[$perm]);
 
 //        Nie może być, ponieważ gdy są puste permisje to się wyświetla - mimo, że user mógłBY zostać zmieniony
@@ -136,18 +136,18 @@ class SafeWebsite
     public function editRank(string $name, ?string $displayName, ?int $priority, ?int $parentId, ?array $perms): array
     {
         //        *pqcms.hr.rank.edit.nickname.<nickname>
-        if(!is_null($displayName) && !$this->website->hasPermission($this->remoteAddr,$this->authKey,"pqcms.hr.rank.edit.display_name.".$name))
+        if(!is_null($displayName) && !$this->website->hasPermission($this->ip,$this->authKey,"pqcms.hr.rank.edit.displayname.".$name))
             $displayName = null;
-        if(!is_null($priority) && !$this->website->hasPermission($this->remoteAddr,$this->authKey,"pqcms.hr.rank.edit.priority.".$name))
+        if(!is_null($priority) && !$this->website->hasPermission($this->ip,$this->authKey,"pqcms.hr.rank.edit.priority.".$name))
             $email = null;
-        if(!is_null($parentId) && !$this->website->hasPermission($this->remoteAddr,$this->authKey,"pqcms.hr.rank.edit.parentid.".$name))
+        if(!is_null($parentId) && !$this->website->hasPermission($this->ip,$this->authKey,"pqcms.hr.rank.edit.parentid.".$name))
             $parentId = null;
-        if(!is_null($perms) && !$this->website->hasPermission($this->remoteAddr,$this->authKey,"pqcms.hr.rank.edit.perms.".$name))
+        if(!is_null($perms) && !$this->website->hasPermission($this->ip,$this->authKey,"pqcms.hr.rank.edit.perms.".$name))
             $perms = null;
 
         if(!empty($perms))
             foreach($perms as $perm)
-                if(!$this->website->hasPermission($_SERVER["REMOTE_ADDR"],$this->authKey,$perm))
+                if(!$this->website->hasPermission($this->ip,$this->authKey,$perm))
                     unset($perms[$perm]);
 
         $resp = $this->website->editRank($name, $displayName, $priority, $parentId, $perms);
@@ -172,7 +172,7 @@ class SafeWebsite
 
     public function getLicenseExpiration(): array
     {
-        if($this->website->hasPermission($this->remoteAddr,$this->authKey,"pqcms.data.licenseexpiration"))
+        if($this->website->hasPermission($this->ip,$this->authKey,"pqcms.data.licenseexpiration"))
             return ["suc" => 1, "license_expiration" => $this->website->getLicenseExpiration()];
         return $this->getUnpermittedArray();
     }
@@ -184,7 +184,7 @@ class SafeWebsite
 
     public function invalidateSession(string $username): array
     {
-        if(!$this->website->hasPermission($this->remoteAddr,$this->authKey,"pqcms.hr.user.invalidatesession"))
+        if(!$this->website->hasPermission($this->ip,$this->authKey,"pqcms.hr.user.invalidatesession.".$username))
             return ["suc" => 0, "desc" => "Nie posiadasz uprawnień!"];
 
         require_once(__DIR__."/website/AuthKey.inc.php");
