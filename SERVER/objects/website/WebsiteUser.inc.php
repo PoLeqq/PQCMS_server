@@ -84,8 +84,7 @@ class WebsiteUser
         if(Validator::validate([$username],["s(5-30)"])["suc"] === 0)
             return ["suc" => 0, "desc" => "Login musi być napisem o długości 5-30 znaków!"];
 
-        $betterUsername = preg_replace('/\s+/', '', $username);
-        return ($betterUsername === $username) ? ["suc" => 1] : ["suc" => 0, "Login nie może posiadać białych znaków (np. spacji)!"];
+        return (preg_match("/^[a-z]+$/", $username) == 1) ? ["suc" => 1] : ["suc" => 0, "desc" => "Login może zawierać tylko małe litery!"];
     }
 
     public static function validateNickname(/*string*/$nickname): array
