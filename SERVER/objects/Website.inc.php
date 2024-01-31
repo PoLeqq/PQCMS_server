@@ -497,11 +497,12 @@ class Website
             if($query->num_rows != 0)
             {
                 $result = $this->loginUserGetResponse($query->fetch_assoc(),$ip,$password,false,$loginTries);
-                $this->logUserLogin($ip,$username,$password,$result["proper_data"],$result["suc"],$result["desc"]);
+                if(!is_null($result["proper_data"]))
+                    $this->logUserLogin($ip,$username,$password,$result["proper_data"],$result["suc"],$result["desc"]);
             }
             else
             {
-                $result = ["suc" => 0, "desc" => "Niepoprawne dane logowania!.", "tries_left" => $loginTries];
+                $result = ["suc" => 0, "desc" => "Niepoprawne dane logowania!", "tries_left" => $loginTries];
                 $this->logUserLogin($ip,$username,$password,false,false,$result["desc"]);
             }
         }
