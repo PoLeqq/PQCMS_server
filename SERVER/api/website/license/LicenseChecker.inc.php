@@ -29,15 +29,14 @@ function isBanned($ip): bool
     return $banned;
 }
 
-function addCheckLicenseHistory($ip, $requestDomain, $domain, $login, $licenseKey, $successful, $description): void
+function addCheckLicenseHistory(string $ip, ?string $requestDomain, string $domain, string $login, string $licenseKey, ?bool $successful, ?string $description): void
 {
     $conn = Connection::getConnection();
-    if(!$successful) $successful = "0";
     date_default_timezone_set('Europe/Warsaw');
     $now = date("Y-m-d H:i:s");
     $stmt = $conn->prepare("INSERT INTO check_license_history 
         (ip,request_domain,domain,login,license_key,date,successful,description) VALUES (?,?,?,?,?,?,?,?)");
-    $stmt->bind_param("ssssssss",$ip,$requestDomain,$domain,$login,$licenseKey,$now,$successful,$description);
+    $stmt->bind_param("ssssssis",$ip,$requestDomain,$domain,$login,$licenseKey,$now,$successful,$description);
     $stmt->execute();
     $stmt->close();
     $conn->close();
@@ -94,40 +93,85 @@ function checkLicense($remoteAddr, $httpReferer, $domain, $login, $license_key):
 //        do logów sk..syna XD
 //        nie ma nic za darmo, niech płaci
             addCheckLicenseHistory($remoteAddr, $requestDomain, $domain, $login, $license_key, false, "SCAM? Nieprawidłowa nazwa hosta. Czy na pewno masz pliki na odpowiednim serwerze?");
-//            return ["suc" => 0, "desc" => "Nieprawidłowa nazwa hosta. Czy na pewno masz pliki na odpowiednim serwerze?"];
-        return["suc" => 0, "desc" => "Nieprawidłowa nazwa hosta. Czy na pewno masz pliki na odpowiednim serwerze?",
-            "yip" => $remoteAddr,
-            "sip" => $clientServerIps];
+            return ["suc" => 0, "desc" => "Nieprawidłowa nazwa hosta. Czy na pewno masz pliki na odpowiednim serwerze?"];
+//        return["suc" => 0, "desc" => "Nieprawidłowa nazwa hosta. Czy na pewno masz pliki na odpowiednim serwerze?",
+//            "yip" => $remoteAddr,
+//            "sip" => $clientServerIps];
         }
     }
 
-    $websiteID = Website::getWebsiteIDByMatching("domain", $domain);
-    if ($websiteID == null) {
-        addCheckLicenseHistory($remoteAddr, $requestDomain, $domain, $login, $license_key, false, "Nie ma takiej domeny");
+    $websitesIDsArray = Website::getWebsitesIDArrayByMatchingDomain($domain);
+
+//    PRZY ERROR: klucz "s" oznacza "show", czyli czy można pokazać userowi błąd, a "d" do "description"
+    $error = [];
+    $website = null;
+    $finalError = true;
+    foreach($websitesIDsArray as $websiteID)
+    {
+        $website = new Website($websiteID);
+
+        if($website->getLogin() != $login ||
+            $website->getLicenseKey() != $license_key ||
+            $website->isBlocked() ||
+            $website->isExpired())
+        {
+            if($website->getLogin() != $login)                $error[] = ["s" => false, "d" => "Niepoprawny login"];
+            elseif($website->getLicenseKey() != $license_key) $error[] = ["s" => false, "d" => "Niepoprawny klucz"];
+            elseif($website->isBlocked())                     $error[] = ["s" => true, "d" => "Strona zablokowana"];
+            elseif($website->isExpired())                     $error[] = ["s" => true, "d" => "Licencja wygasła"];
+
+//            addCheckLicenseHistory($remoteAddr, $requestDomain, $domain, $login, $license_key, false, $error["d"]);
+        }
+        else
+        {
+            $finalError = false;
+            break;
+        }
+    }
+
+    if(is_null($website))
         return (["suc" => 0, "desc" => "Autoryzacja nie powiodła się.", "tries_left" => getTries($remoteAddr)]);
+
+    if($finalError && !empty($error))
+    {
+        addCheckLicenseHistory($remoteAddr, $requestDomain, $domain, $login, $license_key, false, $error[0]["d"]);
+//        for($i = 1; $i < count($error); $i++)
+//            addCheckLicenseHistory($remoteAddr, $requestDomain, $domain, $login, $license_key, NULL, $error[$i]["d"]);
+        return ["suc" => 0, "desc" => "Autoryzacja nie powiodła się.", "id" => $website->getId()];
     }
 
-    $website = new Website($websiteID);
-    if ($website->getLogin() != $login) {
-        addCheckLicenseHistory($remoteAddr, $requestDomain, $domain, $login, $license_key, false, "Niepoprawny login");
-        return (["suc" => 0, "desc" => "Autoryzacja nie powiodła się.", "tries_left" => getTries($remoteAddr)]);
-    }
+// Jeżeli żadne z ID nie spowodowało przerwania autoryzacji, dodaj historię i zwróć sukces.
+    addCheckLicenseHistory($remoteAddr, $requestDomain, $domain, $login, $license_key, 1, NULL);
 
-    if ($website->getLicenseKey() != $license_key) {
-        addCheckLicenseHistory($remoteAddr, $requestDomain, $domain, $login, $license_key, false, "Niepoprawny klucz");
-        return (["suc" => 0, "desc" => "Autoryzacja nie powiodła się.", "tries_left" => getTries($remoteAddr)]);
-    }
-
-    if($website->isBlocked()) {
-        addCheckLicenseHistory($remoteAddr, $requestDomain, $domain, $login, $license_key, false, "Strona zablokowana");
-        return (["suc" => 0, "desc" => "Strona jest zablokowana.", "tries_left" => getTries($remoteAddr)]);
-    }
-
-    if($website->isExpired()) {
-        addCheckLicenseHistory($remoteAddr, $requestDomain, $domain, $login, $license_key, false, "Licencja wygasła");
-        return (["suc" => 0, "desc" => "Autoryzacja nie powiodła się. Licencja wygasła!", "tries_left" => getTries($remoteAddr)]);
-    }
-
-    addCheckLicenseHistory($remoteAddr, $requestDomain, $domain, $login, $license_key, true, "");
-    return ["suc" => 1, "desc" => "Autoryzacja powiodła się!"];
+    return ["suc" => 1, "desc" => "Autoryzacja powiodła się!", "id" => $website->getId()];
+//    $websitesIDsArray = Website::getWebsitesIDArrayByMatchingDomain($domain);
+//
+//    if ($websiteID == null) {
+//        addCheckLicenseHistory($remoteAddr, $requestDomain, $domain, $login, $license_key, false, "Nie ma takiej domeny");
+//        return (["suc" => 0, "desc" => "Autoryzacja nie powiodła się.", "tries_left" => getTries($remoteAddr)]);
+//    }
+//
+//    $website = new Website($websiteID);
+//    if ($website->getLogin() != $login) {
+//        addCheckLicenseHistory($remoteAddr, $requestDomain, $domain, $login, $license_key, false, "Niepoprawny login");
+//        return (["suc" => 0, "desc" => "Autoryzacja nie powiodła się.", "tries_left" => getTries($remoteAddr)]);
+//    }
+//
+//    if ($website->getLicenseKey() != $license_key) {
+//        addCheckLicenseHistory($remoteAddr, $requestDomain, $domain, $login, $license_key, false, "Niepoprawny klucz");
+//        return (["suc" => 0, "desc" => "Autoryzacja nie powiodła się.", "tries_left" => getTries($remoteAddr)]);
+//    }
+//
+//    if($website->isBlocked()) {
+//        addCheckLicenseHistory($remoteAddr, $requestDomain, $domain, $login, $license_key, false, "Strona zablokowana");
+//        return (["suc" => 0, "desc" => "Strona jest zablokowana.", "tries_left" => getTries($remoteAddr)]);
+//    }
+//
+//    if($website->isExpired()) {
+//        addCheckLicenseHistory($remoteAddr, $requestDomain, $domain, $login, $license_key, false, "Licencja wygasła");
+//        return (["suc" => 0, "desc" => "Autoryzacja nie powiodła się. Licencja wygasła!", "tries_left" => getTries($remoteAddr)]);
+//    }
+//
+//    addCheckLicenseHistory($remoteAddr, $requestDomain, $domain, $login, $license_key, true, "");
+//    return ["suc" => 1, "desc" => "Autoryzacja powiodła się!"];
 }

@@ -1,4 +1,11 @@
 <?php
+
+/**
+ * UWAGA!!! JEST TO WYJĄTKOWY API-k
+ * Nie jest to API-k per user, tylko per serwer
+ * Nie pobiera on "client_ip", tylko działa na (przynajmniej powinien XD) IP serwera klienta.
+ */
+
 //header("Access-Control-Allow-Origin: https://b.com");
 header("Content-Type: application/json; charset=utf-8");
 
@@ -24,7 +31,7 @@ if($response["suc"] === 1)
 {
     require_once(dirname(__DIR__,3)."/objects/Website.inc.php");
     require_once(dirname(__DIR__,3)."/objects/website/SecureKey.inc.php");
-    $website = new Website(Website::getWebsiteIDByMatching("domain",$_POST["domain"]));
+    $website = new Website($response["id"]);
 
 //    to uniemożliwia zalogowanie się z kilku użytkowników na 1 ip, bo w loginie wywala "błąd API",
 //    który nie jest dosłownie błędem (tylko nie ma sesji na kliencie z secure_key w momencie
