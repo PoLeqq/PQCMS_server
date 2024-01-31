@@ -183,7 +183,7 @@ class Website
     public function getUsers(): array
     {
         $conn = Connection::getConnection();
-        $query = $conn->query("SELECT id, username, nickname, perms, disabled FROM websites_users WHERE website_id = $this->id AND deleted = 0");
+        $query = $conn->query("SELECT id, username, nickname, email, perms, disabled FROM websites_users WHERE website_id = $this->id AND deleted = 0");
 
         date_default_timezone_set("Europe/Warsaw");
         $date = date("Y-m-d H:i:s");
@@ -192,7 +192,7 @@ class Website
                       AND logout = 0 
                       AND invalid = 0
                       AND admin_id IS NULL
-                      AND expired_time >  '$date'
+                      AND expired_time > '$date'
                       ORDER BY id DESC;");
         $usersSessions = [];
         while($row = $querySessions->fetch_row())
@@ -200,7 +200,7 @@ class Website
 
         $result = [];
         while ($row = $query->fetch_row()) {
-            $userRow = ["username" => $row[1], "nickname" => $row[2], "perms" => json_decode($row[3]), "disabled" => $row[4]];
+            $userRow = ["username" => $row[1], "nickname" => $row[2], "email" => $row[3], "perms" => json_decode($row[4]), "disabled" => $row[5]];
             if(array_key_exists($row[0],$usersSessions))
                 $userRow["active_session"] = $usersSessions[$row[0]];
 
