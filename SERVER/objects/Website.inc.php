@@ -158,7 +158,7 @@ class Website
         $query = $conn->query("SELECT id FROM websites_users WHERE website_id = $this->id AND deleted = 0");
 
         $result = [];
-        foreach ($query->fetch_row() as $row)
+        while($row = $query->fetch_row())
             $result[] = $row[0];
 
         $query->close();
