@@ -430,67 +430,6 @@ class Website
         return $resp;
     }
 
-    /**
-     * Funkcja do wewnętrznego logowania użytkownika (używana do logowania na serwerach PQCMS). Nie działa na sesjach
-     * auth_key, przez co jest jedynie dozwolone na wspomnianych wcześnej serwerach PQCMS.
-     * @param string $ip ip
-     * @param string $username nazwa użytkownika
-     * @param string $password hasło
-     * @return array response
-     */
-    public function internalLoginUser(string $ip, string $username, string $password): array
-    {
-        require_once(dirname(__DIR__)."/utils/SQLSecurity.php");
-        $insecureCharsResponse = SQLSecurity::generateResponseForAPI(SQLSecurity::doesStringContains($username),"username");
-        if(sizeof($insecureCharsResponse) !== 0)
-            return $insecureCharsResponse;
-
-        $conn = Connection::getConnection();
-        $query = $conn->query("SELECT id, password FROM websites_admins 
-                    WHERE website_id = $this->id 
-                      AND username = '$username'");
-        if($query->num_rows == 0)
-        {
-            $query = $conn->query("SELECT id, password FROM websites_users 
-                    WHERE website_id = $this->id 
-                      AND username = '$username' 
-                      AND disabled = 0");
-
-            if($query->num_rows != 0)
-            {
-                $row = $query->fetch_assoc();
-                $result = $this->internalLoginUserGetResponse($row,$password);
-                if($result["suc"] == 1)
-                {
-                    $result["admin"] = 0;
-                    $result["id"] = (int) $row["id"];
-                }
-                $this->logUserLogin($ip,$username,$password,$result["proper_data"],$result["suc"],$result["desc"]);
-            }
-            else
-            {
-                $result = ["suc" => 0, "desc" => "Niepoprawne dane logowania."];
-                $this->logUserLogin($ip,$username,$password,false,false,$result["desc"]);
-            }
-        }
-        else
-        {
-            $row = $query->fetch_assoc();
-            $result = $this->internalLoginUserGetResponse($row, $password);
-            if($result["suc"] == 1)
-            {
-                $result["admin"] = 1;
-                $result["id"] = (int) $row["id"];
-            }
-            $this->logUserLogin($ip, $username, $password, $result["proper_data"], $result["suc"],$result["desc"]);
-        }
-
-        $query->close();
-        $conn->close();
-
-        return $result;
-    }
-
 
     function getLoginTries(string $ip): int
     {
