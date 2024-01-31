@@ -135,13 +135,13 @@ class Website
     public function deleteUser(string $name): void
     {
         require_once(dirname(__DIR__) . "/objects/website/WebsiteUser.inc.php");
-        return WebsiteUser::editUser($this->id, $username, $nickname, $password, $perms, $disabled);
+        WebsiteUser::deleteUser($this->id, $name);
     }
 
-    public function deleteUser(string $username): void
+    public function deleteRank(string $name): void
     {
         require_once(dirname(__DIR__) . "/objects/website/WebsiteUser.inc.php");
-        WebsiteUser::deleteUser($this->id, $username);
+        WebsiteRank::deleteRank($this, $name);
     }
 
     public function addRank(string $name, string $displayName, array $perms, int $priority, ?int $parentId): array
