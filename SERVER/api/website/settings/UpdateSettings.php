@@ -3,14 +3,14 @@
 header('Content-Type: application/json; charset=utf-8');
 require_once(dirname(__DIR__,2)."/utils/APIUtils.php");
 
-APIUtils::validatePostForAuthKey($_POST);
+APIUtils::validatePostForAuthKey($_SERVER["REMOTE_ADDR"],basename(__FILE__, '.php'),$_POST);
 
 if((!isset($_POST["login_count"]) && empty($_POST["login_count_reset"])) ||
     (!isset($_POST["login_session_time"]) && empty($_POST["login_session_time_reset"])))
     die(json_encode(["suc" => 0, "desc" => "Uzupełnij wszystkie pola!"],JSON_UNESCAPED_UNICODE));
 
 require_once(dirname(__DIR__,3)."/objects/Website.inc.php");
-$website = APIUtils::getWebsite($_POST);
+$website = APIUtils::getWebsite($_SERVER["REMOTE_ADDR"],$_POST);
 
 $apiFields = [
     "login_count","login_count_reset",
@@ -38,7 +38,8 @@ foreach ($apiFields as $apiField)
 
 $validatorResponse = Validator::validate($fields,$sendingFieldValidators);
 if($validatorResponse["suc"] == 0)
-    die(json_encode(["suc" => 0, "desc" => "Walidacja nie powiodła się dla pola \"{$apiFields[$validatorResponse["element_index"]]}\"", "dev_msg" => $validatorResponse["desc"]],JSON_UNESCAPED_UNICODE));
+    APIUtils::endAPIscript(basename(__FILE__, '.php'),$_POST,["suc" => 0, "desc" => "Walidacja nie powiodła się dla pola \"{$apiFields[$validatorResponse["element_index"]]}\""]);
+//    APIUtils::endAPIscript(basename(__FILE__, '.php'),$_POST,["suc" => 0, "desc" => "Walidacja nie powiodła się dla pola \"{$apiFields[$validatorResponse["element_index"]]}\"", "dev_msg" => $validatorResponse["desc"]]);
 
 require_once(dirname(__DIR__,3)."/objects/website/AuthKey.inc.php");
 $settings = $website->getSettings();
@@ -60,7 +61,6 @@ $responseChanged = [];
             $responseChanged["login_count"] = 0;
     }
 
-
     if(!empty($_POST["login_count"]) || !empty($_POST["login_count_reset"]))
     {
         if($website->hasPermission($_POST["client_ip"], $_POST["auth_key"], "pqcms.settings.login_session_time.set"))
@@ -77,5 +77,4 @@ $responseChanged = [];
 }
 
 $response = ["suc" => 1, "desc" => "Zmieniono ustawienia strony!", "changed" => $responseChanged];
-APIUtils::logAPI($_POST,$response);
-die(json_encode($response,JSON_UNESCAPED_UNICODE));
+APIUtils::endAPIscript(basename(__FILE__, '.php'),$_POST,$response);

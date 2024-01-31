@@ -9,21 +9,20 @@
 header('Content-Type: application/json; charset=utf-8');
 require_once(dirname(__DIR__, 2) . "/utils/APIUtils.php");
 
-APIUtils::validatePost($_POST);
+APIUtils::validatePost($_SERVER["REMOTE_ADDR"],basename(__FILE__, '.php'),$_POST);
 
 if(empty($_POST["auth_key"]))
-    die(json_encode(["suc" => 0, "desc" => "Uzupełnij wszystkie pola!"], JSON_UNESCAPED_UNICODE));
+    APIUtils::endAPIscript(basename(__FILE__, '.php'),$_POST,["suc" => 0, "desc" => "Uzupełnij wszystkie pola!"]);
 
 $validator = Validator::validateAssoc(["auth_key" => $_POST["auth_key"]],["s(128)"]);
 if($validator["suc"] === 0)
-    die(json_encode($validator, JSON_UNESCAPED_UNICODE));
+    APIUtils::endAPIscript(basename(__FILE__, '.php'),$_POST,$validator);
 
 require_once(dirname(__DIR__, 3) . "/objects/website/AuthKey.inc.php");
-$website = APIUtils::getWebsite($_POST);
+$website = APIUtils::getWebsite($_SERVER["REMOTE_ADDR"],$_POST);
 
 $isValidAuthKeyForIP = AuthKey::isValidAuthKeyForIp($website->getId(),$_POST["client_ip"],$_POST["auth_key"]);
 //if(isset($isValidAuthKeyForIP["not_secure"]) && $isValidAuthKeyForIP["not_secure"] === 1)
 $response["resp"] = $isValidAuthKeyForIP;
 
-APIUtils::logAPI($_POST,$response);
-die(json_encode($response, JSON_UNESCAPED_UNICODE));
+APIUtils::endAPIscript(basename(__FILE__, '.php'),$_POST,$response);

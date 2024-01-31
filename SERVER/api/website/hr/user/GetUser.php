@@ -3,34 +3,34 @@
 header('Content-Type: application/json; charset=utf-8');
 
 require_once(dirname(__DIR__, 3) . "/utils/APIUtils.php");
-APIUtils::validatePostForAuthKey($_POST);
+APIUtils::validatePostForAuthKey($_SERVER["REMOTE_ADDR"],basename(__FILE__, '.php'),$_POST);
 
 if(!empty($_POST["admin"]))
 {
     $validator = Validator::validate([$_POST["admin"]],["s(0-1)"]);
     if($validator["suc"] == 0)
-        die(json_encode($validator,JSON_UNESCAPED_UNICODE));
+        APIUtils::endAPIscript(basename(__FILE__, '.php'),$_POST,$validator);
 }
 if(!empty($_POST["username"]))
 {
     $validator = Validator::validate([$_POST["username"]],["s(5-30)"]);
     if($validator["suc"] == 0)
-        die(json_encode($validator,JSON_UNESCAPED_UNICODE));
+        APIUtils::endAPIscript(basename(__FILE__, '.php'),$_POST,$validator);
 }
 if(!empty($_POST["nickname"]))
 {
     $validator = Validator::validate([$_POST["nickname"]],["s(2-30)"]);
     if($validator["suc"] == 0)
-        die(json_encode($validator,JSON_UNESCAPED_UNICODE));
+        APIUtils::endAPIscript(basename(__FILE__, '.php'),$_POST,$validator);
 }
 if(!empty($_POST["disabled"]))
 {
     $validator = Validator::validate([$_POST["disabled"]],["s(0-1)"]);
     if($validator["suc"] == 0)
-        die(json_encode($validator,JSON_UNESCAPED_UNICODE));
+        APIUtils::endAPIscript(basename(__FILE__, '.php'),$_POST,$validator);
 }
 
-$safeWebsite = APIUtils::getSafeWebsite($_POST);
+$safeWebsite = APIUtils::getSafeWebsite($_SERVER["REMOTE_ADDR"],$_POST);
 $users = $safeWebsite->getUsers();
 
 $responseUsers = [];
@@ -63,5 +63,4 @@ else
 
 $response = ["suc" => 1, "resp" => $responseUsers];
 
-APIUtils::logAPI($_POST,$response);
-echo json_encode($response,JSON_UNESCAPED_UNICODE);
+APIUtils::endAPIscript(basename(__FILE__, '.php'),$_POST,$response);

@@ -3,11 +3,10 @@
 header('Content-Type: application/json; charset=utf-8');
 
 require_once(dirname(__DIR__, 3) . "/utils/APIUtils.php");
-APIUtils::validatePostForAuthKey($_POST);
+APIUtils::validatePostForAuthKey($_SERVER["REMOTE_ADDR"],basename(__FILE__, '.php'),$_POST);
 
-$website = APIUtils::getSafeWebsite($_POST);
+$website = APIUtils::getSafeWebsite($_SERVER["REMOTE_ADDR"],$_POST);
 
 $response = $website->getRanks();
 
-APIUtils::logAPI($_POST,$response);
-die(json_encode($response,JSON_UNESCAPED_UNICODE));
+APIUtils::endAPIscript(basename(__FILE__, '.php'),$_POST,$response);

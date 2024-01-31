@@ -21,10 +21,10 @@ header('Content-Type: application/json; charset=utf-8');
 // "dev-1.0.0"
 
 require_once(dirname(__DIR__, 2) . "/utils/APIUtils.php");
-APIUtils::validatePostForAuthKey($_POST);
+APIUtils::validatePostForAuthKey($_SERVER["REMOTE_ADDR"],basename(__FILE__, '.php'),$_POST);
 
 require_once("Version.inc.php");
 $response["version"] = Version::getVersion("server",!empty($_POST["complex"]));
 
-APIUtils::logAPI($_POST,$response);
+APIUtils::endAPIscript(basename(__FILE__, '.php'),$_POST,$response);
 echo json_encode($response,JSON_UNESCAPED_UNICODE);
