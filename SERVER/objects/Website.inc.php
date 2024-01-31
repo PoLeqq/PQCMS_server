@@ -614,6 +614,22 @@ class Website
         return $resp;
     }
 
+    public static function getWebsitesIDArrayByMatchingDomain(string $domain): array
+    {
+        $conn = Connection::getConnection();
+        $stmt = $conn->prepare("SELECT id FROM websites WHERE domain = ?");
+        $stmt->bind_param("s",$domain);
+        $stmt->execute();
+
+        $result = $stmt->get_result();
+        $websites = [];
+        while($row = $result->fetch_row())
+            $websites[] = $row[0];
+
+        $conn->close();
+        return $websites;
+    }
+
     public static function addWebsite(string $domain, string $login, string $license_key, ?string $license_expiration, bool $blocked): void
     {
         $conn = Connection::getConnection();
