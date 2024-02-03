@@ -29,7 +29,10 @@ function addLoginHistory($ip, $username, $password, $logged): void
     if(!$logged) $logged = "0";
     date_default_timezone_set('Europe/Warsaw');
     $now = date("Y-m-d H:i:s");
-    $conn->query("INSERT INTO login_history VALUES (null,'$ip','$username','$password','$now',$logged)");
+    $stmt = $conn->prepare("INSERT INTO login_history VALUES (null,?,?,?,?,?)");
+    $stmt->bind_param("ssssi",$ip,$username,$password,$now,$logged);
+    $stmt->execute();
+    $stmt->close();
     $conn->close();
 }
 
@@ -38,10 +41,13 @@ function getTries($ip): int
     $conn = Connection::getConnection();
 
     date_default_timezone_set("Europe/Warsaw");
-    $date = date("Y-m-d");
+    $date = date("Y-m-d")."%";
 
-    $result = $conn->query("SELECT date FROM login_history WHERE ip='$ip' AND date LIKE '$date%' AND logged=0");
-    $res = 5 - $result->num_rows;
+    $stmt = $conn->prepare("SELECT date FROM login_history WHERE ip=? AND date LIKE ? AND logged=0");
+    $stmt->bind_param("ss",$ip,$date);
+    $stmt->execute();
+
+    $res = 5 - $stmt->get_result()->num_rows;
     $conn->close();
     return $res;
 }
@@ -51,9 +57,13 @@ function isBanned($ip): bool
     if(getTries($ip) <= 0) return true;
 
     $conn = Connection::getConnection();
-    $result = $conn->query("SELECT * FROM login_banned_ips WHERE ip='$ip'");
-    $banned = $result->num_rows >= 1;
+    $stmt = $conn->prepare("SELECT * FROM login_banned_ips WHERE ip = ?");
+    $stmt->bind_param("s",$ip);
+    $stmt->execute();
 
+    $banned = $stmt->get_result()->num_rows >= 1;
+
+    $stmt->close();
     $conn->close();
 
     if(!$banned) $banned = getTries($ip) <= 0;
@@ -68,10 +78,14 @@ function login($ip, $username, $password): bool
     if(!empty($username) || !empty($password))
     {
         $conn = Connection::getConnection();
-        $result = $conn->query("SELECT id, password FROM users WHERE username = '$username'");
-        if(mysqli_num_rows($result) == 1)
+        $stmt = $conn->prepare("SELECT id, password FROM users WHERE username = ?");
+        $stmt->bind_param("s",$username);
+        $stmt->execute();
+
+        $result = $stmt->get_result();
+        if($result->num_rows == 1)
         {
-            $row = mysqli_fetch_assoc($result);
+            $row = $result->fetch_assoc();
             if(password_verify($password, $row['password']))
             {
                 addLoginHistory($ip,$username,"",true);
@@ -80,12 +94,14 @@ function login($ip, $username, $password): bool
                 unset($_SESSION["pqcms-server-token-login"]);
                 unset($_SESSION["pqcms-server-token-login-expire"]);
 
+                $stmt->close();
                 $conn->close();
                 return true;
             }
             else
             {
                 addLoginHistory($ip,$username,$password,false);
+                $stmt->close();
                 $conn->close();
                 return false;
             }
@@ -93,6 +109,7 @@ function login($ip, $username, $password): bool
         else
         {
             addLoginHistory($ip,$username,$password,false);
+            $stmt->close();
             $conn->close();
             return false;
         }
