@@ -119,7 +119,7 @@ class WebsitePermissions
             $allPerms = [$userPerms];
             require_once(dirname(__DIR__,2)."/database/Connection.inc.php");
             $conn = Connection::getConnection();
-            $query = $conn->query("SELECT name, perms FROM websites_ranks WHERE website_id = $websiteId ORDER BY priority DESC");
+            $query = $conn->query("SELECT name, perms FROM websites_ranks WHERE website_id = $websiteId AND deleted = 0 ORDER BY priority DESC");
             while($row = $query->fetch_row())
             {
 //                tutaj miało być ale pqcms.rank.* , ale chyba zrezygnuję z posiadania wszystkich rang 1 permisją :p
