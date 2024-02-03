@@ -245,28 +245,28 @@ class AuthKey
         return $result;
     }
 
-    /**
-     * @param int $website_id id strony
-     * @param string $authKey auth_key
-     * @param bool $logout czy wylogowanie "dobrowolne" (1 - wylogowanie, 0 - działanie admina)
-     * @return void
-     */
-    public static function invalidateAuthKey(int $website_id, string $authKey, bool $logout): void
-    {
-        $conn = Connection::getConnection();
-
-        date_default_timezone_set('Europe/Warsaw');
-        $now = date("Y-m-d H:i:s");
-
-        if($logout)
-            $sql = "";
-
-        $conn->query("UPDATE websites_auth_keys 
-                              SET expired_time = '$now', logout = 1 
-                              WHERE website_id = $website_id 
-                              AND auth_key = '$authKey'");
-        $conn->close();
-    }
+//    /**
+//     * @param int $website_id id strony
+//     * @param string $authKey auth_key
+//     * @param bool $logout czy wylogowanie "dobrowolne" (1 - wylogowanie, 0 - działanie admina)
+//     * @return void
+//     */
+//    public static function invalidateAuthKey(int $website_id, string $authKey, bool $logout): void
+//    {
+//        $conn = Connection::getConnection();
+//
+//        date_default_timezone_set('Europe/Warsaw');
+//        $now = date("Y-m-d H:i:s");
+//
+//        if($logout)
+//            $sql = "";
+//
+//        $conn->query("UPDATE websites_auth_keys
+//                              SET expired_time = '$now', logout = 1
+//                              WHERE website_id = $website_id
+//                              AND auth_key = '$authKey'");
+//        $conn->close();
+//    }
 
     /**
      * @param int $website_id id strony
