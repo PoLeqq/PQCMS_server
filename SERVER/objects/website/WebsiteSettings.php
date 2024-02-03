@@ -29,14 +29,15 @@ class WebsiteSettings
         $this->unsafe_setField("login_session_time",$loginSessionTime);
     }
 
-    private function unsafe_setField(string $column, mixed $value): void
+    private function unsafe_setField(string $column, ?int $value): void
     {
 //        W przypadku, gdy będą tu stringi (raczej nie będzie), trzeba zabezpieczyć kod z utils/SQLSecurity.php)
-        if(is_string($value)) $value = "'$value'";
         if(is_null($value)) $value = "DEFAULT";
 
         $conn = Connection::getConnection();
-        $conn->query("UPDATE websites_settings SET $column = $value WHERE website_id = $this->websiteId");
+        $stmt = $conn->prepare("UPDATE websites_settings SET $column = ? WHERE website_id = ?");
+        $stmt->bind_param("ii",$value,$this->websiteId);
+        $stmt->execute();
         $conn->close();
     }
 

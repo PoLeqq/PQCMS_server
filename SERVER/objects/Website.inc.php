@@ -86,14 +86,17 @@ class Website
     public function getAdminId(): ?int
     {
         $conn = Connection::getConnection();
-        $query = $conn->query("SELECT id FROM websites_admins WHERE website_id = $this->id");
+        $stmt = $conn->prepare("SELECT id FROM websites_admins WHERE website_id = ?");
+        $stmt->bind_param("i",$this->id);
+        $stmt->execute();
 
-        if($query->num_rows == 0)
+        $result = $stmt->get_result();
+        if($result->num_rows == 0)
             $result = null;
         else
-            $result = $query->fetch_row()[0];
+            $result = $result->fetch_row()[0];
 
-        $query->close();
+        $stmt->close();
         $conn->close();
         return $result;
     }
@@ -155,15 +158,18 @@ class Website
     public function getUsersIds(): array
     {
         $conn = Connection::getConnection();
-        $query = $conn->query("SELECT id FROM websites_users WHERE website_id = $this->id AND deleted = 0");
+        $stmt = $conn->prepare("SELECT id FROM websites_users WHERE website_id = ? AND deleted = 0");
+        $stmt->bind_param("i",$this->id);
+        $stmt->execute();
 
-        $result = [];
-        while($row = $query->fetch_row())
-            $result[] = $row[0];
+        $result = $stmt->get_result();
+        $response = [];
+        while($row = $result->fetch_row())
+            $response[] = $row[0];
 
-        $query->close();
+        $stmt->close();
         $conn->close();
-        return $result;
+        return $response;
     }
 
     public function getRanksIds(): array
@@ -175,20 +181,24 @@ class Website
         while($row = $query->fetch_row())
             $result[] = $row[0];
 
-        $query->close();
+        $stmt->close();
         $conn->close();
-        return $result;
+        return $response;
     }
 
     public function getUsers(): array
     {
         $conn = Connection::getConnection();
-        $query = $conn->query("SELECT id, username, nickname, email, perms, disabled FROM websites_users WHERE website_id = $this->id AND deleted = 0");
+        $stmtUsers = $conn->prepare("SELECT id, username, nickname, email, perms, disabled FROM websites_users WHERE website_id = ? AND deleted = 0");
+        $stmtUsers->bind_param("i",$this->id);
+        $stmtUsers->execute();
+        $stmtUsersResult = $stmtUsers->get_result();
+        $stmtUsers->close();
 
         date_default_timezone_set("Europe/Warsaw");
         $date = date("Y-m-d H:i:s");
         $querySessions = $conn->query("SELECT user_id, expired_time FROM websites_auth_keys 
-                    WHERE website_id = 1
+                    WHERE website_id = $this->id
                       AND logout = 0 
                       AND invalid = 0
                       AND admin_id IS NULL
@@ -199,14 +209,13 @@ class Website
             $usersSessions[$row[0]] = $row[1];
 
         $result = [];
-        while ($row = $query->fetch_row()) {
+        while ($row = $stmtUsersResult->fetch_row()) {
             $userRow = ["username" => $row[1], "nickname" => $row[2], "email" => $row[3], "perms" => json_decode($row[4]), "disabled" => $row[5]];
             if(array_key_exists($row[0],$usersSessions))
                 $userRow["active_session"] = $usersSessions[$row[0]];
 
             $result[] = $userRow;
         }
-
 
         $query = $conn->query("SELECT username, nickname FROM websites_admins WHERE website_id = $this->id");
         if ($row = $query->fetch_row())
@@ -220,15 +229,18 @@ class Website
     public function getRanks(): array
     {
         $conn = Connection::getConnection();
-        $query = $conn->query("SELECT name, display_name, perms, priority, parent_id FROM websites_ranks WHERE website_id = $this->id AND deleted = 0");
+        $stmt = $conn->prepare("SELECT name, display_name, perms, priority, parent_id FROM websites_ranks WHERE website_id = ? AND deleted = 0");
+        $stmt->bind_param("i",$this->id);
+        $stmt->execute();
 
-        $result = [];
-        while($row = $query->fetch_row())
-            $result[] = ["name" => $row[0], "display_name" => $row[1], "perms" => json_decode($row[2]), "priority" => $row[3], "parent_id" => $row[4]];
+        $result = $stmt->get_result();
+        $response = [];
+        while($row = $result->fetch_row())
+            $response[] = ["name" => $row[0], "display_name" => $row[1], "perms" => json_decode($row[2]), "priority" => $row[3], "parent_id" => $row[4]];
 
-        $query->close();
+        $stmt->close();
         $conn->close();
-        return $result;
+        return $response;
     }
 
     public function hasPermission(string $remoteAddr, string $authKey, string $perm): bool
@@ -255,19 +267,23 @@ class Website
             return ["suc" => 0, "desc" => "Klucz bezpieczeństwa jest niepoprawny!"];
 
         $conn = Connection::getConnection();
-        $query = $conn->query("SELECT admin_id, user_id FROM websites_auth_keys 
-                         WHERE auth_key = '$authKey' 
-                           AND website_id = $this->id
+        $stmt = $conn->prepare("SELECT admin_id, user_id FROM websites_auth_keys 
+                         WHERE auth_key = ? 
+                           AND website_id = ?
                            AND invalid = 0
                            AND logout = 0
                            ORDER BY id DESC
                            LIMIT 1");
+        $stmt->bind_param("si",$authKey,$this->id);
+        $stmt->execute();
 //        raczej się nie wydarzy, ale na wszelki wypadek
-        if($query->num_rows === 0)
+
+        $result = $stmt->get_result();
+        if($result->num_rows === 0)
             $resp = ["suc" => 0, "desc" => "Nie odnaleziono użytkownika powiązanego z podanym \"auth_key\"!"];
         else
         {
-            $row = $query->fetch_row();
+            $row = $result->fetch_row();
             if(!is_null($row[0]))
             {
                 $permsResponse = [];
@@ -292,7 +308,7 @@ class Website
             }
         }
 
-        $query->close();
+        $stmt->close();
         $conn->close();
 
         return $resp;
@@ -340,7 +356,8 @@ class Website
         {
             $userStmt = $conn->prepare("SELECT perms FROM websites_users 
                                         WHERE website_id = $this->id 
-                                          AND BINARY username = ?");
+                                          AND BINARY username = ?
+                                          AND deleted = 0");
 
             $userStmt->bind_param("s",$username);
             $userStmt->execute();
@@ -383,19 +400,23 @@ class Website
             return ["suc" => 0, "desc" => "Klucz bezpieczeństwa jest niepoprawny!"];
 
         $conn = Connection::getConnection();
-        $query = $conn->query("SELECT admin_id, user_id FROM websites_auth_keys 
-                         WHERE auth_key = '$authKey' 
-                           AND website_id = $this->id
+        $stmt = $conn->prepare("SELECT admin_id, user_id FROM websites_auth_keys 
+                         WHERE auth_key = ? 
+                           AND website_id = ?
                            AND invalid = 0
                            AND logout = 0
                            ORDER BY id DESC
                            LIMIT 1");
+        $stmt->bind_param("si",$authKey,$this->id);
+        $stmt->execute();
+
+        $result = $stmt->get_result();
 //        raczej się nie wydarzy, ale na wszelki wypadek
-        if($query->num_rows === 0)
+        if($result->num_rows === 0)
             $resp = ["suc" => 0, "desc" => "Nie odnaleziono użytkownika powiązanego z podanym \"auth_key\"!"];
         else
         {
-            $row = $query->fetch_row();
+            $row = $result->fetch_row();
             $permsResponse = [];
             if(!is_null($row[0]))
             {
@@ -424,7 +445,7 @@ class Website
             $resp = ["suc" => 1, "perms" => $permsResponse];
         }
 
-        $query->close();
+        $stmt->close();
         $conn->close();
 
         return $resp;
@@ -483,20 +504,29 @@ class Website
             return ["suc" => 0, "desc" => "To IP zostało zablokowane!", "tries_left" => 0];
 
         $conn = Connection::getConnection();
-        $query = $conn->query("SELECT id, nickname, password FROM websites_admins 
-                    WHERE website_id = $this->id 
-                      AND BINARY username = '$username'");
+        $stmtAdmins = $conn->prepare("SELECT id, nickname, password FROM websites_admins 
+                    WHERE website_id = ? 
+                      AND BINARY username = ?");
+        $stmtAdmins->bind_param("is",$this->id,$username);
+        $stmtAdmins->execute();
+        $stmtAdminsResult = $stmtAdmins->get_result();
+        $stmtAdmins->close();
 
-        if($query->num_rows == 0)
+        if($stmtAdminsResult->num_rows == 0)
         {
-            $query = $conn->query("SELECT id, nickname, password FROM websites_users 
-                    WHERE website_id = $this->id 
-                      AND BINARY username = '$username' 
-                      AND disabled = 0");
+            $stmtUsers = $conn->prepare("SELECT id, nickname, password FROM websites_users 
+                    WHERE website_id = ? 
+                      AND BINARY username = ? 
+                      AND disabled = 0
+                      AND deleted = 0");
+            $stmtUsers->bind_param("is",$this->id,$username);
+            $stmtUsers->execute();
+            $resultUsers = $stmtUsers->get_result();
+            $stmtUsers->close();
 
-            if($query->num_rows != 0)
+            if($resultUsers->num_rows != 0)
             {
-                $result = $this->loginUserGetResponse($query->fetch_assoc(),$ip,$password,false,$loginTries);
+                $result = $this->loginUserGetResponse($resultUsers->fetch_assoc(),$ip,$password,false,$loginTries);
                 if(!is_null($result["proper_data"]))
                     $this->logUserLogin($ip,$username,$password,$result["proper_data"],$result["suc"],$result["desc"]);
             }
@@ -508,7 +538,7 @@ class Website
         }
         else
         {
-            $result = $this->loginUserGetResponse($query->fetch_assoc(), $ip, $password, true,$loginTries);
+            $result = $this->loginUserGetResponse($stmtAdminsResult->fetch_assoc(), $ip, $password, true,$loginTries);
             $this->logUserLogin($ip, $username, $password, $result["proper_data"], $result["suc"],$result["desc"]);
         }
 
@@ -525,8 +555,9 @@ class Website
         $conn = Connection::getConnection();
         $now = date("Y-m-d H:i:s");
         $conn->query("UPDATE websites_auth_keys
-                    SET expired_time = '$now', 
-                    logout = 1
+                    SET 
+                        expired_time = '$now', 
+                        logout = 1
                     WHERE website_id = $this->id
                     AND auth_key = '$authKey'");
         $conn->close();
@@ -558,7 +589,7 @@ class Website
         else return ["suc" => 0, "proper_data" => 0, "desc" => "Niepoprawne dane logowania!", "tries_left" => $triesLeft];
     }
 
-    private function logUserLogin(string $ip, string $username, string $password, bool $properData, bool $logged, string $description): void
+    private function logUserLogin(string $ip, string $username, string $password, ?bool $properData, bool $logged, string $description): void
     {
         $conn = Connection::getConnection();
 
@@ -568,10 +599,13 @@ class Website
         $now = date("Y-m-d H:i:s");
         if($properData) $password = "";
 
-        $conn->query("INSERT INTO websites_login_history 
-                    (website_id, ip, username, password, date, proper_data, logged) 
+        $stmt = $conn->prepare("INSERT INTO websites_login_history 
+                    (website_id, ip, username, password, date, proper_data, logged, description) 
                     VALUES
-                    ($this->id, '$ip', '$username', '$password', '$now', $properData, $logged)");
+                    (?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("issssiis",$this->id,$ip,$username,$password,$now,$properData,$logged,$description);
+        $stmt->execute();
+        $stmt->close();
         $conn->close();
     }
 
@@ -636,17 +670,15 @@ class Website
     {
         $conn = Connection::getConnection();
 
-        // Data transformation for SQL
-        if ($blocked) $blocked = 1; else $blocked = 0;
-        if ($license_expiration != null) $license_expiration = "'$license_expiration'";
-        else $license_expiration = 'null';
+        $stmtWebsites = $conn->prepare("INSERT INTO websites VALUES (null,?,?,?,?,?)");
+        $stmtWebsites->bind_param("ssssi",$domain,$login,$license_key,$license_expiration,$blocked);
+        $stmtWebsites->execute();
+        $websiteId = $stmtWebsites->insert_id;
+        $stmtWebsites->close();
 
-        $sql = "INSERT INTO websites VALUES (null,'$domain','$login','$license_key',$license_expiration,$blocked)";
-        $conn->query($sql);
-
-        $websiteId = mysqli_insert_id($conn);
         $sql = "INSERT INTO websites_settings (website_id) VALUES ($websiteId)";
         $conn->query($sql);
+
         $conn->close();
     }
 }

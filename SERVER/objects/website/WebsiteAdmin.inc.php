@@ -37,13 +37,15 @@ class WebsiteAdmin
     private function unsafe_getField($column): mixed
     {
         $conn = Connection::getConnection();
-        $query = $conn->query("SELECT $column FROM websites_admins WHERE id = $this->id");
+        $stmt = $conn->prepare("SELECT $column FROM websites_admins WHERE id = ?");
+        $stmt->bind_param("i",$this->id);
+        $stmt->execute();
 
-        $fetchArray = mysqli_fetch_array($query);
+        $fetchArray = $stmt->get_result()->fetch_row();
         if($fetchArray == null || count($fetchArray) == 0) return null;
         $result = $fetchArray[0];
 
-        $query->close();
+        $stmt->close();
         $conn->close();
         return $result;
     }

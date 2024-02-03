@@ -14,9 +14,11 @@ class SecureKey
             $secureKey = bin2hex(random_bytes(64));
         } while($conn->query("SELECT id FROM websites_secure_keys WHERE website_id = $website_id AND secure_key = '$secureKey' AND expired_time >= '$date'")->num_rows > 0);
 
-        $conn->query("INSERT INTO websites_secure_keys (website_id, secure_key, ip, expired_time) VALUES ($website_id, '$secureKey', '$remoteAddr', '$date')");
-        $conn->close();
+        $stmt = $conn->prepare("INSERT INTO websites_secure_keys (website_id, secure_key, ip, expired_time) VALUES (?, ?, ?, ?)");
+        $stmt->bind_param("isss",$website_id,$secureKey,$remoteAddr,$date);
+        $stmt->execute();
 
+        $conn->close();
         return ["value" => $secureKey, "expire_time" => time() + 300];
     }
 
@@ -48,11 +50,15 @@ class SecureKey
         date_default_timezone_set('Europe/Warsaw');
         $date = date("Y-m-d H:i:s");
 
-        return $conn->query("SELECT id FROM websites_secure_keys 
-          WHERE website_id = $websiteId 
-            AND expired_time >= '$date'
-            AND ip = '$remoteAddr'
-            AND invalid = 0")->num_rows > 0;
+        $stmt = $conn->prepare("SELECT id FROM websites_secure_keys 
+          WHERE website_id = ? 
+            AND expired_time >= ?
+            AND ip = ?
+            AND invalid = 0");
+        $stmt->bind_param("iss",$websiteId,$date,$remoteAddr);
+        $stmt->execute();
+
+        return $stmt->get_result()->num_rows > 0;
     }
 
     public static function getSecureKeyByIP(int $websiteId, string $remoteAddr): ?array
@@ -62,16 +68,19 @@ class SecureKey
         date_default_timezone_set('Europe/Warsaw');
         $date = date("Y-m-d H:i:s");
 
-        $query = $conn->query("SELECT secure_key, expired_time FROM websites_secure_keys 
-          WHERE website_id = $websiteId 
-            AND expired_time >= '$date'
-            AND ip = '$remoteAddr'
+        $stmt = $conn->prepare("SELECT secure_key, expired_time FROM websites_secure_keys 
+          WHERE website_id = ? 
+            AND expired_time >= ?
+            AND ip = ?
             AND invalid = 0");
+        $stmt->bind_param("iss",$websiteId,$date,$remoteAddr);
+        $stmt->execute();
 
-        if($query->num_rows === 0)
+        $result = $stmt->get_result();
+        if($result->num_rows === 0)
             return null;
 
-        $row = $query->fetch_row();
+        $row = $result->fetch_row();
         return ["value" => $row[0], "expire_time" => strtotime($row[1])];
     }
 
@@ -87,7 +96,10 @@ class SecureKey
 //        TODO ??? dołożyć do tego jeszcze kolumnę `data` - gdy zostanie dodana do DB (o ile zostanie dodana)
         date_default_timezone_set('Europe/Warsaw');
         $now = date("Y-m-d H:i:s");
-        $conn->query("UPDATE websites_secure_keys SET expired_time = '$now' WHERE website_id = $website_id AND secure_key = '$secureKey'");
+        $stmt = $conn->prepare("UPDATE websites_secure_keys SET expired_time = ? WHERE website_id = ? AND secure_key = ?");
+        $stmt->bind_param("sis",$now,$website_id,$website_id);
+        $stmt->execute();
+        $stmt->close();
         $conn->close();
     }
 }

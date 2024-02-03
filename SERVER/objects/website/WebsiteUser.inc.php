@@ -146,8 +146,13 @@ class WebsiteUser
         $query = $conn->query("SELECT username FROM websites_admins WHERE website_id = $websiteId");
         if($query->fetch_row()[0] !== $username)
         {
-            $query = $conn->query("SELECT id FROM websites_users WHERE website_id = $websiteId AND username = '$username' AND deleted = 0");
-            if($query->num_rows == 0)
+            $selectStmt = $conn->prepare("SELECT id FROM websites_users 
+                                WHERE website_id = $websiteId 
+                                  AND username = ? 
+                                  AND deleted = 0");
+            $selectStmt->bind_param("s",$username);
+            $selectStmt->execute();
+            if($selectStmt->get_result()->num_rows == 0)
             {
                 $disabled = (int) $disabled;
                 if(is_null($perms))
@@ -192,7 +197,7 @@ class WebsiteUser
     {
         $conn = Connection::getConnection();
 
-        $selectStmt = $conn->prepare("SELECT id, nickname, email from websites_users WHERE website_id = ? AND username = ?");
+        $selectStmt = $conn->prepare("SELECT id, nickname, email from websites_users WHERE website_id = ? AND username = ? AND deleted = 0");
         $selectStmt->bind_param("is",$websiteId,$username);
         $selectStmt->execute();
         $resultSelect = $selectStmt->get_result();
@@ -292,7 +297,7 @@ HTML,
         $query = $conn->query("SELECT username FROM websites_admins WHERE website_id = $websiteId");
         if($query->fetch_row()[0] !== $username)
         {
-            $stmtUsers = $conn->prepare("SELECT id FROM websites_users WHERE website_id = $websiteId AND username = ?");
+            $stmtUsers = $conn->prepare("SELECT id FROM websites_users WHERE website_id = $websiteId AND username = ? AND deleted = 0");
             $stmtUsers->bind_param("s",$username);
             $stmtUsers->execute();
 
@@ -303,10 +308,6 @@ HTML,
             else
             {
                 $userId = $stmtUsersResult->fetch_row()[0];
-
-                if(!is_null($perms))
-                    $perms = json_encode($perms);
-
 
                 $sql = [];
                 $params = [];

@@ -34,19 +34,29 @@ class AuthKey
         if($admin) $column = "admin_id";
         else $column = "user_id";
 
-        $loginSessionTimeResult = $conn->query("SELECT login_session_time FROM websites_settings WHERE website_id = $website_id");
-        if($row = $loginSessionTimeResult->fetch_row())
+        $loginSessionTimeStmt = $conn->prepare("SELECT login_session_time FROM websites_settings WHERE website_id = ?");
+        $loginSessionTimeStmt->bind_param("i",$website_id);
+        $loginSessionTimeStmt->execute();
+        $loginSessionTimeStmtResult = $loginSessionTimeStmt->get_result();
+        $loginSessionTimeStmt->close();
+
+        if($row = $loginSessionTimeStmtResult->fetch_row())
             $sessionTime = $row[0];
         else
             return null;
 
         date_default_timezone_set('Europe/Warsaw');
         $currentDate = date("Y-m-d H:i:s", time()+$sessionTime);
-        $conn->query("INSERT INTO websites_auth_keys 
+        $stmt = $conn->prepare("INSERT INTO websites_auth_keys 
                     (website_id, $column, ip, auth_key, expired_time) 
                     VALUES 
-                    ($website_id, $userId, '$ip', '$authKey', '$currentDate')");
-        $insertId = $conn->insert_id;
+                    (?, ?, ?, ?, ?)");
+        $stmt->bind_param("iisss",$website_id,$userId,$ip,$authKey,$currentDate);
+        $stmt->execute();
+
+//        zadziała jak jest teraz na stmt? raczej ta
+        $insertId = $stmt->insert_id;
+        $stmt->close();
         $conn->close();
 
         return ["value" => $authKey, "expiry_time" => time()+$sessionTime, "id" => $insertId];
@@ -101,18 +111,22 @@ class AuthKey
         if(!self::isProperAuthKey($authKey))
             return["valid" => 0, "outdated" => 0, "invalidated" => 0, "not_secure" => 1];
         $conn = Connection::getConnection();
-        $query = $conn->query("SELECT expired_time, invalid, logout FROM websites_auth_keys 
-                              WHERE website_id = $websiteId
-                              AND ip = '$ip'
-                              AND auth_key = '$authKey'
+        $stmt = $conn->prepare("SELECT expired_time, invalid, logout FROM websites_auth_keys 
+                              WHERE website_id = ?
+                              AND ip = ?
+                              AND auth_key = ?
                               ORDER BY id DESC
                               LIMIT 1");
+        $stmt->bind_param("iss",$websiteId,$ip,$authKey);
+        $stmt->execute();
 
-        if($query->num_rows == 0)
+        $result = $stmt->get_result();
+
+        if($result->num_rows == 0)
             $result = ["valid" => 0, "outdated" => 0, "invalidated" => 0];
         else
         {
-            $row = $query->fetch_row();
+            $row = $result->fetch_row();
 
             $expiredTime = $row[0];
             $expiredDate = strtotime($expiredTime);
@@ -124,21 +138,24 @@ class AuthKey
             $result = ["valid" => (int) (!($outdated || $invalidated)), "outdated" => (int) $outdated, "invalidated" => (int) $invalidated];
         }
 
-        $query->close();
+        $stmt->close();
         $conn->close();
         return $result;
     }
 
-    public static function isValidAuthKeyByID(int $id): array
+    public static function isValidAuthKeyByID(int $id, string $ip): array
     {
         $conn = Connection::getConnection();
-        $query = $conn->query("SELECT expired_time, invalid, logout FROM websites_auth_keys WHERE id = $id");
+        $stmt = $conn->prepare("SELECT expired_time, invalid, logout FROM websites_auth_keys WHERE id = ? AND ip = ?");
+        $stmt->bind_param("is",$id,$ip);
+        $stmt->execute();
 
-        if($query->num_rows === 0)
+        $stmtResult = $stmt->get_result();
+        if($stmtResult->num_rows === 0)
             $result = ["valid" => 0, "outdated" => 0, "invalidated" => 0];
         else
         {
-            $row = $query->fetch_row();
+            $row = $stmtResult->fetch_row();
 
             $expiredTime = $row[0];
             $expiredDate = strtotime($expiredTime);
@@ -150,7 +167,7 @@ class AuthKey
             $result = ["valid" => (int) (!($outdated || $invalidated)), "outdated" => (int) $outdated, "invalidated" => (int) $invalidated];
         }
 
-        $query->close();
+        $stmt->close();
         $conn->close();
         return $result;
     }

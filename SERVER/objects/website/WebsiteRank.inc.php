@@ -72,14 +72,16 @@ class WebsiteRank
     private function getField($column): mixed
     {
         $conn = Connection::getConnection();
-        $query = $conn->query("SELECT * FROM websites_ranks WHERE id = $this->id");
+        $stmt = $conn->prepare("SELECT * FROM websites_ranks WHERE id = ?");
+        $stmt->bind_param("i",$this->id);
+        $stmt->execute();
 
-        $fetchArray = $query->fetch_assoc();
+        $fetchArray = $stmt->get_result()->fetch_assoc();
         if($fetchArray == null || count($fetchArray) == 0 || !isset($fetchArray[$column]))
             return null;
-        $result = $fetchArray[0];
+        $result = $fetchArray[$column];
 
-        $query->close();
+        $stmt->close();
         $conn->close();
         return $result;
     }
@@ -106,17 +108,26 @@ class WebsiteRank
 
         $conn = Connection::getConnection();
 
-        $query = $conn->query("SELECT name FROM websites_ranks 
-            WHERE website_id = $websiteId 
-              AND name = '$name'");
-        if($query->num_rows == 0)
+        $stmt = $conn->prepare("SELECT name FROM websites_ranks 
+            WHERE website_id = ? 
+              AND name = ?
+              AND deleted = 0");
+        $stmt->bind_param("is",$websiteId,$name);
+        $stmt->execute();
+
+        $result = $stmt->get_result();
+        $stmt->close();
+        if($result->num_rows == 0)
         {
             $perms = json_encode($perms);
-            if(is_null($parentId))
-                $parentId = "NULL";
 
-            $conn->query("INSERT INTO websites_ranks VALUES (null,$websiteId,'$name','$displayName','$perms','$priority',$parentId,0)");
-            if($conn->errno === 0) $resp = ["suc" => 1, "desc" => "Dodano rangę!"];
+            $parentId = null;
+            $stmt = $conn->prepare("INSERT INTO websites_ranks VALUES (null,?,?,?,?,?,?,0)");
+            $stmt->bind_param("issssi",$websiteId,$name,$displayName,$perms,$priority,$parentId);
+            $stmt->execute();
+
+//            stmt->errno, conn->errno, stmt->getresult->errno? chyba jest git ale nwm
+            if($stmt->errno === 0) $resp = ["suc" => 1, "desc" => "Dodano rangę!"];
             else $resp = ["suc" => 0, "desc" => "Błąd podczas dodawania rangi. Kod błędu: ".($conn->errno)."!"];
             $conn->close();
         }
@@ -172,14 +183,33 @@ class WebsiteRank
         return $response;
     }
 
-    public static function deleteRank(Website $website, string $name): void
+    public static function deleteRank(Website $website, string $name): array
     {
+        if(preg_match("/^[a-z]+$/", $name) != 1)
+            return ["suc" => 0, "desc" => "Nazwa rangi może składać się tylko z małych liter a-z (bez polskich znaków)!"];
+
+        $websiteRank = WebsiteRank::getWebsiteRankByName($_POST["name"],$website->getId());
+        if(is_null($websiteRank))
+            die(json_encode(["suc" => 0, "desc" => "Nie znaleziono rangi o podanej nazwie!"],JSON_UNESCAPED_UNICODE));
+
+//        todo usunięcie permisji typu: pqcms.hr.rank.get.<name> z userów, rang
         $conn = Connection::getConnection();
+
+        $stmt = $conn->prepare("SELECT name FROM websites_ranks 
+            WHERE website_id = ? 
+              AND name = ?
+              AND deleted = 0");
+        $websiteId = $website->getId();
+        $stmt->bind_param("is",$websiteId, $name);
+        $stmt->execute();
+        if($stmt->get_result()->num_rows == 0)
+            return ["suc" => 0, "desc" => "Ta ranga nie istnieje!"];
+
         $stmt = $conn->prepare("UPDATE websites_ranks 
             SET deleted = 1 
             WHERE website_id = ? 
-              AND name = ?");
-        $websiteId = $website->getId();
+              AND name = ?
+              AND deleted = 0");
         $stmt->bind_param("is", $websiteId,$name);
         $stmt->execute();
         $stmt->close();
@@ -187,12 +217,18 @@ class WebsiteRank
 //        $stmt = $conn->prepare('UPDATE websites_users SET perms = REPLACE(REPLACE(perms, '"pqcms.*":true', ""),'"pqcms.*":false',"");');
 
 //        Pobranie użytkowników strony
-        $query = $conn->query("SELECT id, perms FROM websites_users WHERE website_id = $websiteId");
+        $stmt = $conn->prepare("SELECT id, perms FROM websites_users WHERE website_id = ?");
+        $stmt->bind_param("i",$websiteId);
+        $stmt->execute();
+
         $userPerms = [];
 
 //        dodanie do array nowych permisji (usunięcie permisji do usuniętej rangi) tylko wtedy, gdy user tę rangę posiada
         $rankPerm = "pqcms.rank.$name";
-        while($row = $query->fetch_assoc())
+        $result = $stmt->get_result();
+        $stmt->close();
+
+        while($row = $result->fetch_assoc())
         {
             $newPerms = json_decode($row["perms"],true);
 
@@ -215,15 +251,25 @@ class WebsiteRank
 
 //        Również nullowanie, gdy ranga była dzieckiem
 //        pobieranie id rangi:
-        $stmt = $conn->prepare("SELECT id FROM websites_ranks WHERE website_id = ? AND name = ?");
+        $stmt = $conn->prepare("SELECT id FROM websites_ranks WHERE website_id = ? AND name = ? AND deleted = 0");
         $stmt->bind_param("is",$websiteId,$name);
         $stmt->execute();
-        $rankID = $stmt->get_result()->fetch_row()[0];
+        $result = $stmt->get_result();
+        $stmt->close();
+        if($result->num_rows >= 1)
+        {
+            $rankID = $result->fetch_row()[0];
 
-        $conn->query("UPDATE websites_ranks SET parent_id = NULL 
-                      WHERE parent_id = $rankID");
+            $stmt = $conn->prepare("UPDATE websites_ranks SET parent_id = NULL 
+                          WHERE parent_id = ?");
+            $stmt->bind_param("i",$rankID);
+            $stmt->execute();
+            $stmt->close();
+        }
+
 
         $conn->close();
+        return ["suc" => 1, "desc" => "Usunięto rangę!"];
     }
 
     public static function editRank(int $websiteId, string $name, ?string $displayName, ?int $priority, ?int $parentId, ?array $perms): array
@@ -255,7 +301,9 @@ class WebsiteRank
         }
 
         $conn = Connection::getConnection();
-        $stmt = $conn->prepare("SELECT id FROM websites_ranks WHERE website_id = $websiteId AND name = ?");
+        $stmt = $conn->prepare("SELECT id FROM websites_ranks WHERE website_id = $websiteId 
+                                AND name = ?
+                                AND deleted = 0");
         $stmt->bind_param("s",$name);
         $stmt->execute();
 
