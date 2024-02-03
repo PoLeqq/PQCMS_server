@@ -1,0 +1,85 @@
+@import url('https://fonts.googleapis.com/css2?family=Courier+Prime:ital@1&family=Nanum+Myeongjo&family=Roboto&display=swap');
+@import url("../../../../index.css");
+
+body {
+    background-color: #fff;
+    font-family: 'Roboto', sans-serif;
+}
+
+nav, footer {
+    background: rgba(50,50,50,.8);
+    color: white;
+    z-index: 1000;
+    backdrop-filter: blur(10px);
+}
+
+nav {
+    width: 100vw;
+    min-height: 80px;
+    top: 0;
+    left: 0;
+}
+
+#main-link > img {
+    height: 50px;
+    font-size: 40px!important;
+}
+
+#site-container {
+    position: relative;
+    min-height: 100vh;
+}
+
+footer {
+    position: absolute;
+    /*bottom: -30px;*/
+    bottom: 0;
+    height: 30px;
+    width: 100%;
+}
+
+#tutorial-nav {
+    list-style-type: none;
+    overflow: auto;
+    height: 100%;
+}
+
+#tutorial-nav > li {
+    color: #cccccc;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+#tutorial-nav > li[data-category] {
+    text-decoration: underline;
+    margin-top: 15px;
+    user-select: none;
+}
+
+#tutorial-nav > li > a {
+    color: white;
+    text-transform: capitalize;
+    text-decoration: none;
+    font-size: 16px;
+    letter-spacing: 1px;
+    transition: .3s;
+    transform: scale(-1);
+}
+
+#tutorial-nav > li > a:hover {
+    color: #d3d3d3;
+    transition: .2s;
+    transform: scale(2);
+}
+
+#site {
+    height: calc(100vh - 30px - 80px);
+    background: linear-gradient(135deg, #8a2be2, #793ee6, #3b79ff, #8a2be2) no-repeat fixed;
+    background-size: 400% 400%;
+    animation: block-background 30s ease-in-out infinite;
+}
+/*#tutorial-iframe {*/
+/*    */
+/*}*/
