@@ -30,7 +30,8 @@ nav {
 
 footer {
     position: absolute;
-    bottom: -10vh;
+    /*bottom: -10vh;*/
+    bottom: 0;
     height: 10vh;
     width: 100%;
 }

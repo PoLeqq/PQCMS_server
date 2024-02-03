@@ -1,3 +1,16 @@
+<?php
+if(empty($_GET["token"]))
+    die("Nie można wyświetlić strony, najpierw zaloguj się do panelu PQCMS!");
+
+require_once(dirname(__DIR__,2)."/objects/website/PQCMSToken.inc.php");
+if(!PQCMSToken::isValidToken($_GET["token"],$_SERVER["REMOTE_ADDR"]))
+    die("Niepoprawny token!");
+
+session_start();
+$_SESSION["pqcms"]["client"]["system"]["token"] = $_GET["token"];
+?>
+
+
 <!doctype html>
 <html lang="pl-PL">
 <head>
@@ -52,11 +65,11 @@
                 <ul class="navbar-nav mb-2 mb-lg-0 fs-4">
 
                     <li class="nav-item link-nav">
-                        <a class="nav-link" href="#zalety">Pomoc</a>
+                        <a class="nav-link" href="tutorial/">Poradnik</a>
                     </li>
 
                     <li class="nav-item link-nav">
-                        <a class="nav-link" aria-current="page" href="#projekt">Zgłoszenie</a>
+                        <a class="nav-link" aria-current="page" href="#zgloszenia">Zgłoszenia</a>
                     </li>
 
                 </ul>
@@ -65,13 +78,13 @@
     </nav>
 
     <div id="site">
-        <div id="start" class="block-background">
+        <div id="zgloszenia" class="block-background">
             <div class="col-10 offset-1 p-5 block-foreground">
                 <section>
                     <h1 class="mb-3">Oficjalny panel PQCMS</h1>
                     <span style="color: red">
                         Na tej stronie zobaczysz tylko rzeczy, które są związane tylko z PQCMS. Jeśli chcesz edytować
-                        swoją stronę, zobacz menu znajdujące się po prawej stronie.
+                        swoją stronę, zobacz menu znajdujące się po lewej stronie.
                     </span>
                     <br>
                     <i>Szukasz czegoś innego? Zjedź niżej!</i>
@@ -79,8 +92,8 @@
                         <div class="pqcms-action col m-3 p-3">
                             <div class="pqcms-action-content">
                                 <h2>Pomoc</h2>
-                                Ta sekcja jest potrzebna, gdy nie wiesz jak coś zrobić lub nie do końca rozumiesz np.
-                                funkcjonalności programu. Nasz zespół pomocy technicznej jest zawsze do usług!
+                                Ta sekcja jest potrzebna, gdy nie wiesz jak coś zrobić lub nie do końca rozumiesz (np.
+                                jakiejś funkcjonalności programu). Nasz zespół pomocy technicznej jest zawsze do usług!
                             </div>
                             <a href="report/help.php" class="mt-2">
                                 <div class="pqcms-action-button">
@@ -122,28 +135,28 @@
         </div>
         <div class="block2-background">
             <div class="block2-foreground">
-                <section id="zalety" class="d-flex flex-column justify-content-center align-items-center">
+                <section class="d-flex flex-column justify-content-center align-items-center">
                     <h1>Zalety</h1>
                     <div class="col-12 my-5">
                         <div class="row col-12 p-5">
-                            <div class="col-6 d-flex justify-content-center align-items-center flex-column">
+                            <div class="col-6 d-flex justify-content-center align-items-center flex-column advantage">
                                 <h3>Prostota</h3>
                                 Od użytkowników systemu nie wymaga się żadnej specjalistycznej wiedzy - panel administracyjny jest intuicyjny, a co za tym idzie - prosty w obsłudze.
                                 Łatwość w zarządzaniu stroną internetową jest dla nas priotytetem.
                             </div>
 
-                            <div class="col-6 d-flex justify-content-center align-items-center flex-column">
+                            <div class="col-6 d-flex justify-content-center align-items-center flex-column advantage">
                                 <h3>Wspierany projekt</h3>
                                 Nasz system jest ciągle wspierany oraz aktualizowany.
                             </div>
                         </div>
                         <div class="row col-12 px-5">
-                            <div class="col-6 d-flex justify-content-center align-items-center flex-column">
+                            <div class="col-6 d-flex justify-content-center align-items-center flex-column advantage">
                                 <h3>Pomoc techniczna</h3>
                                 coś tam jest team jest super
                             </div>
 
-                            <div class="col-6 d-flex justify-content-center align-items-center flex-column">
+                            <div class="col-6 d-flex justify-content-center align-items-center flex-column advantage">
                                 <h3>Bezpieczeństwo</h3>
                                 Program korzysta z wielu funkcjonalności zabezpieczających.
                             </div>
@@ -159,7 +172,7 @@
             </div>
             <div class="col-8 offset-3 p-5 block-foreground">
                 <div class="block-foreground">
-                    <section id="projekt">
+                    <section>
                         <h1>O projekcie</h1>
                         <div class="col-12 d-flex justify-content-center align-items-center my-5">
                             dlaczego powstał projekt
@@ -174,7 +187,7 @@
 
         <div class="block2-background">
             <div class="block2-foreground">
-                <section id="koszty" class="col-10 offset-1">
+                <section class="col-10 offset-1">
                     <h1>Koszty</h1>
                     <h5>Pierwszy miesiąc licencji jest zawsze bezpłatny, aby nasi klienci mogli przetestować system</h5>
                     <div class="col-12 d-flex justify-content-center my-4 flex-column">
@@ -220,5 +233,3 @@
 <script src="../../bs5/js/bootstrap.min.js"></script>
 </body>
 </html>
-<!--            <b>Witaj w głównym panelu systemu! Bardzo cieszymy się, że korzystasz z naszysz usług. Naszym priorytetem jest, aby PQCMS był najwydajniejszy,-->
-<!--            a jednocześnie spełniał wszystkie warunki bezpieczeństwa.</b> Tutaj jeszcze jakieś inne bzdury ładnie wyglądające.-->
