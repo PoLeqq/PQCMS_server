@@ -27,8 +27,7 @@ if($response["suc"] == 1)
     $_SESSION["pqcms-client-license-key"] = $_POST["pqcms-license-key"];
     $_SESSION["pqcms-client-logged"] = true;
 
-    require_once(dirname(__DIR__) . "/objects/Website.inc.php");
-    $_SESSION["pqcms-client-website-id"] = Website::getWebsiteIDByMatchingDomain("domain",$_POST["pqcms-domain"]);
+    $_SESSION["pqcms-client-website-id"] = $response["id"];
 
     $_SESSION["pqcms-initializer-success"] = "Pomyślnie zalogowano! Za chwilę nastąpi przekierowanie...";
     header("location: success/");
