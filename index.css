@@ -8,7 +8,7 @@
 	background-size: 400% 400%;
 	animation: block-background 30s ease-in-out infinite;
 	padding: 100px 0;
-	background: linear-gradient(135deg, #8a2be2, #793ee6, #00bfff, #8a2be2) no-repeat fixed;
+	background: linear-gradient(135deg, #8a2be2, #793ee6, #3b4cff, #8a2be2) no-repeat fixed;
 }
 
 .block-foreground {
