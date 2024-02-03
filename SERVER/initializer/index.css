@@ -23,7 +23,7 @@ form, div[class=result] {
     font-size: 20px;
 }
 
-legend{
+legend {
     float:none;
 }
 
@@ -33,7 +33,7 @@ fieldset {
 }
 
 input[type=text],
-input[type=password]{
+input[type=password] {
     border: #FF4500 solid 2px;
 }
 
@@ -43,33 +43,20 @@ input[type=password]:focus {
     outline: white 1px solid;
 }
 
-#password{
+#password {
     width: 85%;
 }
 
-div > img{
+div > img {
     width: 15%;
     height: 50px;
     cursor: pointer;
     margin-left: -5px;
-
     position: relative;
     top: -4px;
-
     border: #FF4500 solid 2px;
     border-left: none;
-
     transition: all 0.5s;
-}
-
-.hidePass{
-    content: url("../../PQCMS/images/hidePassword.svg");
-    background-color: #8A2BE2;
-}
-
-.showPass{
-    content: url("../../PQCMS/images/showPassword.svg");
-    background-color: #e9ecef;
 }
 
 @keyframes block-background {

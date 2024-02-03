@@ -1,0 +1,9 @@
+#site-container {
+    position: relative;
+    min-height: 100vh;
+}
+
+#main-link > img {
+    height: 50px;
+    font-size: 40px!important;
+}

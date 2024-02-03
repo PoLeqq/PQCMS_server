@@ -17,7 +17,7 @@ if(!isset($_SESSION["pqcms-initializer-success"])) {
     <link rel="icon" type="image/x-icon" href="../../../images/PQCMS.svg">
 
     <link rel="stylesheet" href="../../../bs5/css/bootstrap.min.css">
-    <link rel="stylesheet" href="../../default.css">
+    <link rel="stylesheet" href="../default.css">
     <link rel="stylesheet" href="../index.css">
     <link rel="stylesheet" href="success.css">
 </head>
@@ -35,7 +35,6 @@ if(!isset($_SESSION["pqcms-initializer-success"])) {
             echo $_SESSION["pqcms-initializer-success"];
             unset($_SESSION["pqcms-initializer-success"])
             ?>
-            Sukces
             <noscript>
                 <a href="https://poleq.pl/server/client/">Wykryto wyłączony JavaScript! Kliknij tutaj, aby przekierować.</a>
             </noscript>

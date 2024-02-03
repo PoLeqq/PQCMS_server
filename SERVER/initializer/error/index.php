@@ -16,7 +16,7 @@ if(!isset($_SESSION["pqcms-initializer-error"])) {
     <link rel="icon" type="image/x-icon" href="../../images/PQCMS.svg">
 
     <link rel="stylesheet" href="../../../bs5/css/bootstrap.min.css">
-    <link rel="stylesheet" href="../../../default.css">
+    <link rel="stylesheet" href="../default.css">
     <link rel="stylesheet" href="../index.css">
     <link rel="stylesheet" href="error.css">
 </head>
