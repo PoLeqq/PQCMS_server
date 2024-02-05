@@ -1,6 +1,7 @@
 <?php
 
 require_once(dirname(__DIR__,2)."/database/Connection.inc.php");
+require_once(dirname(__DIR__)."/Website.inc.php");
 class WebsiteRank
 {
     private int $id;
@@ -92,7 +93,7 @@ class WebsiteRank
         if(strlen($name) < 5 || strlen($name) > 30)
             return ["suc" => 0, "desc" => "Nazwa musi mieć od 5 do 30 znaków!"];
         if(preg_match("/^[a-z]+$/", $name) != 1)
-            return ["suc" => 0, "desc" => "Nazwa może składać się tylko z małych liter!"];
+            return ["suc" => 0, "desc" => "Nazwa może składać się tylko z małych liter (bez polskich znaków)!"];
         if(strlen($displayName) < 2 || strlen($displayName) > 30)
             return ["suc" => 0, "desc" => "Wyświetlana nazwa musi mieć od 2 do 30 znaków!"];
         require_once "WebsitePermissions.php";
