@@ -84,7 +84,7 @@ class WebsiteUser
         if(Validator::validate([$username],["s(5-30)"])["suc"] === 0)
             return ["suc" => 0, "desc" => "Login musi być napisem o długości 5-30 znaków!"];
 
-        return (preg_match("/^[a-z]+$/", $username) == 1) ? ["suc" => 1] : ["suc" => 0, "desc" => "Login może zawierać tylko małe litery!"];
+        return (preg_match("/^[a-z]+$/", $username) == 1) ? ["suc" => 1] : ["suc" => 0, "desc" => "Login może zawierać tylko małe litery a-z (bez polskich znaków)!"];
     }
 
     public static function validateNickname(/*string*/$nickname): array
@@ -97,7 +97,7 @@ class WebsiteUser
     {
         require_once(dirname(__DIR__,2)."/api/utils/validators/Validator.inc.php");
         if(Validator::validate([$email],["s(5-255)"])["suc"] === 0)
-            return ["suc" => 0, "desc" => "Email musi być napisem o długości 5-255 znaków!"];
+            return ["suc" => 0, "desc" => "E-mail musi być napisem o długości 5-255 znaków!"];
         return filter_var($email,FILTER_VALIDATE_EMAIL) ? ["suc" => 1] : ["suc" => 0, "desc" => "Podany e-mail jest niepoprawny!"];
     }
 
@@ -304,7 +304,7 @@ HTML,
             $stmtUsersResult = $stmtUsers->get_result();
 
             if($stmtUsersResult->num_rows == 0)
-                $resp = ["suc" => 0, "desc" => "Już istnieje użytkownik o takim loginie!"];
+                $resp = ["suc" => 0, "desc" => "Użytkownik o podanym loginie nie istnieje!"];
             else
             {
                 $userId = $stmtUsersResult->fetch_row()[0];
@@ -355,12 +355,14 @@ HTML,
                 $updateStmt->bind_param($paramsTypes,...$params);
                 $updateStmt->execute();
 
-                if($conn->errno === 0) $resp = ["suc" => 1, "desc" => "Edycja użytkownika powiodła się!"];
-                else $resp = ["suc" => 0, "desc" => "Błąd podczas edytowania użytkownika. Kod błędu: ".($conn->errno)."!"];
+                if($conn->errno === 0)
+                    $resp = ["suc" => 1, "desc" => "Edycja użytkownika powiodła się!"];
+                else
+                    $resp = ["suc" => 0, "desc" => "Błąd podczas edytowania użytkownika. Kod błędu: ".($conn->errno)."!"];
                 $conn->close();
             }
         }
-        else $resp = ["suc" => 0, "desc" => "Już istnieje użytkownik o takim loginie (administrator)!"];
+        else $resp = ["suc" => 0, "desc" => "Nie możesz edytować administratora!"];
 
         return $resp;
     }
