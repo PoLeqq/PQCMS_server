@@ -297,6 +297,7 @@ class AuthKey
                     WHERE id = ?");
         $stmt->bind_param("siii",$now,$logout,$invalid,$authKeyID);
         $stmt->execute();
+        $stmt->close();
         $conn->close();
         return ["suc" => 1, "desc" => "Sesja użytkownika została unieważniona!"];
     }
@@ -326,6 +327,38 @@ class AuthKey
 
         $conn->close();
         return $resp;
+    }
+
+    public static function getAuthKeyOwner(int $websiteId, string $authKey): array
+    {
+        $conn = Connection::getConnection();
+
+        $stmt = $conn->prepare("SELECT admin_id, user_id FROM websites_auth_keys
+                    WHERE logout = 0
+                      AND invalid = 0
+                    AND website_id = ?
+                    AND auth_key = ? 
+                    ORDER BY expired_time DESC
+                    LIMIT 1");
+        $stmt->bind_param("is",$websiteId,$authKey);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        if($result->num_rows == 0)
+            return ["suc" => 0, "desc" => "Niepoprawny klucz!"];
+
+        $row = $result->fetch_row();
+        if(is_null([$row[0]]))
+//            a - admin
+            $return = ["suc" => 1, "resp" => ["type" => "u", "id" => $row[1]]];
+        else
+//            u - user
+            $return = ["suc" => 1, "resp" => ["type" => "a", "id" => $row[0]]];
+
+        $result->close();
+        $stmt->close();
+        $conn->close();
+
+        return $return;
     }
 
     public static function isAdminAuthKey(int $websiteId, string $authKey): bool
