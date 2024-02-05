@@ -18,7 +18,7 @@ $apiFields = [
 ];
 $fields = [];
 $fieldValidators = [
-    "i(0-255)","i(0-1)",
+    "i(1-255)","i(0-1)",
     "i(60-3600)","i(0-1)"
 ];
 
@@ -49,32 +49,31 @@ $responseChanged = [];
 {
     if(!empty($_POST["login_count"]) || !empty($_POST["login_count_reset"]))
     {
-        if($website->hasPermission($_POST["client_ip"], $_POST["auth_key"], "pqcms.settings.login_count.set"))
+        if($website->hasPermission($_POST["client_ip"], $_POST["auth_key"], "pqcms.settings.logincount.set"))
         {
             if(!empty($_POST["login_count_reset"]))
                 $settings->setLoginAttempts(null);
             else
                 $settings->setLoginAttempts($_POST["login_count"]);
-            $responseChanged["login_count"] = 1;
+            $responseChanged[] = "login_count";
         }
-        else
-            $responseChanged["login_count"] = 0;
     }
 
     if(!empty($_POST["login_count"]) || !empty($_POST["login_count_reset"]))
     {
-        if($website->hasPermission($_POST["client_ip"], $_POST["auth_key"], "pqcms.settings.login_session_time.set"))
+        if($website->hasPermission($_POST["client_ip"], $_POST["auth_key"], "pqcms.settings.loginsessiontime.set"))
         {
             if(!empty($_POST["login_session_time_reset"]))
                 $settings->setLoginSessionTime(null);
             else
                 $settings->setLoginSessionTime($_POST["login_session_time"]);
-            $responseChanged["login_session_time"] = 1;
+            $responseChanged[] = "login_session_time";
         }
-        else
-            $responseChanged["login_session_time"] = 0;
     }
 }
 
-$response = ["suc" => 1, "desc" => "Zmieniono ustawienia strony!", "changed" => $responseChanged];
+if(empty($responseChanged))
+    $response = ["suc" => 0, "desc" => "Nie posiadasz uprawnień!"];
+else
+    $response = ["suc" => 1, "desc" => "Zmieniono ustawienia strony!", "changed" => $responseChanged];
 APIUtils::endAPIscript(basename(__FILE__, '.php'),$_POST,$response);

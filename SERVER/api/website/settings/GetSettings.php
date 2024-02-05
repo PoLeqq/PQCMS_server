@@ -13,12 +13,19 @@ $permsValues = [
     "loginsessiontime" => "login_session_time"
 ];
 
-$response["suc"] = 1;
 foreach($permsValues as $perm => $value)
 {
     if($website->hasPermission($_POST["client_ip"],$_POST["auth_key"],"pqcms.settings.system.$perm"))
         $response["resp"][$value] = $settings->unsafe_getField($value);
 }
+
+if(empty($response["resp"]))
+{
+    $response["suc"] = 0;
+    $response["desc"] = "Nie posiadasz uprawnień!";
+}
+else
+    $response["suc"] = 1;
 
 //$response["resp"] = [
 //    "login_attempts" => $settings->getLoginAttempts(),
