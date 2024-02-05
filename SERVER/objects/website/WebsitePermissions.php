@@ -260,8 +260,41 @@ class WebsitePermissions
             require_once(dirname(__DIR__)."/Website.inc.php");
             $website = new Website($websiteId);
 
-            foreach($website->getRanks() as $rank)
-                $perms[] = [
+            $ranks = $website->getRanks();
+            $users = $website->getUsers();
+
+            $newPerms = [];
+            foreach($perms as $perm)
+            {
+                $name = $perm["perm"];
+                $desc = $perm["description"];
+
+                if(str_contains($name,"(rank)"))
+                    foreach($ranks as $rank)
+                    {
+                        $newPerm = [
+                            "perm" => str_replace("(rank)",$rank["name"], $name),
+                            "description" => str_replace("(rank)", $rank["display_name"]." (${rank["name"]})",$desc)
+                        ];
+                        $newPerms[] = $newPerm;
+                    }
+                else if(str_contains($name,"(user)"))
+                    foreach($users as $user)
+                    {
+                        if(!isset($user["disabled"]))
+                            continue;
+                        $newPerm = [
+                            "perm" => str_replace("(user)",$user["username"], $name),
+                            "description" => str_replace("(user)",$user["nickname"]." (${user["username"]})",$desc)
+                        ];
+                        $newPerms[] = $newPerm;
+                    }
+                else
+                    $newPerms[] = $perm;
+            }
+
+            foreach($ranks as $rank)
+                $newPerms[] = [
                     "perm" => "pqcms.rank.".$rank["name"],
                     "description" => "Ranga: ${rank["display_name"]} (${rank["name"]})"
                 ];
@@ -275,6 +308,7 @@ class WebsitePermissions
 //                    "desc" =>
 //                ];
 //            }
+            return $newPerms;
         }
         return $perms;
     }
