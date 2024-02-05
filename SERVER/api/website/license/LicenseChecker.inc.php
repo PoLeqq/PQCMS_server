@@ -6,11 +6,14 @@ function getTries($ip): int
     $conn = Connection::getConnection();
 
     date_default_timezone_set("Europe/Warsaw");
-    $date = date("Y-m-d");
+    $date = date("Y-m-d")."%";
 
-    $result = $conn->query("SELECT date FROM check_license_history WHERE ip='$ip' AND date LIKE '$date%' AND successful=0 AND description != 'To IP jest zablokowane!'");
+    $stmt = $conn->prepare("SELECT date FROM check_license_history WHERE ip= ? AND date LIKE ? AND successful=0 AND description != 'To IP jest zablokowane!'");
+    $stmt->bind_param("ss",$ip,$date);
+    $stmt->execute();
+
 //    ilość dozwolonych prób do weryfikacji licensji na dzień (aktualnie 10)
-    $res = 10 - $result->num_rows;
+    $res = 10 - $stmt->get_result()->num_rows;
     $conn->close();
     return $res;
 }
@@ -20,8 +23,11 @@ function isBanned($ip): bool
     if(getTries($ip) <= 0) return true;
 
     $conn = Connection::getConnection();
-    $result = $conn->query("SELECT * FROM check_license_banned_ips WHERE ip='$ip'");
-    $banned = $result->num_rows >= 1;
+    $stmt = $conn->prepare("SELECT * FROM check_license_banned_ips WHERE ip = ?");
+    $stmt->bind_param("s",$ip);
+    $stmt->execute();
+
+    $banned = $stmt->get_result()->num_rows >= 1;
 
     $conn->close();
 
