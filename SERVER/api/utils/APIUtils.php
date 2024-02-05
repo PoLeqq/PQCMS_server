@@ -165,4 +165,24 @@ class APIUtils
 
         die(json_encode($response,JSON_UNESCAPED_UNICODE));
     }
+
+    public static function isAPIenabled(string $apiName): bool
+    {
+        require_once(dirname(__DIR__,2)."/database/Connection.inc.php");
+        $conn = Connection::getConnection();
+        $stmt = $conn->prepare("SELECT enabled FROM websites_api_description WHERE name = ?");
+        $stmt->bind_param("s",$apiName);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        if($result->num_rows == 0)
+            $response = false;
+        else
+            $response = $result->fetch_row()[0];
+
+        $result->close();
+        $stmt->close();
+        $conn->close();
+        return $response;
+    }
 }
