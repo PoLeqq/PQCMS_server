@@ -127,10 +127,24 @@ class WebsiteUser
 
     public static function addUser(int $websiteId, string $username, string $nickname, ?string $email, string $password, array $perms = [], bool $disabled = false): array
     {
-//        Walidacja długości
-        $paramsValidator = self::validateParamsForUser($username, $nickname, $password, $perms);
-        if($paramsValidator["suc"] == 0)
-            return $paramsValidator;
+        $validator = self::validateUsername($username);
+        if($validator["suc"] === 0)
+            return $validator;
+
+        $validator = self::validateNickname($nickname);
+        if($validator["suc"] === 0)
+            return $validator;
+
+        if(!empty($email))
+        {
+            $validator = self::validateEmail($email);
+            if($validator["suc"] === 0)
+                return $validator;
+        } else $email = null;
+
+        $validator = self::validatePassword($password);
+        if($validator["suc"] === 0)
+            return $validator;
 
 //        Walidacja - anti SQL injection
         require_once(dirname(__DIR__,2)."/utils/SQLSecurity.php");
