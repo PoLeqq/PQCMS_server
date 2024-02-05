@@ -1,7 +1,7 @@
 <?php
 
 require_once "PermsCommonCodeAPI.inc.php";
-verifyPosts();
+verifyPosts(basename(__FILE__, '.php'));
 
 require_once(dirname(__DIR__, 3) . "/objects/Website.inc.php");
 $website = APIUtils::getWebsite($_SERVER["REMOTE_ADDR"],$_POST);
