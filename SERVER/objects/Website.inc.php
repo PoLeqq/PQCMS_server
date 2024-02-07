@@ -118,7 +118,6 @@ class Website
     public function editUser(string $username, ?string $nickname, ?string $email, ?string $password, ?array $perms, ?bool $disabled): array
     {
         require_once(dirname(__DIR__) . "/objects/website/WebsiteUser.inc.php");
-//        var_dump($email);
         return WebsiteUser::editUser($this->id, $username, $nickname, $email, $password, $perms, $disabled);
     }
 
@@ -545,7 +544,6 @@ class Website
             $this->logUserLogin($ip, $username, $password, $result["proper_data"], $result["suc"],$result["desc"]);
         }
 
-        $query->close();
         $conn->close();
         return $result;
     }
