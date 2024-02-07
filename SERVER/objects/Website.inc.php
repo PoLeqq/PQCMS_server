@@ -141,10 +141,10 @@ class Website
         WebsiteUser::deleteUser($this->id, $name);
     }
 
-    public function deleteRank(string $name): void
+    public function deleteRank(string $name): array
     {
-        require_once(dirname(__DIR__) . "/objects/website/WebsiteUser.inc.php");
-        WebsiteRank::deleteRank($this, $name);
+        require_once(dirname(__DIR__) . "/objects/website/WebsiteRank.inc.php");
+        return WebsiteRank::deleteRank($this, $name);
     }
 
     public function addRank(string $name, string $displayName, array $perms, int $priority, ?int $parentId): array
