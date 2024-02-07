@@ -231,7 +231,7 @@ class WebsiteUser
         require_once "ResetPasswordToken.php";
         $token = ResetPasswordToken::generateToken($user["id"]);
 
-        $link = "http://localhost/pqcms/server/client/account/ResetPassword.php?token=$token";
+        $link = "https://poleq.pl/server/client/account/ResetPassword.php?token=$token";
 
         require_once(dirname(__DIR__)."/Mailer.php");
         Mailer::sendMail($user["email"],'PQCMS - Twoje hasło zostało zresetowane!',
@@ -239,13 +239,6 @@ class WebsiteUser
 <!DOCTYPE html>
 <html lang="pl">
     <head>
-        <style>
-            .body {
-                background: linear-gradient(135deg, #8a2be2, #793ee6 60%, #00bfff 120%);
-                background-size: 400% 400%;
-                color: white;
-            }
-        </style>
     </head>
     <body>
         <div class="body">
