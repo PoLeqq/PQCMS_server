@@ -274,7 +274,7 @@ class WebsitePermissions
                     {
                         $newPerm = [
                             "perm" => str_replace("(rank)",$rank["name"], $name),
-                            "description" => str_replace("(rank)", $rank["display_name"]." (${rank["name"]})",$desc)
+                            "description" => str_replace("(rank)", "\"${rank["display_name"]} (${rank["name"]})\"",$desc)
                         ];
                         $newPerms[] = $newPerm;
                     }
@@ -285,7 +285,7 @@ class WebsitePermissions
                             continue;
                         $newPerm = [
                             "perm" => str_replace("(user)",$user["username"], $name),
-                            "description" => str_replace("(user)",$user["nickname"]." (${user["username"]})",$desc)
+                            "description" => str_replace("(user)","\"${user["nickname"]} (${user["username"]}\")",$desc)
                         ];
                         $newPerms[] = $newPerm;
                     }
@@ -296,7 +296,7 @@ class WebsitePermissions
             foreach($ranks as $rank)
                 $newPerms[] = [
                     "perm" => "pqcms.rank.".$rank["name"],
-                    "description" => "Ranga: ${rank["display_name"]} (${rank["name"]})"
+                    "description" => "Ranga: \"${rank["display_name"]} (${rank["name"]})\""
                 ];
 //            $userPerms = [
 //                "pqcms.hr"
