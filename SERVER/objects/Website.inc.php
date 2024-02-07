@@ -175,11 +175,14 @@ class Website
     public function getRanksIds(): array
     {
         $conn = Connection::getConnection();
-        $query = $conn->query("SELECT id FROM websites_ranks WHERE website_id = $this->id");
+        $stmt = $conn->prepare("SELECT id FROM websites_ranks WHERE website_id = ? AND deleted = 0");
+        $stmt->bind_param("i",$this->id);
+        $stmt->execute();
+        $result = $stmt->get_result();
 
-        $result = [];
-        while($row = $query->fetch_row())
-            $result[] = $row[0];
+        $response = [];
+        while($row = $result->fetch_row())
+            $response[] = $row[0];
 
         $stmt->close();
         $conn->close();
