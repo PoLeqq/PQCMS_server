@@ -220,9 +220,9 @@ class Website
             $result[] = $userRow;
         }
 
-        $query = $conn->query("SELECT username, nickname FROM websites_admins WHERE website_id = $this->id");
+        $query = $conn->query("SELECT username, email, nickname FROM websites_admins WHERE website_id = $this->id");
         if ($row = $query->fetch_row())
-            $result[] = ["username" => $row[0], "nickname" => $row[1]];
+            $result[] = ["username" => $row[0], "email" => $row[1], "nickname" => $row[2]];
 
         $query->close();
         $conn->close();
