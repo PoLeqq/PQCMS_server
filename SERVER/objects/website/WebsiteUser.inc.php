@@ -281,7 +281,7 @@ HTML,
             if($validator["suc"] === 0)
                 return $validator;
         }
-        if(!is_null($email))
+        if(!is_null($email) && $email != "")
         {
             $validator = self::validateEmail($email);
             if($validator["suc"] === 0)
@@ -328,6 +328,8 @@ HTML,
                 }
                 if(!is_null($email))
                 {
+                    if($email === "")
+                        $email = null;
                     $sql[] = " email = ?";
                     $params[] = $email;
                     $paramsTypes .= "s";
@@ -341,7 +343,7 @@ HTML,
                 if(!is_null($perms))
                 {
                     $sql[] = " perms = ?";
-                    $params[] = $perms;
+                    $params[] = json_encode($perms);
                     $paramsTypes .= "s";
                 }
                 if(!is_null($disabled))
@@ -380,7 +382,8 @@ HTML,
         $stmt = $conn->prepare("UPDATE websites_users 
             SET deleted = 1 
             WHERE website_id = ? 
-              AND username = ?");
+              AND username = ?
+              AND deleted = 0");
         $stmt->bind_param("is",$websiteId,$username);
         $stmt->execute();
 
