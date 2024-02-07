@@ -96,6 +96,10 @@
                         <a class="nav-link" href="#koszty">Koszty</a>
                     </li>
 
+                    <li class="nav-item link-nav">
+                        <a class="nav-link" href="#zamowienie">Zamówienie</a>
+                    </li>
+
                 </ul>
             </div>
         </div>
@@ -109,12 +113,16 @@
                     <p>
                         PQCMS to nowoczesny system CMS (Content Management System) stworzony z myślą o łatwym zarządzaniu treścią na stronach internetowych.
                         Jego głównym celem jest umożliwienie użytkownikom, w tym pracownikom, wygodnej i bezpiecznej edycji tekstów na stronie oraz zarządzanie
-                        rangami i uprawnieniami dostępu.
+                        rangami i uprawnieniami dostępu. Dzięki temu nie tylko Ty, lecz ktoś z Twoich bliskich (czy pracowników)
+                        będzie mógł w stanie edytować stronę bez obawy o utratę danych.
+                    </p>
+                    <p>
+                        Program oferuje oczywiście wiele, wiele więcej...
                     </p>
                     <img src="images/panel.png" alt="panel" width="800" height="auto">
                 </section>
             </div>
-            <div class="wave">
+            <div class="wave multiple-wave">
                 <img src="images/wave1.svg" alt="fala">
             </div>
         </div>
@@ -163,18 +171,27 @@
 
                             <div class="col-6 d-flex justify-content-center align-items-center flex-column">
                                 <h3>Wspierany projekt</h3>
-                                Nasz system jest ciągle wspierany oraz aktualizowany.
+                                System PQCMS jest na bieżąco aktualizowany. Wszelkie poprawki tworzone są z myślą
+                                o wygodzie użytkowania oraz o bezpieczeństwie systemu. Program jest stworzony dla klientów,
+                                a więc wysłuchujemy ich oczekiwań! W miarę możliwości staramy się wdrażać wasze pomysły,
+                                aby obsługa panelu PQCMS była przyjemna oraz nie stanowiła wielkich kłopotów.
                             </div>
                         </div>
                         <div class="row col-12 px-5">
                             <div class="col-6 d-flex justify-content-center align-items-center flex-column">
                                 <h3>Pomoc techniczna</h3>
-                                coś tam jest team jest super
+                                PQCMS oferuje również wsparcie techniczne - jeżeli nie będziesz w stanie czegoś zrobić,
+                                lub czegoś nie będziesz rozumieć (co jest zrozumiałe!), jesteśmy otwarci!
+                                Można do nas śmiało pisać o pomoc! Postaramy się, aby problem został jak najszybciej
+                                rozwiązany.
                             </div>
 
                             <div class="col-6 d-flex justify-content-center align-items-center flex-column">
                                 <h3>Bezpieczeństwo</h3>
-                                Program korzysta z wielu funkcjonalności zabezpieczających.
+                                Duży nacisk stawiamy również na bezpieczeństwo programu. Cały czas trwają prace mające
+                                na celu symulację pracę hakera. Gdy wyszukamy luki w programie, od razu je zabezpieczamy!
+                                Jest to priorytetowa sprawa, dlatego w takim wypadku mniej ważne poprawki będą musiały
+                                poczekać z wdrożeniem.
                             </div>
                         </div>
                     </div>
@@ -183,16 +200,50 @@
         </div>
 
         <div class="block-background">
-            <div class="wave_reversed">
+            <div class="wave_reversed multiple-wave-reversed">
                 <img src="images/wave2.svg" alt="fala">
             </div>
             <div class="col-8 offset-3 p-5 block-foreground">
                 <div class="block-foreground">
                     <section id="projekt">
                         <h1>O projekcie</h1>
-                        <div class="col-12 d-flex justify-content-center align-items-center my-5">
-                            dlaczego powstał projekt
-                        </div>
+                        <article class="col-12 d-flex flex-column my-5">
+                            <header>Dlaczego powstał projekt?</header>
+                            <p>
+                                PQCMS powstał z myślą o osobach, które nie mają specjalistycznej wiedzy informatycznej, lub
+                                dla tych, którzy uznali, że ręczna zmiana tekstu na stronie nie jest zbyt efektywna.
+                                Przywróciliśmy BBCode, dzięki któremu można formatować tekst w dowolnej formie! Kursywa,
+                                paragrafy, listy, nagłówki, a nawet filmik YouTube! Oczywiście jest tego więcej!
+                            </p>
+                        </article>
+                        <article class="col-12 d-flex flex-column my-5">
+                            <header>Co oferuje panel?</header>
+                            <p>
+                                W panelu możemy znaleźć kilka zakładek, są to aktualnie:
+                            </p>
+                            <ul class="d-flex flex-column gap-2">
+                                <li>
+                                    <b>Strona</b> - zawiera stronę klienta, gdzie można edytować tekst.
+                                </li>
+                                <li>
+                                    <b>HR</b> - jest to dział, w którym można dodawać, edytować użytkowników oraz
+                                    rangi, sprawdzać uprawnienia, dostosowywać je do potrzeb.
+                                </li>
+                                <li>
+                                    <b>Ustawienia</b> - zawiera ustawienia takie jak: dane do bazy danych, ustawienia
+                                    systemowe, dane do licencji PQCMS (oraz czas jej wygaśnięcia)
+                                </li>
+                                <li>
+                                    <b>Twoje dane</b> - dane konta, którego aktualnie używasz. Dozwolona jest tam również
+                                    ich edycja (jeśli tylko masz odpowiednie uprawnienia)
+                                </li>
+                                <li>
+                                    <b>Formularze</b> - dane z formularzy, które są na stronie klienta. Wszystkie
+                                    informacje znajdziesz w jednym miejscu!
+                                </li>
+                            </ul>
+                        </article>
+
                     </section>
                 </div>
             </div>
@@ -203,7 +254,7 @@
 
         <div class="block2-background">
             <div class="block2-foreground">
-                <section id="koszty" class="col-10 offset-1">
+                <section id="koszty" class="col-10 offset-1 my-5 pb-5">
                     <h1>Koszty</h1>
                     <h5>Pierwszy miesiąc licencji jest zawsze bezpłatny, aby nasi klienci mogli przetestować system</h5>
                     <div class="col-12 d-flex justify-content-center my-4 flex-column">
@@ -236,6 +287,56 @@
 
                         </ul>
                     </div>
+                    Dalej nie możesz się zdecydować, czy uwzględnić w koszta system PQCMS? Poproś administratora o
+                    wersję demo!
+                </section>
+
+                <section id="zamowienie" class="col-10 offset-1 my-5 pt-5">
+                    <form id="save-contact-form" method="post" action="forms/contact/SaveContact.php" class="col-10 offset-1 d-flex flex-column gap-3 my-3 p-5">
+                        <h1>Zamówienie</h1>
+                        Jeżeli chcesz prosić o wykonanie strony, pozostaw kontakt!
+
+                        <label>
+                            Imię
+                            <input name="name" placeholder="Imię"/>
+                        </label>
+                        <label>
+                            Nazwisko
+                            <input name="surname" placeholder="Nazwisko"/>
+                        </label>
+                        <label>
+                            Numer telefonu
+                            <input name="phone" placeholder="nr tel."/>
+                        </label>
+
+                        <label>
+                            PQCMS
+                            <select name="pqcms">
+                                <option value="1">Chcę system PQCMS</option>
+                                <option value="0">Nie chcę systemu PQCMS</option>
+                            </select>
+                        </label>
+
+                        <label>
+                            Stan strony:
+                            <select name="state">
+                                <option disabled selected>(Proszę wybrać)</option>
+                                <option value="1">Mam już stronę, chcę ją tylko połączyć z PQCMS</option>
+                                <option value="2">Mam szablon strony, potrzebuję tylko jej wykonanie</option>
+                                <option value="3">Wiem mniej więcej jak ma wyglądać strona</option>
+                                <option value="4">Nie zastanawiałem(am) się, jaka będzie strona</option>
+                                <option value="0">Inny (proszę opisać niżej)</option>
+                            </select>
+                        </label>
+
+                        <label>
+                            Szczegółowe informacje:
+                            <textarea name="message"></textarea>
+                        </label>
+
+                        <input type="submit" value="Prześlij" class="mt-5"/>
+
+                    </form>
                 </section>
             </div>
         </div>
