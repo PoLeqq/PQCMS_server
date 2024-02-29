@@ -95,6 +95,8 @@ class APIUtils
             $domain = "localhost.localhost";
         else
             $domain = $post["domain"];
+
+        $domain = (str_starts_with($domain, "www.")) ? substr($domain, 4) : $domain;
         $idArray = Website::getWebsitesIDArrayByMatchingDomain($domain);
         if(empty($idArray))
             return null;
