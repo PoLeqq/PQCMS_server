@@ -154,7 +154,8 @@ class APIUtils
     #[NoReturn] public static function endAPIscript(string $apiName, array $post, array $response): void
     {
         date_default_timezone_set('Europe/Warsaw');
-        $date = date("Y-m-d H:i:s.u", time());
+        $now = DateTime::createFromFormat('U.u', microtime(true));
+        $date = $now->format("Y-m-d H:i:s.u");
         $jsonPost = json_encode($post,JSON_UNESCAPED_UNICODE);
         $jsonResponse = json_encode($response,JSON_UNESCAPED_UNICODE);
 
