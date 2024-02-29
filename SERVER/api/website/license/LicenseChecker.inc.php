@@ -116,15 +116,18 @@ function checkLicense($remoteAddr, $httpReferer, $domain, $login, $license_key):
     {
         $website = new Website($websiteID);
 
+        if($website->isExpired())
+            $website->tryRenewLicense();
+
         if($website->getLogin() != $login ||
             $website->getLicenseKey() != $license_key ||
             $website->isBlocked() ||
             $website->isExpired())
         {
-            if($website->getLogin() != $login)                $error[] = ["s" => false, "d" => "Niepoprawny login"];
-            elseif($website->getLicenseKey() != $license_key) $error[] = ["s" => false, "d" => "Niepoprawny klucz"];
-            elseif($website->isBlocked())                     $error[] = ["s" => true, "d" => "Strona zablokowana"];
-            elseif($website->isExpired())                     $error[] = ["s" => true, "d" => "Licencja wygasła"];
+            if($website->getLogin() != $login)                $error = ["s" => false, "d" => "Niepoprawny login"];
+            elseif($website->getLicenseKey() != $license_key) $error = ["s" => false, "d" => "Niepoprawny klucz"];
+            elseif($website->isBlocked())                     $error = ["s" => true, "d" => "Strona zablokowana"];
+            elseif($website->isExpired())                     $error = ["s" => true, "d" => "Licencja wygasła"];
 
 //            addCheckLicenseHistory($remoteAddr, $requestDomain, $domain, $login, $license_key, false, $error["d"]);
         }
@@ -140,10 +143,17 @@ function checkLicense($remoteAddr, $httpReferer, $domain, $login, $license_key):
 
     if($finalError && !empty($error))
     {
-        addCheckLicenseHistory($remoteAddr, $requestDomain, $domain, $login, $license_key, false, $error[0]["d"]);
+        addCheckLicenseHistory($remoteAddr, $requestDomain, $domain, $login, $license_key, false, $error["d"]);
 //        for($i = 1; $i < count($error); $i++)
 //            addCheckLicenseHistory($remoteAddr, $requestDomain, $domain, $login, $license_key, NULL, $error[$i]["d"]);
-        return ["suc" => 0, "desc" => "Autoryzacja nie powiodła się.", "id" => $website->getId()];
+
+
+//        var_dump($error);
+        if($error["s"])
+            return (["suc" => 0, "desc" => "Autoryzacja nie powiodła się. ${error["d"]}.", "tries_left" => getTries($remoteAddr)]);
+        else
+            return (["suc" => 0, "desc" => "Autoryzacja nie powiodła się.", "tries_left" => getTries($remoteAddr)]);
+//        return ["suc" => 0, "desc" => "Autoryzacja nie powiodła się.", "id" => $website->getId()];
     }
 
 // Jeżeli żadne z ID nie spowodowało przerwania autoryzacji, dodaj historię i zwróć sukces.
