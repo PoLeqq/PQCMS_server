@@ -116,9 +116,6 @@ function checkLicense($remoteAddr, $httpReferer, $domain, $login, $license_key):
     {
         $website = new Website($websiteID);
 
-        if($website->isExpired())
-            $website->tryRenewLicense();
-
         if($website->getLogin() != $login ||
             $website->getLicenseKey() != $license_key ||
             $website->isBlocked() ||
@@ -127,7 +124,12 @@ function checkLicense($remoteAddr, $httpReferer, $domain, $login, $license_key):
             if($website->getLogin() != $login)                $error = ["s" => false, "d" => "Niepoprawny login"];
             elseif($website->getLicenseKey() != $license_key) $error = ["s" => false, "d" => "Niepoprawny klucz"];
             elseif($website->isBlocked())                     $error = ["s" => true, "d" => "Strona zablokowana"];
-            elseif($website->isExpired())                     $error = ["s" => true, "d" => "Licencja wygasła"];
+            else
+            {
+                if($website->isExpired())
+                    $website->tryRenewLicense();
+                if($website->isExpired())                     $error = ["s" => true, "d" => "Licencja wygasła"];
+            }
 
 //            addCheckLicenseHistory($remoteAddr, $requestDomain, $domain, $login, $license_key, false, $error["d"]);
         }
