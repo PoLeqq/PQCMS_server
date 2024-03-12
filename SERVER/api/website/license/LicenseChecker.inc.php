@@ -141,7 +141,12 @@ function checkLicense($remoteAddr, $httpReferer, $domain, $login, $license_key):
     }
 
     if(is_null($website))
+    {
+        $er = $error["d"] ?? "nullerror";
+        addCheckLicenseHistory($remoteAddr, $requestDomain, $domain, $login, $license_key, false, "\$website is null ".basename(__FILE__).":".__LINE__.". $er");
         return (["suc" => 0, "desc" => "Autoryzacja nie powiodła się.", "tries_left" => getTries($remoteAddr)]);
+    }
+
 
     if($finalError && !empty($error))
     {
