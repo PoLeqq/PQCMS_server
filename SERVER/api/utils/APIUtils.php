@@ -30,9 +30,15 @@ class APIUtils
 
 //        Różne "sprawdzacze"
         $website = self::getWebsite($remoteAddr,$post);
-        if(is_null($website) || !$website->doesExists())
+        if(is_null($website))
         {
-            $response = ["suc" => 0, "desc" => "Nie znaleziono strony o podanej domenie!".var_export($post["domain"],true)];
+            $response = ["suc" => 0, "desc" => "Strona o podanej domenie nie istnieje! (".var_export($post["domain"],true).")"];
+            APIUtils::endAPIscript($apiName, $_POST, $response);
+        }
+
+        if(!$website->doesExists())
+        {
+            $response = ["suc" => 0, "desc" => "Nie znaleziono strony o podanej domenie! (".var_export($post["domain"],true).")"];
             APIUtils::endAPIscript($apiName, $_POST, $response);
         }
 
@@ -81,6 +87,13 @@ class APIUtils
             APIUtils::endAPIscript($apiName, $_POST, $response);
         }
     }
+
+//    public static function getUser(string $remoteAddr, array $post): array
+//    {
+//        $website = self::getSafeWebsite($remoteAddr,$post);
+//        require_once(dirname(__DIR__,2)."/objects/website/AuthKey.inc.php");
+//        return AuthKey::getAuthKeyOwner($website->getId(),$post["auth_key"]);
+//    }
 
     /**
      * Funkcja zwraca Website. Jeżeli validatePost zwróci wynik pozytywny, funkcja ta na pewno zwróci wartość, która nie
