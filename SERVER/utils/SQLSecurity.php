@@ -24,6 +24,8 @@ class SQLSecurity
         return $contains;
     }
 
+//    public static function checkValidCharacters($string,)
+
     public static function generateResponseForAPI(array $doesStringContainsResponse, string $fieldName): array
     {
         if(sizeof($doesStringContainsResponse) === 0)
