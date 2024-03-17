@@ -4,6 +4,8 @@ require_once(dirname(__DIR__)."/database/Connection.inc.php");
 
 class Website
 {
+    public static float $licensePrice = 50;
+
     protected int $id;
 
     public function __construct(int $id)
@@ -57,6 +59,84 @@ class Website
 //        if($nowTime >= $licenseTime)
 //            return true;
 //        return false;
+    }
+
+    /**
+     * Funkcja zwraca, czy licencja na następny miesiąc może być opłacona
+     * @return bool true, gdy licencja może być odnowiona (na nast. raz)
+     */
+    public function isLicenseRenewable(): bool
+    {
+        $conn = Connection::getConnection();
+        $stmt = $conn->prepare("SELECT id, money FROM websites_admins WHERE website_id = ?");
+        $stmt->bind_param("i",$this->id);
+        $stmt->execute();
+
+        $result = $stmt->get_result();
+        if($result->num_rows == 0)
+            $canAfford = false;
+        else
+        {
+            $admin = $result->fetch_assoc();
+            $canAfford = $admin["money"] >= 50;
+        }
+        $result->close();
+        $stmt->close();
+        $conn->close();
+
+        return $canAfford;
+    }
+
+    /**
+     * Funkcja próbuje opłacić licencję, jeśli ta wygasła.
+     * @return bool true, gdy odnowi licencję. False, gdy admin nie ma wystarczająco pieniędzy (lub jeśli licencja jest ważna)
+     */
+    public function tryRenewLicense(): bool
+    {
+        $conn = Connection::getConnection();
+        $stmt = $conn->prepare("SELECT id, money FROM websites_admins WHERE website_id = ?");
+        $stmt->bind_param("i",$this->id);
+        $stmt->execute();
+
+        $result = $stmt->get_result();
+        if($result->num_rows == 0)
+            $canAfford = false;
+        else
+        {
+            $admin = $result->fetch_assoc();
+            $canAfford = $admin["money"] >= 50;
+        }
+        $result->close();
+        $stmt->close();
+
+
+        if($canAfford)
+        {
+//            odjęcie kaski od konta admina
+            $stmt = $conn->prepare("UPDATE websites_admins SET money = ? WHERE id = ?");
+            $money = $admin["money"] - Website::$licensePrice;
+            $stmt->bind_param("ii",$money,$admin["id"]);
+            $stmt->execute();
+            $stmt->close();
+
+//            zapisanie do logów odświeżenia licencji
+            date_default_timezone_set('Europe/Warsaw');
+            $date = date("Y-m-d H:i:s");
+            $stmt = $conn->prepare("INSERT INTO websites_license_renews VALUES(null,?,?,?)");
+            $stmt->bind_param("isi",$this->id,$date,Website::$licensePrice);
+            $stmt->execute();
+            $stmt->close();
+
+            $licenseExpirationDate = date("Y-m-d H:i", strtotime("+30 days"));
+            $stmt = $conn->prepare("UPDATE websites SET license_expiration = ? WHERE id = ?");
+            $stmt->bind_param("si",$licenseExpirationDate,$this->id);
+            $stmt->execute();
+            $stmt->close();
+        }
+
+        $conn->close();
+
+        return $canAfford;
     }
 
     public function doesExists(): bool
