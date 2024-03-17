@@ -39,8 +39,9 @@
         }
 
         .tooltip .tooltiptext {
+            display: none;
             opacity: 0;
-            width: clamp(100px, 300px, 300px);
+            width: clamp(100px, 300px, 30vw);
             background-color: black;
             color: #fff;
             text-align: center;
@@ -50,10 +51,11 @@
             transition: .3s;
 
             position: absolute;
-            z-index: 1;
+            z-index: 9999;
         }
 
         .tooltip:hover .tooltiptext {
+            display: block;
             opacity: 1;
             transition: .1s;
         }
@@ -70,7 +72,7 @@
 
     <nav class="navbar navbar-expand-lg navbar-dark">
 
-        <div class="container-fluid px-5">
+        <div class="container-fluid px-3 px-lg-5">
 
             <a id="main-link" class="navbar-brand fs-2 link-nav" href="#">
                 PQCMS
@@ -107,7 +109,7 @@
 
     <div id="site">
         <div id="start" class="block-background">
-            <div class="col-8 offset-3 p-5 block-foreground">
+            <div class="col-10 offset-1 col-lg-8 offset-lg-3 p-5 block-foreground">
                 <section>
                     <h1 class="mb-4">Poznaj PQCMS!</h1>
                     <p>
@@ -119,57 +121,26 @@
                     <p>
                         Program oferuje oczywiście wiele, wiele więcej...
                     </p>
-                    <img src="images/panel.png" alt="panel" width="800" height="auto">
+                    <img src="images/panel.png" alt="panel" class="img-fluid">
                 </section>
             </div>
             <div class="wave multiple-wave">
                 <img src="images/wave1.svg" alt="fala">
             </div>
         </div>
-
-        <!--            <div class="block-background p-5" id="projekt">-->
-        <!--                <div class="block-foreground col-8 offset-3 p-5">-->
-        <!--                    <section>-->
-        <!--                        <h1 class="mb-4">Poznaj PQCMS</h1>-->
-        <!--                            <p>-->
-        <!--                                PQCMS to nowoczesny system CMS (Content Management System) stworzony z myślą o łatwym zarządzaniu treścią na stronach internetowych.-->
-        <!--                                Jego głównym celem jest umożliwienie użytkownikom, w tym pracownikom, wygodnej i bezpiecznej edycji tekstów na stronie oraz zarządzanie-->
-        <!--                                rangami i uprawnieniami dostępu.-->
-        <!--                            </p>-->
-        <!--                            <p>-->
-        <!--                                Jednym z głównych atutów PQCMS jest intuicyjny interfejs, który umożliwia łatwą edycję treści. Użytkownicy, którzy mają odpowiednie-->
-        <!--                                uprawnienia, mogą modyfikować teksty na stronie. Dzięki prostemu interfejsowi nie jest wymagana duża wiedza techniczna, aby korzystać z systemu.-->
-        <!--                            </p>-->
-        <!--                            <p>-->
-        <!--                                PQCMS umożliwia także dodawanie rang, coś w tylu stanowisk pracy. Można zdefiniować różne rangi, takie jak administrator, zarządca treści.-->
-        <!--                                Każda ranga ma określone uprawnienia, które można dostosować do potrzeb. Na przykład, administrator ma pełny dostęp do wszystkich funkcji systemu,-->
-        <!--                                zarządca treści ma uprawnienia do edycji treści.-->
-        <!--                            </p>-->
-        <!--                            <p>-->
-        <!--                                Ponadto PQCMS umożliwia tworzenie i zarządzanie użytkownikami. Można dodawać nowych pracowników do systemu i przypisywać im odpowiednie rangi-->
-        <!--                                oraz uprawnienia dostępu. Dzięki temu można precyzyjnie kontrolować, kto ma dostęp do poszczególnych treści i funkcji systemu.-->
-        <!--                            </p>-->
-        <!--                            <p>-->
-        <!--                                Ważnym aspektem PQCMS jest również niezawodność. System ten został zaprojektowany z myślą o stabilności i wydajności.-->
-        <!--                                Program wykorzystuje zaawansowane technologie, które minimalizują ryzyko awarii i zapewniają ciągłość działania.-->
-        <!--                                Regularne aktualizacje i wsparcie techniczne są również dostępne, aby zapewnić optymalne działanie systemu.-->
-        <!--                            </p>-->
-        <!--                    </section>-->
-        <!--                </div>-->
-        <!--            </div>-->
         <div class="block2-background">
             <div class="block2-foreground">
                 <section id="zalety" class="d-flex flex-column justify-content-center align-items-center">
                     <h1>Zalety</h1>
-                    <div class="col-12 my-5">
+                    <div class="col-12">
                         <div class="row col-12 p-5">
-                            <div class="col-6 d-flex justify-content-center align-items-center flex-column">
+                            <div class="col-12 my-3 col-md-6 d-flex justify-content-center align-items-center flex-column">
                                 <h3>Prostota</h3>
                                 Od użytkowników systemu nie wymaga się żadnej specjalistycznej wiedzy - panel administracyjny jest intuicyjny, a co za tym idzie - prosty w obsłudze.
                                 Łatwość w zarządzaniu stroną internetową jest dla nas priotytetem.
                             </div>
 
-                            <div class="col-6 d-flex justify-content-center align-items-center flex-column">
+                            <div class="col-12 my-3 col-md-6 d-flex justify-content-center align-items-center flex-column">
                                 <h3>Wspierany projekt</h3>
                                 System PQCMS jest na bieżąco aktualizowany. Wszelkie poprawki tworzone są z myślą
                                 o wygodzie użytkowania oraz o bezpieczeństwie systemu. Program jest stworzony dla klientów,
@@ -178,7 +149,7 @@
                             </div>
                         </div>
                         <div class="row col-12 px-5">
-                            <div class="col-6 d-flex justify-content-center align-items-center flex-column">
+                            <div class="col-12 my-3 col-md-6 d-flex justify-content-center align-items-center flex-column">
                                 <h3>Pomoc techniczna</h3>
                                 PQCMS oferuje również wsparcie techniczne - jeżeli nie będziesz w stanie czegoś zrobić,
                                 lub czegoś nie będziesz rozumieć (co jest zrozumiałe!), jesteśmy otwarci!
@@ -186,7 +157,7 @@
                                 rozwiązany.
                             </div>
 
-                            <div class="col-6 d-flex justify-content-center align-items-center flex-column">
+                            <div class="col-12 my-3 col-md-6 d-flex justify-content-center align-items-center flex-column">
                                 <h3>Bezpieczeństwo</h3>
                                 Duży nacisk stawiamy również na bezpieczeństwo programu. Cały czas trwają prace mające
                                 na celu symulację pracę hakera. Gdy wyszukamy luki w programie, od razu je zabezpieczamy!
@@ -203,7 +174,7 @@
             <div class="wave_reversed multiple-wave-reversed">
                 <img src="images/wave2.svg" alt="fala">
             </div>
-            <div class="col-8 offset-3 p-5 block-foreground">
+            <div class="col-10 offset-1 col-lg-8 offset-lg-3 p-5 block-foreground">
                 <div class="block-foreground">
                     <section id="projekt">
                         <h1>O projekcie</h1>
@@ -228,6 +199,11 @@
                                 <li>
                                     <b>HR</b> - jest to dział, w którym można dodawać, edytować użytkowników oraz
                                     rangi, sprawdzać uprawnienia, dostosowywać je do potrzeb.
+                                </li>
+                                <li>
+                                    <b>Logi</b> - możesz sprawdzić <s>logi strony </s> oraz statystyki Twojej witryny!
+                                    Są to np. regiony, z których była otwierana strona, jakie podstrony osiągnęły ile
+                                    wyświetleń. Wszystko pokazane jest na czytelnych wykresach.
                                 </li>
                                 <li>
                                     <b>Ustawienia</b> - zawiera ustawienia takie jak: dane do bazy danych, ustawienia
@@ -291,8 +267,8 @@
                     wersję demo!
                 </section>
 
-                <section id="zamowienie" class="col-10 offset-1 my-5 pt-5">
-                    <form id="save-contact-form" method="post" action="forms/contact/SaveContact.php" class="col-10 offset-1 d-flex flex-column gap-3 my-3 p-5">
+                <section id="zamowienie" class="col-12 col-lg-10 offset-lg-1 my-5 pt-5">
+                    <form id="save-contact-form" method="post" action="forms/contact/SaveContact.php" class="col-12 col-lg-10 offset-lg-1 d-flex flex-column gap-3 my-3 p-4 p-lg-5">
                         <h1>Zamówienie</h1>
                         Jeżeli chcesz prosić o wykonanie strony, pozostaw kontakt!
 
