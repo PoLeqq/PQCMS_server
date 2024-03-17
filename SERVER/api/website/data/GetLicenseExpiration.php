@@ -10,5 +10,5 @@ $website = APIUtils::getSafeWebsite($_SERVER["REMOTE_ADDR"],$_POST);
 //pqcms.?.licenseexpiration
 //if()
 
-$response = $website->getLicenseExpiration();
+$response = $website->canRenewLicense();
 APIUtils::endAPIscript(basename(__FILE__, '.php'),$_POST,$response);
