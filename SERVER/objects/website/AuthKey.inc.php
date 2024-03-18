@@ -123,6 +123,7 @@ class AuthKey
         $result = $stmt->get_result();
 
         if($result->num_rows == 0)
+//            $result = ["valid" => 0, "outdated" => 0, "invalidated" => 0, "wid" => $websiteId];
             $result = ["valid" => 0, "outdated" => 0, "invalidated" => 0];
         else
         {
@@ -347,11 +348,11 @@ class AuthKey
             return ["suc" => 0, "desc" => "Niepoprawny klucz!"];
 
         $row = $result->fetch_row();
-        if(is_null([$row[0]]))
-//            a - admin
+        if(is_null($row[0]))
+//            u - user
             $return = ["suc" => 1, "resp" => ["type" => "u", "id" => $row[1]]];
         else
-//            u - user
+//            a - admin
             $return = ["suc" => 1, "resp" => ["type" => "a", "id" => $row[0]]];
 
         $result->close();
