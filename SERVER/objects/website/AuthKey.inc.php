@@ -300,6 +300,13 @@ class AuthKey
         $stmt->execute();
         $stmt->close();
         $conn->close();
+
+        require_once("WebsiteLogs.php");
+        require_once("WebsiteUser.inc.php");
+        $user = new WebsiteUser($userId);
+        $logs = new WebsiteLogs($website_id);
+        $logs->saveLogout($user->getUsername(),true);
+
         return ["suc" => 1, "desc" => "Sesja użytkownika została unieważniona!"];
     }
 
