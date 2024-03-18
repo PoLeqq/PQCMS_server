@@ -266,7 +266,7 @@ HTML,
 
 
 
-    public static function editUser(int $websiteId, string $username = null, ?string $nickname = null, ?string $email = null, ?string $password = null, ?array $perms = null, ?bool $disabled = false): array
+    public static function editUser(int $websiteId, string $username = null, ?string $nickname = null, ?string $email = null, ?string $password = null, ?array $perms = null, ?bool $disabled = false, ?array $untouchablePerms = null): array
     {
 //        Walidacja pól
         if(!is_null($username))
@@ -304,7 +304,7 @@ HTML,
         $query = $conn->query("SELECT username FROM websites_admins WHERE website_id = $websiteId");
         if($query->fetch_row()[0] !== $username)
         {
-            $stmtUsers = $conn->prepare("SELECT id FROM websites_users WHERE website_id = $websiteId AND username = ? AND deleted = 0");
+            $stmtUsers = $conn->prepare("SELECT id, perms FROM websites_users WHERE website_id = $websiteId AND username = ? AND deleted = 0");
             $stmtUsers->bind_param("s",$username);
             $stmtUsers->execute();
 
@@ -314,7 +314,8 @@ HTML,
                 $resp = ["suc" => 0, "desc" => "Użytkownik o podanym loginie nie istnieje!"];
             else
             {
-                $userId = $stmtUsersResult->fetch_row()[0];
+                $user = $stmtUsersResult->fetch_assoc();
+                $userId = $user["id"];
 
                 $sql = [];
                 $params = [];
@@ -342,6 +343,24 @@ HTML,
                 }
                 if(!is_null($perms))
                 {
+                    if(!empty($untouchablePerms))
+                    {
+                        foreach($untouchablePerms as $untouchablePerm)
+                        {
+                            $permissionReset = false;
+                            foreach(json_decode($user["perms"],true) as $userPerm => $userPermValue)
+                            {
+                                if($untouchablePerm === $userPerm)
+                                {
+                                    $perms[$userPerm] = $userPermValue;
+                                    $permissionReset = true;
+                                }
+                            }
+                            if(!$permissionReset)
+                                unset($perms[$untouchablePerm]);
+                        }
+                    }
+
                     $sql[] = " perms = ?";
                     $params[] = json_encode($perms);
                     $paramsTypes .= "s";

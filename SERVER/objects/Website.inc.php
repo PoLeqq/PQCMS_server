@@ -195,10 +195,10 @@ class Website
         return WebsiteUser::addUser($this->id, $username, $nickname, $email, $password, $perms, $disabled);
     }
 
-    public function editUser(string $username, ?string $nickname, ?string $email, ?string $password, ?array $perms, ?bool $disabled): array
+    public function editUser(string $username, ?string $nickname, ?string $email, ?string $password, ?array $perms, ?bool $disabled, ?array $untouchablePerms = null): array
     {
         require_once(dirname(__DIR__) . "/objects/website/WebsiteUser.inc.php");
-        return WebsiteUser::editUser($this->id, $username, $nickname, $email, $password, $perms, $disabled);
+        return WebsiteUser::editUser($this->id, $username, $nickname, $email, $password, $perms, $disabled, untouchablePerms: $untouchablePerms);
     }
 
     public function editRank(string $name, ?string $displayName, ?int $priority, ?int $parentId, ?array $perms): array

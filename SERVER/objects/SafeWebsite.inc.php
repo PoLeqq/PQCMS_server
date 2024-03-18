@@ -117,16 +117,20 @@ class SafeWebsite
         if(!is_null($perms) && !$this->website->hasPermission($this->ip,$this->authKey,"pqcms.hr.user.edit.perms.".$username))
             $perms = null;
 
+        $untouchablePerms = [];
         if(!empty($perms))
             foreach($perms as $perm => $value)
                 if(!$this->website->hasPermission($this->ip,$this->authKey,$perm))
-                    unset($perms[$perm]);
+                    $untouchablePerms[] = $perm;
+
+        if(is_null($nickname) && is_null($email) && is_null($password) && empty($perms) && is_null($disabled))
+            return self::getUnpermittedArray();
 
 //        Nie może być, ponieważ gdy są puste permisje to się wyświetla - mimo, że user mógłBY zostać zmieniony
 //        if(is_null($nickname) && is_null($email) && is_null($password) && empty($perms) && is_null($disabled))
 //            return ["suc" => 0, "desc" => "Nic nie zmieniono, ponieważ nie masz odpowiednich uprawnień!"];
 
-        $resp = $this->website->editUser($username, $nickname, $email, $password, $perms, $disabled);
+        $resp = $this->website->editUser($username, $nickname, $email, $password, $perms, $disabled, untouchablePerms: $untouchablePerms);
         if($resp["suc"] === 1 && !is_null($perms))
             $resp["perms"] = $perms;
 
